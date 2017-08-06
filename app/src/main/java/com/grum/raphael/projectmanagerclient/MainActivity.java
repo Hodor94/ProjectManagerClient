@@ -27,7 +27,8 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 public class MainActivity extends AppCompatActivity {
 
     public final static String URL
-            = "http://10.0.2.2:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+            = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+    public static byte[] secret;
 
     private Button login;
     private EditText username;
@@ -127,13 +128,18 @@ public class MainActivity extends AppCompatActivity {
                             return result;
                         }
                     } catch (IOException e) {
-                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                                .setTitle(R.string.error_login_title)
-                                .setMessage("App reagiert falsch! Bitte benachrichtigen Sie den " +
-                                        "Admin unter grum02@gw.uni-passau.de")
-                                .setNegativeButton("OK", null)
-                                .create();
-                        alertDialog.show();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                                        .setTitle(R.string.error_login_title)
+                                        .setMessage("App reagiert falsch! Bitte benachrichtigen Sie den " +
+                                                "Admin unter grum02@gw.uni-passau.de")
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        });
                     } catch (JSONException e) {
                         // AlertDialog has to run on UI thread.
                         runOnUiThread(new Runnable() {
@@ -161,7 +167,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String success = jsonObject.getString("success");
                     if (success.equals("true")) {
-                        // TODO
+                        String token = jsonObject.getString("token");
+                        System.out.println(token);
                         System.out.println("Login erfolgreich");
                     } else {
                         // TODO
