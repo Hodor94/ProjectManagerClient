@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                     } catch (JSONException e) {
                         // AlertDialog has to run on UI thread.
+                        e.printStackTrace();
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -175,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                         System.out.println("Login fehlgeschlagen");
                     }
                 } catch (JSONException e) {
+                    e.printStackTrace();
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                             .setTitle(R.string.error_login_title)
                             .setMessage("Server Fehler! Bitte benachrichtigen Sie den " +
