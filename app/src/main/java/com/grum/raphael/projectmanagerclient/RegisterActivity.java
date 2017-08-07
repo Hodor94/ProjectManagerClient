@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -228,32 +232,47 @@ public class RegisterActivity extends AppCompatActivity {
                             result = new JSONObject(tempJson);
                             return result;
                         } else {
-                            AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
-                                    .setTitle(R.string.error_registration_title)
-                                    .setMessage("Keine Antwort vom Server! Bitte benachrichtigen " +
-                                            "Sie den Admin unter grum02@gw.uni-passau.de")
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
+                                            .setTitle(R.string.error_registration_title)
+                                            .setMessage("Keine Antwort vom Server! Bitte benachrichtigen " +
+                                                    "Sie den Admin unter grum02@gw.uni-passau.de")
+                                            .setNegativeButton("OK", null)
+                                            .create();
+                                    alertDialog.show();
+                                }
+                            });
                         }
                     }
                 }
             } catch (IOException exc) {
-                AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
-                        .setTitle(R.string.error_registration_title)
-                        .setMessage("App reagiert falsch! Bitte benachrichtigen Sie den " +
-                                "Admin unter grum02@gw.uni-passau.de")
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
+                                .setTitle(R.string.error_registration_title)
+                                .setMessage("App reagiert falsch! Bitte benachrichtigen Sie den " +
+                                        "Admin unter grum02@gw.uni-passau.de")
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                });
             } catch (JSONException e) {
-                AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
-                        .setTitle(R.string.error_registration_title)
-                        .setMessage("Server Fehler! Bitte benachrichtigen Sie den " +
-                                "Admin unter grum02@gw.uni-passau.de")
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
+                                .setTitle(R.string.error_registration_title)
+                                .setMessage("Server Fehler! Bitte benachrichtigen Sie den " +
+                                        "Admin unter grum02@gw.uni-passau.de")
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                });
             }
             return result;
         }
@@ -279,6 +298,13 @@ public class RegisterActivity extends AppCompatActivity {
             if (jsonObject != null) {
                 try {
                     String success = jsonObject.getString("success");
+                    String secret = jsonObject.getString("secret");
+                    System.out.println(secret);
+                    byte[] decodedKey = Base64.decode(secret, Base64.DEFAULT);
+                    SecretKey originalKey
+                            = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
+                    System.out.println(originalKey.getEncoded());
+                    System.out.println(Base64.decode(originalKey.getEncoded(), Base64.DEFAULT));
                     if (success != "") {
                         if (success.equals("true")) {
                             AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
@@ -295,7 +321,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     })
                                     .create();
                             alertDialog.show();
-
                         } else {
                             AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
                                     .setTitle(R.string.error_registration_title)
