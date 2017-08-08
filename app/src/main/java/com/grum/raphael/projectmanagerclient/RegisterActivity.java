@@ -298,13 +298,6 @@ public class RegisterActivity extends AppCompatActivity {
             if (jsonObject != null) {
                 try {
                     String success = jsonObject.getString("success");
-                    String secret = jsonObject.getString("secret");
-                    System.out.println(secret);
-                    byte[] decodedKey = Base64.decode(secret, Base64.DEFAULT);
-                    SecretKey originalKey
-                            = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-                    System.out.println(originalKey.getEncoded());
-                    System.out.println(Base64.decode(originalKey.getEncoded(), Base64.DEFAULT));
                     if (success != "") {
                         if (success.equals("true")) {
                             AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)
