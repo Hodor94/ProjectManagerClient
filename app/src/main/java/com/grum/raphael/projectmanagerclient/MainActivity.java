@@ -1,6 +1,7 @@
 package com.grum.raphael.projectmanagerclient;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
             = "http://10.0.2.2:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public static byte[] secret;
     private String token;
+    private String userInfo;
 
     private Button login;
     private EditText username;
@@ -101,6 +103,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     private class LoginTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
@@ -162,7 +166,6 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
-        // TODO debug
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             if (jsonObject != null) {
@@ -170,8 +173,8 @@ public class MainActivity extends AppCompatActivity {
                     String success = jsonObject.getString("success");
                     if (success.equals("true")) {
                         token = jsonObject.getString("token");
-
-                        System.out.println("Login erfolgreich");
+                        userInfo = jsonObject.getString("user");
+                        System.err.println(userInfo);
                     } else {
                         // TODO
                         System.out.println("Login fehlgeschlagen");
@@ -195,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                         .create();
                 alertDialog.show();
             }
+            goToUserProfile();
         }
 
         private JSONObject createUserInfo(String username, String password) {
@@ -206,6 +210,63 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return result;
+        }
+
+        private void goToUserProfile() {
+            JSONObject user = null;
+            if (userInfo != null && !(userInfo.equals(""))) {
+                try {
+                    user = new JSONObject(userInfo);
+                } catch (JSONException e) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(R.string.error_login_title)
+                            .setMessage("Interner Fehler! Bitte versuchen Sie, sich erneut einzuloggen.")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    username.setText("");
+                    password.setText("");
+                    alertDialog.show();
+                }
+                Intent userProfile = new Intent(MainActivity.this, UserProfileActivity.class);
+                Bundle userData = new Bundle();
+                try {
+                    // Adding every needed user data to bundle
+                    userData.putString("id", user.getString("id"));
+                    userData.putString("username", user.getString("username"));
+                    userData.putString("firstName", user.getString("firstName"));
+                    userData.putString("surname", user.getString("surname"));
+                    userData.putString("email", user.getString("email"));
+                    // TODO format all in utf-8
+                    userData.putString("address", user.getString("address"));
+                    userData.putString("phoneNr", user.getString("phoneNr"));
+                    userData.putString("tributes", user.getString("tributes"));
+                    // TODO team namen fetchen
+                    userData.putString("register", user.getString("registerName"));
+                    userData.putString("dayOfEntry", user.getString("dayOfEntry"));
+                } catch (JSONException e) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(R.string.error_login_title)
+                            .setMessage("Server Fehler! Der Server schickt falsche Daten!" +
+                                    "Bitte kontaktieren Sie den Administrator unter " +
+                                    "grum02@gw.uni-passau.de.")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    username.setText("");
+                    password.setText("");
+                    alertDialog.show();
+                }
+                userProfile.putExtras(userData);
+                startActivity(userProfile);
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.error_login_title)
+                        .setMessage("Interner Fehler! Bitte versuchen Sie, sich erneut einzuloggen.")
+                        .setNegativeButton("OK", null)
+                        .create();
+                username.setText("");
+                password.setText("");
+                alertDialog.show();
+            }
         }
 
     }

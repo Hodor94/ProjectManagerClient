@@ -20,6 +20,7 @@ public class UserProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
+        Bundle userData = getIntent().getExtras();
 
         // Fetch all components on within activity
         username = (TextView) findViewById(R.id.username);
@@ -32,7 +33,18 @@ public class UserProfileActivity extends AppCompatActivity {
         birthday = (TextView) findViewById(R.id.birthday);
         dayOfEntry = (TextView) findViewById(R.id.dayOfEntry);
 
-        // TODO method for setting values -> look TestAsyncTask
+        // Set the values fetched from intent
+        username.setText(userData.getString("username"));
+        firstName.setText(userData.getString("dirstName"));
+        surname.setText(userData.getString("surname"));
+        email.setText(userData.getString("email"));
+        phoneNr.setText(userData.getString("phoneNr"));
+        address.setText(userData.getString("address"));
+        tributes.setText(userData.getString("tributes"));
+        birthday.setText(userData.getString("birthday"));
+        dayOfEntry.setText(userData.getString("dayOfEntry"));
+
+        // TODO team
     }
 
 }
