@@ -28,7 +28,7 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 public class MainActivity extends AppCompatActivity {
 
     public final static String URL
-            = "http://10.0.2.2:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+            = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public static byte[] secret;
     private String token;
     private String userInfo;
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                         .create();
                 alertDialog.show();
             }
-            goToUserProfile();
+            goToPinBoard();
         }
 
         private JSONObject createUserInfo(String username, String password) {
@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
-        private void goToUserProfile() {
+        private void goToPinBoard() {
             JSONObject user = null;
             if (userInfo != null && !(userInfo.equals(""))) {
                 try {
