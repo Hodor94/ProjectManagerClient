@@ -212,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
+        // TODO rework
         private void goToPinBoard() {
             JSONObject user = null;
             if (userInfo != null && !(userInfo.equals(""))) {
@@ -227,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                     password.setText("");
                     alertDialog.show();
                 }
-                Intent userProfile = new Intent(MainActivity.this, UserProfileActivity.class);
+                Intent navigationAction = new Intent(MainActivity.this, NavigationAction.class);
                 Bundle userData = new Bundle();
                 try {
                     // Adding every needed user data to bundle
@@ -255,8 +256,10 @@ public class MainActivity extends AppCompatActivity {
                     password.setText("");
                     alertDialog.show();
                 }
-                userProfile.putExtras(userData);
-                startActivity(userProfile);
+                // TODO think about if needed!
+                navigationAction.putExtras(userData);
+
+                startActivity(navigationAction);
             } else {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                         .setTitle(R.string.error_login_title)

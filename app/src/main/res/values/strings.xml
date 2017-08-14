@@ -37,4 +37,23 @@
     <string name="success_registration_title">Registration erfolgreich!</string>
     <string name="error_login_title">Fehler beim Login!</string>
     <string name="success_login_title">Login erfolgreich!</string>
+    
+    <string-array name="navigation_drawer_items_array">
+        <item>Pinnwand</item>
+        <item>Profil</item>
+        <item>Team</item>
+        <item>Projekte</item>
+        <item>Termine</item>
+        <item>Team finden</item>
+        <item>Nutzer finden</item>
+    </string-array>
+    
+    <!-- Added automatically -->
+    <string name="title_activity_navigation">NavigationActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_navigation_action">NavigationAction</string>
 </resources>

@@ -19,10 +19,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".UserProfileActivity" />
-        <activity android:name=".TeamProfileActivity" />
-        <activity android:name=".ProjectProfileActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".PinboardActivity"></activity>
+        <activity
+            android:name=".NavigationAction"
+            android:label="@string/title_activity_navigation_action"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

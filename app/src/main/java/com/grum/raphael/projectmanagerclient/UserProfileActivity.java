@@ -46,19 +46,7 @@ public class UserProfileActivity extends AppCompatActivity {
         birthday.setText(userData.getString("birthday"));
         dayOfEntry.setText(userData.getString("dayOfEntry"));
 
-        // TODO team
+        // TODO team & convert to fragment
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.common_menues, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    // Todo
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        return super.onOptionsItemSelected(item);
-    }
 }
