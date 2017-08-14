@@ -2,6 +2,8 @@ package com.grum.raphael.projectmanagerclient;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class UserProfileActivity extends AppCompatActivity {
@@ -47,4 +49,16 @@ public class UserProfileActivity extends AppCompatActivity {
         // TODO team
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.common_menues, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    // Todo
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        return super.onOptionsItemSelected(item);
+    }
 }
