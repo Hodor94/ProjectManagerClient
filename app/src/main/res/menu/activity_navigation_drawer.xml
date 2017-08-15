@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_pinboard"
+            android:icon="@drawable/ic_pinboard"
+            android:title="Pinnwand" />
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="Profil" />
+        <item
+            android:id="@+id/nav_team"
+            android:icon="@drawable/ic_team"
+            android:title="Team" />
+        <item
+            android:id="@+id/nav_projects"
+            android:icon="@drawable/ic_projects"
+            android:title="Projekte" />
+        <item
+            android:id="@+id/nav_appointments"
+            android:icon="@drawable/ic_appointments"
+            android:title="Meetings" />
+        <item
+            android:id="@+id/nav_searchTeams"
+            android:icon="@drawable/ic_search_teams"
+            android:title="Team finden" />
+        <item
+            android:id="@+id/nav_searchUsers"
+            android:icon="@drawable/ic_search_users"
+            android:title="User finden" />
+        <item
+            android:id="@+id/nav_chats"
+            android:icon="@drawable/ic_chats"
+            android:title="Chats" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>
