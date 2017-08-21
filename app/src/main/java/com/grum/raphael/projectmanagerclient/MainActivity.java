@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     //public final static String URL
       //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
-    public final static String URL = "http://localhost:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice";
+    public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private static String token;
     private String userInfo;
 

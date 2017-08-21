@@ -37,11 +37,13 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Initial check and open Pinboard
-        navigationView.setCheckedItem(R.id.frg_pinboard);
+        navigationView.setCheckedItem(R.id.frg_user_profile);
 
+        Fragment userProfile = new UserProfileFragment();
+        userProfile.setArguments(this.getIntent().getExtras());
         FragmentTransaction fragmentTransaction
                 = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.containerFrame, new PinboardFragment());
+        fragmentTransaction.replace(R.id.containerFrame, userProfile);
         fragmentTransaction.commit();
     }
 

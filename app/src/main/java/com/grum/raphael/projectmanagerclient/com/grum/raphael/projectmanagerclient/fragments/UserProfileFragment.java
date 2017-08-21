@@ -32,6 +32,7 @@ public class UserProfileFragment extends Fragment {
     private TextView tributes;
     private TextView birthday;
     private TextView dayOfEntry;
+    private TextView team;
 
     public UserProfileFragment() {
 
@@ -41,7 +42,33 @@ public class UserProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle bundle = this.getArguments();
+
+        // Fetch the TextViews of the fragment
         username = (TextView) getView().findViewById(R.id.username);
+        firstName = (TextView) getView().findViewById(R.id.firstName);
+        surname = (TextView) getView().findViewById(R.id.surname);
+        email = (TextView) getView().findViewById(R.id.email);
+        phoneNr = (TextView) getView().findViewById(R.id.phoneNr);
+        address = (TextView) getView().findViewById(R.id.address);
+        tributes = (TextView) getView().findViewById(R.id.tributes);
+        // TODO debug
+        birthday = (TextView) getView().findViewById(R.id.team);
+        dayOfEntry = (TextView) getView().findViewById(R.id.dayOfEntry);
+        team = (TextView) getView().findViewById(R.id.team);
+
+        // Set the text to the TextView elements
+        // TODO format and proof if null
+        username.setText(bundle.getString("username"));
+        firstName.setText(bundle.getString("firstName"));
+        surname.setText(bundle.getString("surname"));
+        email.setText(bundle.getString("email"));
+        phoneNr.setText(bundle.getString("phoneNr"));
+        address.setText(bundle.getString("address"));
+        tributes.setText(bundle.getString("tributes"));
+        birthday.setText(bundle.getString("birthday"));
+        dayOfEntry.setText(bundle.getString("dayOfEntry"));
+        team.setText(bundle.getString("team"));
+
     }
 
     @Nullable
