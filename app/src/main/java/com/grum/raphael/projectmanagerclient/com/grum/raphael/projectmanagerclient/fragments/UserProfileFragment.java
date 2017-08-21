@@ -16,6 +16,9 @@ import com.grum.raphael.projectmanagerclient.R;
 
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
@@ -58,16 +61,24 @@ public class UserProfileFragment extends Fragment {
 
         // Set the text to the TextView elements
         // TODO format and proof if null
-        username.setText(bundle.getString("username"));
-        firstName.setText(bundle.getString("firstName"));
-        surname.setText(bundle.getString("surname"));
-        email.setText(bundle.getString("email"));
-        phoneNr.setText(bundle.getString("phoneNr"));
-        address.setText(bundle.getString("address"));
-        tributes.setText(bundle.getString("tributes"));
-        birthday.setText(bundle.getString("birthday"));
-        dayOfEntry.setText(bundle.getString("dayOfEntry"));
-        team.setText(bundle.getString("team"));
+        try {
+            username.setText(URLEncoder.encode(bundle.getString("username"), "UTF-8"));
+            firstName.setText(URLEncoder.encode(bundle.getString("firstName"), "UTF-8"));
+            surname.setText(URLEncoder.encode(bundle.getString("surname"), "UTF-8"));
+            email.setText(URLEncoder.encode(bundle.getString("email"), "UTF-8"));
+            phoneNr.setText(URLEncoder.encode(bundle.getString("phoneNr"), "UTF-8"));
+            address.setText(URLEncoder.encode(bundle.getString("address"), "UTF-8"));
+            String tributes = bundle.getString("tributes");
+            if (tributes.equals("null")) {
+                System.out.println("Tributes is null");
+            }
+            this.tributes.setText(URLEncoder.encode(bundle.getString(tributes), "UTF-8"));
+            birthday.setText(URLEncoder.encode(bundle.getString("birthday"), "UTF-8"));
+            dayOfEntry.setText(bundle.getString("dayOfEntry"));
+            team.setText(bundle.getString("team"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
     }
 
