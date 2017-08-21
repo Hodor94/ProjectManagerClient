@@ -27,10 +27,10 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String URL
-            = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
-    public static byte[] secret;
-    private String token;
+    //public final static String URL
+      //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+    public final static String URL = "http://localhost:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice";
+    private static String token;
     private String userInfo;
 
     private Button login;
@@ -103,6 +103,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public static String getToken() {
+        return token;
+    }
 
 
     private class LoginTask extends AsyncTask<String, Void, JSONObject> {
@@ -237,13 +240,12 @@ public class MainActivity extends AppCompatActivity {
                     userData.putString("firstName", user.getString("firstName"));
                     userData.putString("surname", user.getString("surname"));
                     userData.putString("email", user.getString("email"));
-                    // TODO format all in utf-8
                     userData.putString("address", user.getString("address"));
                     userData.putString("phoneNr", user.getString("phoneNr"));
                     userData.putString("tributes", user.getString("tributes"));
-                    // TODO team namen fetchen
                     userData.putString("register", user.getString("registerName"));
                     userData.putString("dayOfEntry", user.getString("dayOfEntry"));
+                    userData.putString("team", user.getString("team"));
                 } catch (JSONException e) {
                     AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                             .setTitle(R.string.error_login_title)

@@ -201,6 +201,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------
 
+    // TODO prograss bar or sthg like this
     private class RegisterUserTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
