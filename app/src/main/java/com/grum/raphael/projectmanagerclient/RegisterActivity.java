@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,8 +32,10 @@ import java.util.regex.Pattern;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.methods.HttpEntityEnclosingRequestBase;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
@@ -178,6 +182,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser() {
+        info.setText("");
         RegisterUserTask registerTask = new RegisterUserTask();
         // Getting all the user input made in the register form.
         String firstName = this.firstName.getText().toString();
@@ -223,9 +228,15 @@ public class RegisterActivity extends AppCompatActivity {
                         registerPost.setEntity(stringEntity);
                         HttpResponse response = client.execute(registerPost);
                         InputStream input = response.getEntity().getContent();
+                        /*Gson gson = new Gson();
+                        InputStream input = response.getEntity().getContent();
+                        JSONObject json
+                                = gson.fromJson(new InputStreamReader(input, "UTF-8"), JSONObject.class);
+                                */
                         if (input != null) {
                             BufferedReader reader
-                                    = new BufferedReader(new InputStreamReader(input));
+                                    = new BufferedReader(new InputStreamReader(input, "UTF-8"));
+                            System.out.println(reader.readLine());
                             while ((tempJson = reader.readLine()) != null) {
                                 builder.append(tempJson);
                             }
@@ -314,6 +325,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         }
                                     })
                                     .create();
+                            MainActivity.userData = new DataContainer();
                             alertDialog.show();
                         } else {
                             AlertDialog alertDialog = new AlertDialog.Builder(RegisterActivity.this)

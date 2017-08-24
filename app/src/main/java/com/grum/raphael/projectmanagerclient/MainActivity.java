@@ -11,6 +11,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,19 +23,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpPost;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class MainActivity extends AppCompatActivity {
 
     //public final static String URL
       //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
-    private static String token;
     private String userInfo;
+    protected static DataContainer userData = new DataContainer();
 
     private Button login;
     private EditText username;
@@ -103,11 +109,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static String getToken() {
-        return token;
-    }
-
-
     private class LoginTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
@@ -122,16 +123,19 @@ public class MainActivity extends AppCompatActivity {
                 stringEntity.setContentType("application/json");
                 if (stringEntity != null) {
                     loginRequest.setEntity(stringEntity);
+                    loginRequest.setHeader("Content-Type", "application/json");
+                    loginRequest.setHeader("Accept-Encoding", "application/json");
                     try {
                         HttpResponse response = client.execute(loginRequest);
                         InputStream input = response.getEntity().getContent();
                         String tempJson;
                         if (input != null) {
                             BufferedReader reader
-                                    = new BufferedReader(new InputStreamReader(input));
+                                    = new BufferedReader(new InputStreamReader(input, "UTF-8"));
                             while ((tempJson = reader.readLine()) != null) {
                                 stringBuilder.append(tempJson);
                             }
+
                             result = new JSONObject(stringBuilder.toString());
                             return result;
                         }
@@ -175,12 +179,16 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String success = jsonObject.getString("success");
                     if (success.equals("true")) {
-                        token = jsonObject.getString("token");
                         userInfo = jsonObject.getString("user");
-                        System.err.println(userInfo);
+                        JSONObject user = new JSONObject(userInfo);
                     } else {
-                        // TODO
-                        System.out.println("Login fehlgeschlagen");
+                        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                                .setTitle(R.string.error_login_title)
+                                .setMessage("Login fehlgeschlagen! Eingegebene Informationen sind " +
+                                        "fehlerhaft. Bitte versuchen Sie es erneut.")
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -215,7 +223,6 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
-        // TODO rework
         private void goToNavigationActivity() {
             JSONObject user = null;
             if (userInfo != null && !(userInfo.equals(""))) {
@@ -232,37 +239,32 @@ public class MainActivity extends AppCompatActivity {
                     alertDialog.show();
                 }
                 Intent navigationAction = new Intent(MainActivity.this, NavigationActivity.class);
-                Bundle userData = new Bundle();
-                try {
-                    // Adding every needed user data to bundle
-                    userData.putString("id", user.getString("id"));
-                    userData.putString("username", user.getString("username"));
-                    userData.putString("firstName", user.getString("firstName"));
-                    userData.putString("surname", user.getString("surname"));
-                    userData.putString("email", user.getString("email"));
-                    userData.putString("address", user.getString("address"));
-                    userData.putString("phoneNr", user.getString("phoneNr"));
-                    userData.putString("tributes", user.getString("tributes"));
-                    userData.putString("register", user.getString("registerName"));
-                    userData.putString("dayOfEntry", user.getString("dayOfEntry"));
-                    userData.putString("team", user.getString("team"));
-                } catch (JSONException e) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                            .setTitle(R.string.error_login_title)
-                            .setMessage("Server Fehler! Der Server schickt falsche Daten!" +
-                                    "Bitte kontaktieren Sie den Administrator unter " +
-                                    "grum02@gw.uni-passau.de.")
-                            .setNegativeButton("OK", null)
-                            .create();
-                    username.setText("");
-                    password.setText("");
-                    alertDialog.show();
-                }
-                // TODO think about if needed!
-                navigationAction.putExtras(userData);
-
                 startActivity(navigationAction);
             } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.error_login_title)
+                        .setMessage("Interner Fehler! Bitte versuchen Sie, sich erneut einzuloggen.")
+                        .setNegativeButton("OK", null)
+                        .create();
+                username.setText("");
+                password.setText("");
+                alertDialog.show();
+            }
+        }
+
+        private void fillDataContainer(JSONObject userData) {
+            try {
+                String username = userData.getString("username");
+                String token = userData.getString("token");
+                String userRole = userData.getString("role");
+                String teamName = userData.getString("team");
+                String adminOfProject = userData.getString("adminOfProject");
+                MainActivity.userData.setToken(token);
+                MainActivity.userData.setAdminOfProject(adminOfProject);
+                MainActivity.userData.setTeamName(teamName);
+                MainActivity.userData.setUsername(username);
+                MainActivity.userData.setUserRole(userRole);
+            } catch (JSONException e) {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                         .setTitle(R.string.error_login_title)
                         .setMessage("Interner Fehler! Bitte versuchen Sie, sich erneut einzuloggen.")

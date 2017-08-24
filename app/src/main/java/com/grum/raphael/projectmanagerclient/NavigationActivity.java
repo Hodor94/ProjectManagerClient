@@ -40,7 +40,6 @@ public class NavigationActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.frg_user_profile);
 
         Fragment userProfile = new UserProfileFragment();
-        userProfile.setArguments(this.getIntent().getExtras());
         FragmentTransaction fragmentTransaction
                 = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.containerFrame, userProfile);
@@ -84,7 +83,7 @@ public class NavigationActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        String[] params;
         Fragment newFragment = null;
 
         if (id == R.id.nav_pinboard) {
@@ -92,6 +91,7 @@ public class NavigationActivity extends AppCompatActivity
         } else if (id == R.id.nav_profile) {
             newFragment = new UserProfileFragment();
         } else if (id == R.id.nav_team) {
+            params = new String[]{MainActivity.URL + "team"};
             newFragment = new TeamProfileFragment();
         } else if (id == R.id.nav_projects) {
             newFragment = new ProjectsFragment();

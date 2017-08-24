@@ -17,6 +17,7 @@ import com.grum.raphael.projectmanagerclient.R;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -62,20 +63,17 @@ public class UserProfileFragment extends Fragment {
         // Set the text to the TextView elements
         // TODO format and proof if null
         try {
-            username.setText(URLEncoder.encode(bundle.getString("username"), "UTF-8"));
-            firstName.setText(URLEncoder.encode(bundle.getString("firstName"), "UTF-8"));
-            surname.setText(URLEncoder.encode(bundle.getString("surname"), "UTF-8"));
-            email.setText(URLEncoder.encode(bundle.getString("email"), "UTF-8"));
-            phoneNr.setText(URLEncoder.encode(bundle.getString("phoneNr"), "UTF-8"));
-            address.setText(URLEncoder.encode(bundle.getString("address"), "UTF-8"));
-            String tributes = bundle.getString("tributes");
-            if (tributes.equals("null")) {
-                System.out.println("Tributes is null");
-            }
-            this.tributes.setText(URLEncoder.encode(bundle.getString(tributes), "UTF-8"));
-            birthday.setText(URLEncoder.encode(bundle.getString("birthday"), "UTF-8"));
-            dayOfEntry.setText(bundle.getString("dayOfEntry"));
-            team.setText(bundle.getString("team"));
+            username.setText(URLDecoder.decode(bundle.getString("username"), "latin1"));
+            firstName.setText(URLDecoder.decode(bundle.getString("firstName"), "latin1"));
+            surname.setText(URLDecoder.decode(bundle.getString("surname"), "latin1"));
+            email.setText(URLDecoder.decode(bundle.getString("email"), "latin1"));
+            phoneNr.setText(URLDecoder.decode(bundle.getString("phoneNr"), "latin1"));
+            address.setText(URLDecoder.decode(bundle.getString("address"), "latin1"));
+            String tributes = bundle.getString("tributes", String.valueOf(R.string.blank));
+            String birthday = bundle.getString("birthday", String.valueOf(R.string.blank));
+            String dayOfEntry = bundle.getString("dayOfEntry", String.valueOf(R.string.blank));
+            String team = bundle.getString("team", "----");
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
