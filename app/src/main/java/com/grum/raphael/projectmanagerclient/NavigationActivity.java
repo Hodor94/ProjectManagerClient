@@ -1,5 +1,9 @@
 package com.grum.raphael.projectmanagerclient;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -16,9 +20,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.*;
+import com.grum.raphael.projectmanagerclient.tasks.UserTask;
+
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutionException;
 
 public class NavigationActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener {
+
+    public static JSONObject userTaskData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +50,29 @@ public class NavigationActivity extends AppCompatActivity
         // Initial check and open Pinboard
         navigationView.setCheckedItem(R.id.frg_user_profile);
 
+        UserTask userTask = new UserTask(NavigationActivity.this);
+        if (!MainActivity.userData.isEmpty()) {
+            try {
+                userTaskData = userTask.execute(new String[]{MainActivity.URL + "user",
+                        MainActivity.userData.getUsername(), MainActivity.userData.getToken()})
+                        .get();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            Intent main = new Intent(NavigationActivity.this, MainActivity.class);
+            startActivity(main);
+        }
         Fragment userProfile = new UserProfileFragment();
+        Bundle bundle = new Bundle();
+        if (userTaskData != null) {
+            bundle.putString("userData", userTaskData.toString());
+            userProfile.setArguments(bundle);
+        }
         FragmentTransaction fragmentTransaction
                 = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.containerFrame, userProfile);
@@ -86,34 +119,106 @@ public class NavigationActivity extends AppCompatActivity
         String[] params;
         Fragment newFragment = null;
 
-        if (id == R.id.nav_pinboard) {
-            newFragment = new PinboardFragment();
-        } else if (id == R.id.nav_profile) {
-            newFragment = new UserProfileFragment();
-        } else if (id == R.id.nav_team) {
-            params = new String[]{MainActivity.URL + "team"};
-            newFragment = new TeamProfileFragment();
-        } else if (id == R.id.nav_projects) {
-            newFragment = new ProjectsFragment();
-        } else if (id == R.id.nav_appointments) {
-            newFragment = new AppointmentsFragment();
-        } else if (id == R.id.nav_searchTeams) {
-            newFragment = new SearchTeamsFragment();
-        } else if (id == R.id.nav_searchUsers) {
-            newFragment = new SearchUsersFragment();
-        } else if (id == R.id.nav_chats) {
-            newFragment = new ChatsFragment();
-        }
+        if (!MainActivity.userData.isEmpty()) {
+            if (id == R.id.nav_pinboard) {
+                newFragment = new PinboardFragment();
+            } else if (id == R.id.nav_profile) {
+                UserTask userTask = new UserTask(NavigationActivity.this);
+                Bundle bundle = new Bundle();
+                try {
+                    userTaskData = userTask.execute(new String[]{MainActivity.URL + "user",
+                            MainActivity.userData.getUsername(), MainActivity.userData.getToken()})
+                            .get();
+                    bundle.putString("userData", userTaskData.toString());
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                }
+                newFragment = new UserProfileFragment();
+                newFragment.setArguments(bundle);
+            } else if (id == R.id.nav_team) {
+                if (!MainActivity.userData.getTeamName().equals("null")) {
+                    // TODO
+                    params = new String[]{MainActivity.URL + "team"};
+                    newFragment = new TeamProfileFragment();
+                } else {
+                    AlertDialog alertDialog = generateEmptyTeamAlert();
+                    alertDialog.show();
+                    newFragment = new EmptyDataFragment();
+                }
+            } else if (id == R.id.nav_projects) {
+                if (!MainActivity.userData.getTeamName().equals("null")) {
+                    // TODO
+                    newFragment = new ProjectsFragment();
+                } else {
+                    AlertDialog alertDialog = generateEmptyTeamAlert();
+                    alertDialog.show();
+                    newFragment = new EmptyDataFragment();
+                }
+            } else if (id == R.id.nav_appointments) {
+                if (!MainActivity.userData.getTeamName().equals("null")) {
+                    // TODO
+                    newFragment = new AppointmentsFragment();
+                } else {
+                    AlertDialog alertDialog = generateEmptyTeamAlert();
+                    alertDialog.show();
+                    newFragment = new EmptyDataFragment();
+                }
+            } else if (id == R.id.nav_searchTeams) {
+                newFragment = new SearchTeamsFragment();
+            } else if (id == R.id.nav_searchUsers) {
+                newFragment = new SearchUsersFragment();
+            } else if (id == R.id.nav_chats) {
+                if (!MainActivity.userData.getTeamName().equals("null")) {
+                    // TODO
+                    newFragment = new ChatsFragment();
+                } else {
+                    AlertDialog alertDialog = generateEmptyTeamAlert();
+                    alertDialog.show();
+                    newFragment = new EmptyDataFragment();
+                }
+            }
 
-        if (newFragment != null) {
-            FragmentTransaction fragmentTransaction
-                    = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.containerFrame, newFragment);
-            fragmentTransaction.commit();
-        }
+            if (newFragment != null) {
+                FragmentTransaction fragmentTransaction
+                        = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                fragmentTransaction.commit();
+            }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(NavigationActivity.this)
+                    .setTitle(R.string.error_internal)
+                    .setMessage("Die Berechtigung für die gewählte Aktion fehlt oder ist " +
+                            "abgelaufen!")
+                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent intent
+                                    = new Intent(NavigationActivity.this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .create();
+            alertDialog.show();
+            return false;
+        }
     }
+
+    private AlertDialog generateEmptyTeamAlert() {
+        AlertDialog result = new AlertDialog.Builder(NavigationActivity.this)
+                .setTitle(R.string.error_internal)
+                .setMessage("Sei sind noch keinem Team zugeordnet! Bitte treten Sie zuerst einem " +
+                        "Team bei oder erstellen Sie Ihr eigenes Team.")
+                .setNegativeButton("OK", null)
+                .create();
+        return result;
+    }
+
 }

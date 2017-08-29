@@ -37,6 +37,9 @@
     <string name="success_registration_title">Registration erfolgreich!</string>
     <string name="error_login_title">Fehler beim Login!</string>
     <string name="success_login_title">Login erfolgreich!</string>
+    <string name="error_internal">Interner Fehler!</string>
+    <string name="empty_data">Noch nichts los hier! \n\n
+        Werde Teil eines Teams, um alle Funktionen nutzen zu können!</string>
 
     <string-array name="navigation_drawer_items_array">
         <item>Pinnwand</item>

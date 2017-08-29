@@ -228,15 +228,9 @@ public class RegisterActivity extends AppCompatActivity {
                         registerPost.setEntity(stringEntity);
                         HttpResponse response = client.execute(registerPost);
                         InputStream input = response.getEntity().getContent();
-                        /*Gson gson = new Gson();
-                        InputStream input = response.getEntity().getContent();
-                        JSONObject json
-                                = gson.fromJson(new InputStreamReader(input, "UTF-8"), JSONObject.class);
-                                */
                         if (input != null) {
                             BufferedReader reader
                                     = new BufferedReader(new InputStreamReader(input, "UTF-8"));
-                            System.out.println(reader.readLine());
                             while ((tempJson = reader.readLine()) != null) {
                                 builder.append(tempJson);
                             }

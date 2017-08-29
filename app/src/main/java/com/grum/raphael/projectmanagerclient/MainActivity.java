@@ -34,7 +34,7 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 public class MainActivity extends AppCompatActivity {
 
     //public final static String URL
-      //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+    //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
     protected static DataContainer userData = new DataContainer();
@@ -135,7 +135,6 @@ public class MainActivity extends AppCompatActivity {
                             while ((tempJson = reader.readLine()) != null) {
                                 stringBuilder.append(tempJson);
                             }
-
                             result = new JSONObject(stringBuilder.toString());
                             return result;
                         }
@@ -179,8 +178,8 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     String success = jsonObject.getString("success");
                     if (success.equals("true")) {
-                        userInfo = jsonObject.getString("user");
-                        JSONObject user = new JSONObject(userInfo);
+                        fillDataContainer(jsonObject);
+                        goToNavigationActivity();
                     } else {
                         AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                                 .setTitle(R.string.error_login_title)
@@ -209,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
                         .create();
                 alertDialog.show();
             }
-            goToNavigationActivity();
         }
 
         private JSONObject createUserInfo(String username, String password) {
@@ -224,41 +222,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void goToNavigationActivity() {
-            JSONObject user = null;
-            if (userInfo != null && !(userInfo.equals(""))) {
-                try {
-                    user = new JSONObject(userInfo);
-                } catch (JSONException e) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                            .setTitle(R.string.error_login_title)
-                            .setMessage("Interner Fehler! Bitte versuchen Sie, sich erneut einzuloggen.")
-                            .setNegativeButton("OK", null)
-                            .create();
-                    username.setText("");
-                    password.setText("");
-                    alertDialog.show();
-                }
-                Intent navigationAction = new Intent(MainActivity.this, NavigationActivity.class);
-                startActivity(navigationAction);
-            } else {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(R.string.error_login_title)
-                        .setMessage("Interner Fehler! Bitte versuchen Sie, sich erneut einzuloggen.")
-                        .setNegativeButton("OK", null)
-                        .create();
-                username.setText("");
-                password.setText("");
-                alertDialog.show();
-            }
+            Intent navigationAction = new Intent(MainActivity.this, NavigationActivity.class);
+            startActivity(navigationAction);
         }
 
         private void fillDataContainer(JSONObject userData) {
             try {
-                String username = userData.getString("username");
+                JSONObject user = new JSONObject(userData.getString("user"));
+                String username = user.getString("username");
                 String token = userData.getString("token");
-                String userRole = userData.getString("role");
-                String teamName = userData.getString("team");
-                String adminOfProject = userData.getString("adminOfProject");
+                String userRole = user.getString("userRole");
+                String teamName = user.getString("team");
+                String adminOfProject = user.getString("adminOfProject");
                 MainActivity.userData.setToken(token);
                 MainActivity.userData.setAdminOfProject(adminOfProject);
                 MainActivity.userData.setTeamName(teamName);

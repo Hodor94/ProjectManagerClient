@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -37,6 +38,7 @@ public class UserProfileFragment extends Fragment {
     private TextView birthday;
     private TextView dayOfEntry;
     private TextView team;
+    private final String BLANK = "-----";
 
     public UserProfileFragment() {
 
@@ -55,28 +57,22 @@ public class UserProfileFragment extends Fragment {
         phoneNr = (TextView) getView().findViewById(R.id.phoneNr);
         address = (TextView) getView().findViewById(R.id.address);
         tributes = (TextView) getView().findViewById(R.id.tributes);
-        // TODO debug
-        birthday = (TextView) getView().findViewById(R.id.team);
+        birthday = (TextView) getView().findViewById(R.id.birthday);
         dayOfEntry = (TextView) getView().findViewById(R.id.dayOfEntry);
         team = (TextView) getView().findViewById(R.id.team);
 
-        // Set the text to the TextView elements
-        // TODO format and proof if null
-        try {
-            username.setText(URLDecoder.decode(bundle.getString("username"), "latin1"));
-            firstName.setText(URLDecoder.decode(bundle.getString("firstName"), "latin1"));
-            surname.setText(URLDecoder.decode(bundle.getString("surname"), "latin1"));
-            email.setText(URLDecoder.decode(bundle.getString("email"), "latin1"));
-            phoneNr.setText(URLDecoder.decode(bundle.getString("phoneNr"), "latin1"));
-            address.setText(URLDecoder.decode(bundle.getString("address"), "latin1"));
-            String tributes = bundle.getString("tributes", String.valueOf(R.string.blank));
-            String birthday = bundle.getString("birthday", String.valueOf(R.string.blank));
-            String dayOfEntry = bundle.getString("dayOfEntry", String.valueOf(R.string.blank));
-            String team = bundle.getString("team", "----");
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        if (bundle != null) {
+            try {
+                JSONObject userData = new JSONObject(bundle.getString("userData"));
+                setTextData(userData);
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            // TODO
         }
+
 
     }
 
@@ -88,18 +84,44 @@ public class UserProfileFragment extends Fragment {
         return rootView;
     }
 
-    private void getUserData() {
-        // TODO
-    }
-
-    private class UserDataTask extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-            HttpClient client = HttpClientBuilder.create().build();
-            HttpGet getData = new HttpGet(MainActivity.URL + "user");
-
-            return null;
+    private void setTextData(JSONObject userData) {
+        try {
+            JSONObject user = new JSONObject(userData.getString("user"));
+            this.username.setText(user.getString("username"));
+            this.firstName.setText(user.getString("firstName"));
+            this.surname.setText(user.getString("surname"));
+            this.email.setText(user.getString("email"));
+            this.phoneNr.setText(user.getString("phoneNr"));
+            this.address.setText(user.getString("address"));
+            String tributes = user.getString("tributes");
+            String birthday = user.getString("birthday");
+            String dayOfEntry = user.getString("dayOfEntry");
+            String team = user.getString("team");
+            if (tributes.equals("null")) {
+                this.tributes.setText(BLANK);
+            } else {
+                this.tributes.setText(tributes);
+            }
+            if (birthday.equals("null")) {
+                this.birthday.setText(BLANK);
+            } else {
+                String[] splitted = birthday.split("\\s+");
+                this.birthday.setText(splitted[0]);
+            }
+            if (dayOfEntry.equals("null")) {
+                this.dayOfEntry.setText(BLANK);
+            } else {
+                this.dayOfEntry.setText(dayOfEntry);
+            }
+            if (team.equals("null")) {
+                this.team.setText(BLANK);
+            } else {
+                this.team.setText(team);
+            }
+        } catch (JSONException e) {
+            // TODO
+            e.printStackTrace();
         }
     }
+
 }
