@@ -1,6 +1,10 @@
 package com.grum.raphael.projectmanagerclient.tasks;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+
+import com.grum.raphael.projectmanagerclient.MainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,31 +23,37 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
 /**
- * Created by Raphael on 24.08.2017.
+ * Created by Raphael on 03.09.2017.
  */
 
-public class TeamTask extends AsyncTask<String, Void, JSONObject> {
+public class GetTeamsTask extends AsyncTask<String, Void, JSONObject> {
+
+    private Context context;
+
+    public GetTeamsTask() {
+
+    }
+
+    public GetTeamsTask(Context context) {
+        this.context = context;
+    }
 
     @Override
     protected JSONObject doInBackground(String... params) {
-        String token = params[0];
-        String url = params[1];
-        String teamName = params[2];
         JSONObject result;
-        if (token != null && !(token.equals("")) && url != null && !(url.equals(""))
-                && teamName != null && !(teamName.equals(""))) {
+        if (!MainActivity.userData.isEmpty()) {
             HttpClient client = HttpClientBuilder.create().build();
-            HttpPost requestTeam = new HttpPost(url);
-            String requestData = createRequestData(token, teamName);
+            HttpPost getTeams = new HttpPost(params[0]);
             try {
-                StringEntity stringEntity = new StringEntity(requestData);
+                String tokenData = "{\"token\": \"" + params[1] + "\"}";
+                StringEntity stringEntity = new StringEntity(tokenData);
                 stringEntity.setContentType("application/json");
-                requestTeam.setEntity(stringEntity);
-                HttpResponse response = client.execute(requestTeam);
-                InputStream input = response.getEntity().getContent();
+                getTeams.setEntity(stringEntity);
+                HttpResponse fetchedTeams = client.execute(getTeams);
+                InputStream input = fetchedTeams.getEntity().getContent();
                 if (input != null) {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                     StringBuilder stringBuilder = new StringBuilder();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                     String temp;
                     while ((temp = reader.readLine()) != null) {
                         stringBuilder.append(temp);
@@ -63,12 +73,9 @@ public class TeamTask extends AsyncTask<String, Void, JSONObject> {
             }
         } else {
             result = null;
+            Intent intent = new Intent(context, MainActivity.class);
+            context.startActivity(intent);
         }
         return result;
     }
-
-    private String createRequestData(String token, String teamName) {
-        return "{\"token\": \"" + token + "\", \"team\": \"" + teamName + "\"}";
-    }
-
 }

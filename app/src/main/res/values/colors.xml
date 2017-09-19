@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#009688</color>
     <color name="toolbar">#cceae7</color>
     <color name="text">#000000</color>
+    <color name="white">#ffffff</color>
 </resources>

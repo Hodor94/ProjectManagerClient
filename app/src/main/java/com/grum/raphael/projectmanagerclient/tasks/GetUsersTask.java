@@ -2,6 +2,8 @@ package com.grum.raphael.projectmanagerclient.tasks;
 
 import android.os.AsyncTask;
 
+import com.grum.raphael.projectmanagerclient.MainActivity;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,32 +21,30 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
 /**
- * Created by Raphael on 24.08.2017.
+ * Created by Raphael on 11.09.2017.
  */
 
-public class TeamTask extends AsyncTask<String, Void, JSONObject> {
+public class GetUsersTask extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(String... params) {
-        String token = params[0];
-        String url = params[1];
-        String teamName = params[2];
         JSONObject result;
-        if (token != null && !(token.equals("")) && url != null && !(url.equals(""))
-                && teamName != null && !(teamName.equals(""))) {
+        if (!MainActivity.userData.isEmpty()) {
+            String url = params[0];
+            String token = MainActivity.userData.getToken();
             HttpClient client = HttpClientBuilder.create().build();
-            HttpPost requestTeam = new HttpPost(url);
-            String requestData = createRequestData(token, teamName);
+            HttpPost getUsersRequest = new HttpPost(url);
+            String requestData;
             try {
-                StringEntity stringEntity = new StringEntity(requestData);
+                StringEntity stringEntity = new StringEntity(createRequestData(token));
                 stringEntity.setContentType("application/json");
-                requestTeam.setEntity(stringEntity);
-                HttpResponse response = client.execute(requestTeam);
+                getUsersRequest.setEntity(stringEntity);
+                HttpResponse response = client.execute(getUsersRequest);
                 InputStream input = response.getEntity().getContent();
                 if (input != null) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
                     StringBuilder stringBuilder = new StringBuilder();
-                    String temp;
+                       String temp;
                     while ((temp = reader.readLine()) != null) {
                         stringBuilder.append(temp);
                     }
@@ -67,8 +67,7 @@ public class TeamTask extends AsyncTask<String, Void, JSONObject> {
         return result;
     }
 
-    private String createRequestData(String token, String teamName) {
-        return "{\"token\": \"" + token + "\", \"team\": \"" + teamName + "\"}";
+    private String createRequestData(String token) {
+        return "{\"token\": \"" + token + "\"}";
     }
-
 }

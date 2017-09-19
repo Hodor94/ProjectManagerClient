@@ -5,6 +5,7 @@
     android:theme="@style/FontSizeStyle" >
 
     <TextView
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
@@ -12,8 +13,8 @@
         android:text="@string/label_team_name"
         />
 
-    <TextView
-        android:id="@+id/team_profile_name"
+    <EditText
+        android:id="@+id/edit_team_profile_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp" />
@@ -26,8 +27,8 @@
         android:text="@string/label_description"
         />
 
-    <TextView
-        android:id="@+id/team_profile_description"
+    <EditText
+        android:id="@+id/edit_team_profile_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp" />
@@ -41,15 +42,15 @@
         />
 
     <TextView
-        android:id="@+id/team_profile_admin"
+        android:id="@+id/edit_team_profile_admin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp" />
 
     <Button
-        android:id="@+id/team_profile_btn"
+        android:id="@+id/edit_team_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/edit"/>
+        android:text="@string/ready"/>
 
 </LinearLayout>

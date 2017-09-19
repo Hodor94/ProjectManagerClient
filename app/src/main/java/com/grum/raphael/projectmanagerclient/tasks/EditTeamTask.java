@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.Buffer;
 
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.ClientProtocolException;
@@ -19,27 +20,35 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
 /**
- * Created by Raphael on 24.08.2017.
+ * Created by Raphael on 06.09.2017.
  */
 
-public class TeamTask extends AsyncTask<String, Void, JSONObject> {
-
+public class EditTeamTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected JSONObject doInBackground(String... params) {
-        String token = params[0];
-        String url = params[1];
-        String teamName = params[2];
+        String url;
+        String token;
+        String teamName;
+        String teamDescription;
+        String admin;
         JSONObject result;
-        if (token != null && !(token.equals("")) && url != null && !(url.equals(""))
-                && teamName != null && !(teamName.equals(""))) {
+        // Set the values
+        url = params[0];
+        token = params[1];
+        teamName = params[2];
+        teamDescription = params[3];
+        admin = params[4];
+        if (url != null && !(url.equals("")) && teamName != null && !(teamName.equals(""))
+                && teamDescription != null && !(teamDescription.equals(""))
+                && token != null && !(token.equals(""))) {
             HttpClient client = HttpClientBuilder.create().build();
-            HttpPost requestTeam = new HttpPost(url);
-            String requestData = createRequestData(token, teamName);
+            HttpPost editTeamRequest = new HttpPost(url);
+            String requestData = createRequestData(token, teamName, teamDescription, admin);
             try {
                 StringEntity stringEntity = new StringEntity(requestData);
                 stringEntity.setContentType("application/json");
-                requestTeam.setEntity(stringEntity);
-                HttpResponse response = client.execute(requestTeam);
+                editTeamRequest.setEntity(stringEntity);
+                HttpResponse response = client.execute(editTeamRequest);
                 InputStream input = response.getEntity().getContent();
                 if (input != null) {
                     BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -67,8 +76,9 @@ public class TeamTask extends AsyncTask<String, Void, JSONObject> {
         return result;
     }
 
-    private String createRequestData(String token, String teamName) {
-        return "{\"token\": \"" + token + "\", \"team\": \"" + teamName + "\"}";
+    private String createRequestData(String token, String teamName, String teamDescription,
+                                     String admin) {
+        return "{\"token\": \"" + token + "\", \"teamName\": \"" + teamName + "\", " +
+                "\"teamDescription\": \"" + teamDescription + "\", \"admin\": \"" + admin + "\"}";
     }
-
 }

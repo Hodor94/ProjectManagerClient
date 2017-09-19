@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
-    protected static DataContainer userData = new DataContainer();
+    public static DataContainer userData = new DataContainer();
 
     private Button login;
     private EditText username;

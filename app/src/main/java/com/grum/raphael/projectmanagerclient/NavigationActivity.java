@@ -20,10 +20,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.*;
+import com.grum.raphael.projectmanagerclient.tasks.TeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.UserTask;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 
 public class NavigationActivity extends AppCompatActivity
@@ -141,9 +144,23 @@ public class NavigationActivity extends AppCompatActivity
                 newFragment.setArguments(bundle);
             } else if (id == R.id.nav_team) {
                 if (!MainActivity.userData.getTeamName().equals("null")) {
-                    // TODO
-                    params = new String[]{MainActivity.URL + "team"};
+                    params = new String[]
+                            {MainActivity.userData.getToken(), MainActivity.URL + "team",
+                            MainActivity.userData.getTeamName()};
+                    TeamTask teamTask = new TeamTask();
+                    Bundle bundle = new Bundle();
+                    try {
+                        JSONObject fetchedTeamData = teamTask.execute(params).get();
+                        bundle.putString("teamData", fetchedTeamData.toString());
+                    } catch (InterruptedException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO
+                        e.printStackTrace();
+                    }
                     newFragment = new TeamProfileFragment();
+                    newFragment.setArguments(bundle);
                 } else {
                     AlertDialog alertDialog = generateEmptyTeamAlert();
                     alertDialog.show();
@@ -193,19 +210,7 @@ public class NavigationActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
             return true;
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(NavigationActivity.this)
-                    .setTitle(R.string.error_internal)
-                    .setMessage("Die Berechtigung für die gewählte Aktion fehlt oder ist " +
-                            "abgelaufen!")
-                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent intent
-                                    = new Intent(NavigationActivity.this, MainActivity.class);
-                            startActivity(intent);
-                        }
-                    })
-                    .create();
+            AlertDialog alertDialog = new ErrorAlertExpiredRights(NavigationActivity.this).getAlertDialog();
             alertDialog.show();
             return false;
         }

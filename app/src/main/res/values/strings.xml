@@ -38,6 +38,19 @@
     <string name="error_login_title">Fehler beim Login!</string>
     <string name="success_login_title">Login erfolgreich!</string>
     <string name="error_internal">Interner Fehler!</string>
+    <string name="hint_team_name">Name des Teams</string>
+    <string name="create_new_team">Erstellen Sie ein neues Team!</string>
+    <string name="hint_team_description">Beschreibung des Teams</string>
+    <string name="btn_create_team">Erstellen!</string>
+    <string name="error">Fehler!</string>
+    <string name="success">Glückwunsch!</string>
+    <string name="edit">Bearbeiten</string>
+    <string name="ready">Fertig!</string>
+    <string name="hint_filter">Suchbegriff eingeben</string>
+    <string name="error_create_team_input">Fehler!\n
+        Ihre Eingaben waren falsch! \n
+        Bitte füllen Sie die Felder aus!
+    </string>
     <string name="empty_data">Noch nichts los hier! \n\n
         Werde Teil eines Teams, um alle Funktionen nutzen zu können!</string>
 
