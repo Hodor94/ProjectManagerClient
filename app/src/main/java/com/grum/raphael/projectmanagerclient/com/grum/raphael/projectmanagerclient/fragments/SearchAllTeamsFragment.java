@@ -142,10 +142,8 @@ public class SearchAllTeamsFragment extends Fragment {
                 setValuesToPopupWindow(teamData, view);
                 final PopupWindow popupWindow = new PopupWindow(view,
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                int width = anchorView.getWidth();
-                int height = anchorView.getHeight();
                 popupWindow.setWidth((int) anchorView.getWidth());
-                popupWindow.setHeight((int) anchorView.getHeight());
+                //
                 popupWindow.setBackgroundDrawable(new BitmapDrawable(getContext().getResources(),
                         (Bitmap) null));
                 Button closeBtn = (Button) view.findViewById(R.id.close_btn_team);

@@ -45,7 +45,7 @@ public class EditTeamTask extends AsyncTask<String, Void, JSONObject> {
             HttpPost editTeamRequest = new HttpPost(url);
             String requestData = createRequestData(token, teamName, teamDescription, admin);
             try {
-                StringEntity stringEntity = new StringEntity(requestData);
+                StringEntity stringEntity = new StringEntity(requestData, "UTF-8");
                 stringEntity.setContentType("application/json");
                 editTeamRequest.setEntity(stringEntity);
                 HttpResponse response = client.execute(editTeamRequest);

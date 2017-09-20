@@ -6,9 +6,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
@@ -24,6 +27,7 @@ import java.net.URLEncoder;
 import cz.msebera.android.httpclient.client.HttpClient;
 import cz.msebera.android.httpclient.client.methods.HttpGet;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
+import layout.EditUserProfileFragment;
 
 
 public class UserProfileFragment extends Fragment {
@@ -38,6 +42,7 @@ public class UserProfileFragment extends Fragment {
     private TextView birthday;
     private TextView dayOfEntry;
     private TextView team;
+    private Button edit;
     private final String BLANK = "-----";
 
     public UserProfileFragment() {
@@ -60,6 +65,20 @@ public class UserProfileFragment extends Fragment {
         birthday = (TextView) getView().findViewById(R.id.birthday);
         dayOfEntry = (TextView) getView().findViewById(R.id.dayOfEntry);
         team = (TextView) getView().findViewById(R.id.team);
+        edit = (Button) getView().findViewById(R.id.edit_user_profile);
+
+        // Set OnClickListener for edit Button
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = createBundleForEdit();
+                EditUserProfileFragment newFragment = new EditUserProfileFragment();
+                newFragment.setArguments(bundle);
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                fragmentTransaction.commit();
+            }
+        });
 
         if (bundle != null) {
             try {
@@ -122,6 +141,21 @@ public class UserProfileFragment extends Fragment {
             // TODO
             e.printStackTrace();
         }
+    }
+
+    private Bundle createBundleForEdit() {
+        Bundle bundle = new Bundle();
+        bundle.putString("username", username.getText().toString());
+        bundle.putString("firstName", firstName.getText().toString());
+        bundle.putString("surname", surname.getText().toString());
+        bundle.putString("email", email.getText().toString());
+        bundle.putString("phoneNr", phoneNr.getText().toString());
+        bundle.putString("address", address.getText().toString());
+        bundle.putString("tributes", tributes.getText().toString());
+        bundle.putString("birthday", birthday.getText().toString());
+        bundle.putString("dayOfEntry", dayOfEntry.getText().toString());
+        bundle.putString("team", team.getText().toString());
+        return bundle;
     }
 
 }

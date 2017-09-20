@@ -33,9 +33,9 @@ import cz.msebera.android.httpclient.util.EntityUtils;
 
 public class MainActivity extends AppCompatActivity {
 
-    //public final static String URL
-    //      = "http://localhost:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
-    public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+    public final static String URL
+            = "http://127.0.0.1:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+    //public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
     public static DataContainer userData = new DataContainer();
 
@@ -92,8 +92,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login() {
-        final String username = this.username.getText().toString();
-        final String password = this.password.getText().toString();
+        final String username = this.username.getText().toString().trim();
+        final String password = this.password.getText().toString().trim();
+
+
         if (validateInput(username, password)) {
             LoginTask loginTask = new LoginTask();
             String url = MainActivity.URL + "login";

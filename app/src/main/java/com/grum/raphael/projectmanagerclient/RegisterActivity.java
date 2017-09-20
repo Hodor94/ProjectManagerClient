@@ -1,6 +1,7 @@
 package com.grum.raphael.projectmanagerclient;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -11,6 +12,7 @@ import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -26,6 +28,10 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 
 import java.net.URLEncoder;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,15 +52,16 @@ import okhttp3.MediaType;
 public class RegisterActivity extends AppCompatActivity {
 
     // For validating phoneNr
-    private final String phoneNrRegex = "^[0-9]";
+    private final String PHONE_REGEX = "^[0-9]";
     // For validating email
-    private final String emailRegex = "^[[A-Z]|[0-9]|[._-]]*@[[A-Z]|[0-9]]*.[A-Z]*";
-    // For validating dates
-    private final String dateRegex = "^";
+    private final String EMAIL_REGEX = "^[[A-Z]|[0-9]|[._-]]*@[[A-Z]|[0-9]]*.[A-Z]*";
+    // Limit for the age. People younger than this number are not allowed to register
+    private final int AGE_LIMIT = 12;
 
     private EditText firstName;
     private EditText surname;
-    private EditText birthday;
+    private DatePicker birthdayPicker;
+    String birthday = null;
     private EditText address;
     private EditText email;
     private EditText phoneNr;
@@ -72,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
         // Fetching all the components within this activity
         firstName = (EditText) findViewById(R.id.text_register_first_name);
         surname = (EditText) findViewById(R.id.text_register_surname);
-        birthday = (EditText) findViewById(R.id.text_register_birthday);
+        birthdayPicker = (DatePicker) findViewById(R.id.text_register_birthday);
         address = (EditText) findViewById(R.id.text_register_address);
         email = (EditText) findViewById(R.id.text_register_email);
         phoneNr = (EditText) findViewById(R.id.text_register_phoneNr);
@@ -81,6 +88,22 @@ public class RegisterActivity extends AppCompatActivity {
         passwordValidation = (EditText) findViewById(R.id.text_register_password_validation);
         info = (TextView) findViewById(R.id.text_register_info);
         register = (Button) findViewById(R.id.button_register);
+
+        // Set birthday String
+        birthday = "" + birthdayPicker.getDayOfMonth() + ".0" + (birthdayPicker.getMonth() + 1) + "."
+                + birthdayPicker.getYear() + " 00:00:00";
+
+        // Init DatePicker
+        Calendar currentDate = Calendar.getInstance();
+        birthdayPicker.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
+                currentDate.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
+                    @Override
+                    public void onDateChanged(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
+                        birthday = "" + dayOfMonth + ".0" + (monthOfYear + 1) + "." + year + " 00:00:00";
+                    }
+                });
 
         // Add OnClickListener
         register.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +147,17 @@ public class RegisterActivity extends AppCompatActivity {
             builder.append("Das Passwort ist nicht gesetzt oder stimmt nicht mit der wiederholten " +
                     "Eingabe überein! Bitte korrigieren Sie dies. \n");
         }
-        // Todo validate birthday, username
-
+        if (!validateDateIsEmpty(birthday)) {
+            builder.append("Das Geburtsdatum wurde nicht ausgewählt! \n");
+        } else {
+            if (!validateDate(birthday)) {
+                builder.append("Sie sind leider zu jung für diesen Service! " +
+                        "\nSie müssen mindestens 12 Jahre alt sein! \n");
+            }
+        }
+        if (!validateUsername(username)) {
+            builder.append("Der Username wurde nicht gesetzt! \n");
+        }
         if (builder.toString().equals("")) {
             result = true;
         } else {
@@ -138,7 +170,7 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean isValidEmail(String email) {
         boolean result = false;
         if (email != "") {
-            Pattern emailPattern = Pattern.compile(emailRegex, Pattern.CASE_INSENSITIVE);
+            Pattern emailPattern = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
             Matcher matcher = emailPattern.matcher(email);
             result = matcher.find();
         }
@@ -148,26 +180,44 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean validatePhoneNr(String phoneNr) {
         boolean result = false;
         if (phoneNr != "") {
-            Pattern phoneNrPattern = Pattern.compile(phoneNrRegex, Pattern.CASE_INSENSITIVE);
+            Pattern phoneNrPattern = Pattern.compile(PHONE_REGEX, Pattern.CASE_INSENSITIVE);
             Matcher matcher = phoneNrPattern.matcher(phoneNr);
             result = matcher.find();
         }
         return result;
     }
 
+    private boolean validateDateIsEmpty(String date) {
+        boolean result = false;
+        if (date != "" && date != null) {
+            result = true;
+        }
+        return result;
+    }
+
     private boolean validateDate(String date) {
         boolean result = false;
-        if (date != "") {
-
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        try {
+            Calendar currentTime = Calendar.getInstance();
+            Calendar userBirthday = Calendar.getInstance();
+            userBirthday.setTime(simpleDateFormat.parse(date));
+            int userYear = userBirthday.get(Calendar.YEAR);
+            int currentYear = currentTime.get(Calendar.YEAR);
+            if ((currentYear - userYear) > AGE_LIMIT) {
+                result = true;
+            }
+        } catch (ParseException e) {
+            // TODO interner Fehler
+            e.printStackTrace();
         }
-
         return result;
     }
 
     private boolean validateUsername(String username) {
         boolean result = false;
-        if (username != "") {
-
+        if (username != "" && username != null) {
+            result = true;
         }
 
         return result;
@@ -185,14 +235,13 @@ public class RegisterActivity extends AppCompatActivity {
         info.setText("");
         RegisterUserTask registerTask = new RegisterUserTask();
         // Getting all the user input made in the register form.
-        String firstName = this.firstName.getText().toString();
-        String surname = this.surname.getText().toString();
-        String birthday = this.birthday.getText().toString() + " 00:00:00";
-        String address = this.address.getText().toString();
-        String email = this.email.getText().toString();
-        String phoneNr = this.phoneNr.getText().toString();
-        String username = this.username.getText().toString();
-        String password = this.password.getText().toString();
+        String firstName = this.firstName.getText().toString().trim();
+        String surname = this.surname.getText().toString().trim();
+        String address = this.address.getText().toString().trim();
+        String email = this.email.getText().toString().trim();
+        String phoneNr = this.phoneNr.getText().toString().trim();
+        String username = this.username.getText().toString().trim();
+        String password = this.password.getText().toString().trim();
         String passwordValidation = this.passwordValidation.getText().toString();
         String url = "";
 

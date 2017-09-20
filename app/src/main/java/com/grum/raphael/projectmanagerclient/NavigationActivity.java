@@ -107,8 +107,8 @@ public class NavigationActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_logout) {
+            logout();
         }
 
         return super.onOptionsItemSelected(item);
@@ -224,6 +224,13 @@ public class NavigationActivity extends AppCompatActivity
                 .setNegativeButton("OK", null)
                 .create();
         return result;
+    }
+
+    private void logout() {
+        MainActivity.userData = new DataContainer();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
 }

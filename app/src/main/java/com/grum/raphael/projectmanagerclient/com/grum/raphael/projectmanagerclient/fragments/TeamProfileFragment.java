@@ -41,27 +41,21 @@ public class TeamProfileFragment extends Fragment {
         teamDescription = (TextView) rootView.findViewById(R.id.team_profile_description);
         admin = (TextView) rootView.findViewById(R.id.team_profile_admin);
         btn = (Button) rootView.findViewById(R.id.team_profile_btn);
-        if (MainActivity.userData.getUserRole().equals("ADMINISTRATOR")) {
-            btn.setVisibility(View.VISIBLE);
-            btn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    EditTeamFragment newFragment = new EditTeamFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("teamName", teamName.getText().toString());
-                    bundle.putString("teamDescription", teamDescription.getText().toString());
-                    bundle.putString("admin", admin.getText().toString());
-                    newFragment.setArguments(bundle);
-                    FragmentTransaction fragmentTransaction
-                            = getFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.containerFrame, newFragment);
-                    fragmentTransaction.commit();
-
-                }
-            });
-        } else {
-            btn.setVisibility(View.INVISIBLE);
-        }
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditTeamFragment newFragment = new EditTeamFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("teamName", teamName.getText().toString());
+                bundle.putString("teamDescription", teamDescription.getText().toString());
+                bundle.putString("admin", admin.getText().toString());
+                newFragment.setArguments(bundle);
+                FragmentTransaction fragmentTransaction
+                        = getFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                fragmentTransaction.commit();
+            }
+        });
         String teamName = null;
         String teamDescription = null;
         String admin = null;
@@ -78,6 +72,11 @@ public class TeamProfileFragment extends Fragment {
                     teamName = team.getString("name");
                     teamDescription = team.getString("description");
                     admin = team.getString("admin");
+                    if (admin.equals(MainActivity.userData.getUsername())) {
+                        btn.setVisibility(View.VISIBLE);
+                    } else {
+                        btn.setVisibility(View.INVISIBLE);
+                    }
                 } else {
                     // TODO
                 }

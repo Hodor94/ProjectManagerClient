@@ -2,6 +2,8 @@ package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagercli
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -67,7 +69,6 @@ public class CreateTeamFragment extends Fragment {
                     String success = fetchedData.getString("success");
                     String token = fetchedData.getString("token");
                     if (success.equals("true")) {
-                        // TODO evtl start new Activity...
                         teamName = fetchedData.getString("teamName");
                         MainActivity.userData.setTeamName(teamName);
                         MainActivity.userData.setToken(token);
