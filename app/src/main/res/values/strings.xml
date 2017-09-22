@@ -55,6 +55,8 @@
     </string>
     <string name="empty_data">Noch nichts los hier! \n\n
         Werde Teil eines Teams, um alle Funktionen nutzen zu können!</string>
+    <string name="error_fields_empty">Einige Felder wurden nicht ausgefüllt! \n
+    Bitte geben Sie die Werte ein!</string>
 
     <string-array name="navigation_drawer_items_array">
         <item>Pinnwand</item>

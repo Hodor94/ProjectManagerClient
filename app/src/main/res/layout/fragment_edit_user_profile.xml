@@ -72,7 +72,8 @@
                 android:datePickerMode="spinner"
                 android:calendarViewShown="false"
                 android:hint="@string/hint_birthday"
-                android:inputType="date" />
+                android:inputType="date"
+                android:theme="@style/FragmentDatePickerStyle"/>
 
             <TextView
                 android:layout_width="match_parent"

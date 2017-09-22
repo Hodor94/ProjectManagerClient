@@ -101,7 +101,22 @@ public class RegisterActivity extends AppCompatActivity {
                     @Override
                     public void onDateChanged(DatePicker view, int year, int monthOfYear,
                                               int dayOfMonth) {
-                        birthday = "" + dayOfMonth + ".0" + (monthOfYear + 1) + "." + year + " 00:00:00";
+                        String mDay;
+                        String mMonth;
+                        String mYear;
+                        if (dayOfMonth < 10) {
+                            mDay = "0" + dayOfMonth;
+                        } else {
+                            mDay = "" + dayOfMonth;
+                        }
+                        if (monthOfYear < 10) {
+                            mMonth = "0" + (monthOfYear + 1);
+                        } else {
+                            mMonth = "" + (monthOfYear + 1);
+                        }
+                        mYear = "" + year;
+                        // The 00:00:00 is for the formatter on server side
+                        birthday = mDay + "." + mMonth + "." + mYear + " 00:00:00";
                     }
                 });
 

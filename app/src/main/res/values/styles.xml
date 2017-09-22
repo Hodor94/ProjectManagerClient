@@ -24,5 +24,9 @@
         <item name="android:textSize">18sp</item>
         <item name="android:textColor">@color/text</item>
     </style>
+    
+    <style name="FragmentDatePickerStyle" parent="android:Theme.Holo.Light">
+        <item name="android:datePickerStyle">@android:style/Widget.DatePicker</item>
+    </style>
 
 </resources>

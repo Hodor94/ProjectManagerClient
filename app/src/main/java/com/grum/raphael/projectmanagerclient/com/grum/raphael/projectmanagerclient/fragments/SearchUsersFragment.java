@@ -42,6 +42,7 @@ public class SearchUsersFragment extends Fragment {
 
     }
 
+    // TODO Debug - Not all users are shown
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
