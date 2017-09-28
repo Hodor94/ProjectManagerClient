@@ -1,5 +1,6 @@
 package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -44,16 +45,26 @@ public class TeamProfileFragment extends Fragment {
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditTeamFragment newFragment = new EditTeamFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("teamName", teamName.getText().toString());
-                bundle.putString("teamDescription", teamDescription.getText().toString());
-                bundle.putString("admin", admin.getText().toString());
-                newFragment.setArguments(bundle);
-                FragmentTransaction fragmentTransaction
-                        = getFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.containerFrame, newFragment);
-                fragmentTransaction.commit();
+                if (MainActivity.userData.getUserRole().equals("ADMINISTRATOR")) {
+                    EditTeamFragment newFragment = new EditTeamFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("teamName", teamName.getText().toString());
+                    bundle.putString("teamDescription", teamDescription.getText().toString());
+                    bundle.putString("admin", admin.getText().toString());
+                    newFragment.setArguments(bundle);
+                    FragmentTransaction fragmentTransaction
+                            = getFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Sie sind zu dieser Aktion nicht berechtigt")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
             }
         });
         String teamName = null;

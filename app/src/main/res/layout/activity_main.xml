@@ -70,7 +70,6 @@
             android:text="@string/hint_register"
             android:textSize="15sp" />
 
-
     </LinearLayout>
 
 </ScrollView>

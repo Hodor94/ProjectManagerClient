@@ -169,7 +169,8 @@
             android:textSize="20dp"
             android:textStyle="bold"
             android:textColor="#f00"
-            android:gravity="center" />
+            android:gravity="center"
+            android:layout_marginBottom="10dp"/>
 
     </LinearLayout>
 

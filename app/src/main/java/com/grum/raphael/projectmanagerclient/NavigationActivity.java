@@ -79,6 +79,7 @@ public class NavigationActivity extends AppCompatActivity
         FragmentTransaction fragmentTransaction
                 = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.containerFrame, userProfile);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
@@ -203,6 +204,7 @@ public class NavigationActivity extends AppCompatActivity
                 FragmentTransaction fragmentTransaction
                         = getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
 

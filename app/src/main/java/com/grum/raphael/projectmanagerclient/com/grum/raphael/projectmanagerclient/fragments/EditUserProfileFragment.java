@@ -135,6 +135,24 @@ public class EditUserProfileFragment extends Fragment {
                     try {
                         JSONObject response = editUserTask.execute(params).get();
                         String success = response.getString("success");
+                        if (success.equals("true")) {
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.success)
+                                    .setMessage("Sie haben Ihr Profil erfolgreich aktualisiert")
+                                    .setNegativeButton("OK", null)
+                                    .create();
+                            alertDialog.show();
+                        } else {
+                            // TODO open User Profile
+                            String reason = response.getString("reason");
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.error)
+                                    .setMessage("Ihr Profil konnte nicht erfolgreich aktualisiert " +
+                                            "werden. \n" + reason)
+                                    .setNegativeButton("OK", null)
+                                    .create();
+                            alertDialog.show();
+                        }
                     } catch (InterruptedException e) {
                         // TODO
                         e.printStackTrace();
@@ -170,4 +188,6 @@ public class EditUserProfileFragment extends Fragment {
         }
         return result;
     }
+
+
 }

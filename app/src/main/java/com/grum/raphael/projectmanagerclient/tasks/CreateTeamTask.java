@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
 
 import org.json.JSONException;
@@ -67,6 +68,11 @@ public class CreateTeamTask extends AsyncTask<String, Void, JSONObject> {
             result = null;
         }
         return result;
+    }
+
+    @Override
+    public void onPostExecute(JSONObject jsonObject) {
+        // TODO progress bar
     }
 
     private String createTeamInfo(String teamName, String teamDescription, String username,

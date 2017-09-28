@@ -46,6 +46,7 @@ public class SearchTeamsFragment extends Fragment {
         Fragment initialFragment = new CreateTeamFragment();
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.pager_search_teams, initialFragment);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -55,11 +56,14 @@ public class SearchTeamsFragment extends Fragment {
                     FragmentManager manager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = manager.beginTransaction();
                     fragmentTransaction.replace(R.id.pager_search_teams, new CreateTeamFragment());
+                    fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 } else {
                     FragmentManager manager = getFragmentManager();
                     FragmentTransaction fragmentTransaction = manager.beginTransaction();
-                    fragmentTransaction.replace(R.id.pager_search_teams, new SearchAllTeamsFragment());
+                    fragmentTransaction.replace(R.id.pager_search_teams,
+                            new SearchAllTeamsFragment());
+                    fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 }
             }

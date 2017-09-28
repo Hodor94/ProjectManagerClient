@@ -71,6 +71,7 @@ public class CreateTeamFragment extends Fragment {
                     if (success.equals("true")) {
                         teamName = fetchedData.getString("teamName");
                         MainActivity.userData.setTeamName(teamName);
+                        MainActivity.userData.setUserRole(MainActivity.ADMIN);
                         MainActivity.userData.setToken(token);
                         AlertDialog alertDialog = creatingTeamSuccessfulAlert(teamName);
                         alertDialog.show();

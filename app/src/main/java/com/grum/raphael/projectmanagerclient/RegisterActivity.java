@@ -171,7 +171,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
         if (!validateUsername(username)) {
-            builder.append("Der Username wurde nicht gesetzt! \n");
+            builder.append("Der Username wurde nicht gesetzt oder enthält nicht zugelassene Zeichen! " +
+                    "\n Bitte vermeiden Sie folgende Zeichen: \n< > | ^ ° , ; . : { } ( ) \n");
         }
         if (builder.toString().equals("")) {
             result = true;
@@ -232,9 +233,35 @@ public class RegisterActivity extends AppCompatActivity {
     private boolean validateUsername(String username) {
         boolean result = false;
         if (username != "" && username != null) {
-            result = true;
+            for (int i = 0; i < username.length(); i++) {
+                switch (username.charAt(i)) {
+                    case ';':
+                        return false;
+                    case ',':
+                        return false;
+                    case ':':
+                        return false;
+                    case '<':
+                        return false;
+                    case '>':
+                        return false;
+                    case '°':
+                        return false;
+                    case '|':
+                        return false;
+                    case '{':
+                        return false;
+                    case '}':
+                        return false;
+                    case '(':
+                        return false;
+                    case ')':
+                        return false;
+                    default:
+                        result = true;
+                }
+            }
         }
-
         return result;
     }
 

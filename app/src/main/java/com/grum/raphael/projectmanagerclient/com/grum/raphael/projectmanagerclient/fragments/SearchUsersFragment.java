@@ -1,5 +1,6 @@
 package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments;
 
+import android.app.AlertDialog;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
 import com.grum.raphael.projectmanagerclient.tasks.GetUsersTask;
+import com.grum.raphael.projectmanagerclient.tasks.InviteUserTask;
 import com.grum.raphael.projectmanagerclient.tasks.UserTask;
 
 import org.json.JSONException;
@@ -58,11 +60,12 @@ public class SearchUsersFragment extends Fragment {
             if (success.equals("true")) {
                 String fetchedUsers = fetchedData.getString("users");
                 fetchedUsers = fetchedUsers.substring(1, fetchedUsers.length() - 1);
-                userData = fetchedUsers.split("\\s+");
+                userData = fetchedUsers.split(",");
                 if (userData.length != 0) {
                     // Fill list with items
                     arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
                             R.id.list_element, userData);
+                    arrayAdapter.notifyDataSetChanged();
                     list.setAdapter(arrayAdapter);
                     list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -135,6 +138,19 @@ public class SearchUsersFragment extends Fragment {
                         (Bitmap) null));
                 // Set values for popup
                 Button closeBtn = (Button) view.findViewById(R.id.close_btn_user_popup);
+                Button inviteUser = (Button) view.findViewById(R.id.btn_invite_user);
+                final TextView username = (TextView) view.findViewById(R.id.popup_username);
+                if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                    inviteUser.setVisibility(View.VISIBLE);
+                    inviteUser.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            inviteUser(username);
+                        }
+                    });
+                } else {
+                    inviteUser.setVisibility(View.INVISIBLE);
+                }
                 closeBtn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -152,6 +168,56 @@ public class SearchUsersFragment extends Fragment {
         } catch (JSONException e) {
             // TODO
             e.printStackTrace();
+        }
+    }
+
+    private void inviteUser(TextView username) {
+        String usernameToInvite = username.getText().toString();
+        String token = MainActivity.userData.getToken();
+        String teamName = MainActivity.userData.getTeamName();
+        String url = MainActivity.URL + "invite";
+        if (teamName != null && !(teamName.equals(""))) {
+            String[] params = new String[] {url, token, usernameToInvite, teamName};
+            InviteUserTask inviteUserTask = new InviteUserTask();
+            try {
+                JSONObject response = inviteUserTask.execute(params).get();
+                String success = response.getString("success");
+                if (success.equals("true")) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.success)
+                            .setMessage("Sie haben den User " + usernameToInvite + " erfolgreich " +
+                                    "eingeladen.")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                } else {
+                    String reason = response.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Der User " + usernameToInvite + " konnte nicht eingeladen "
+                                    + "werden. " + reason)
+                            .setNegativeButton("Ok", null)
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.error)
+                    .setMessage("Sie sind in keinem Team! Sie können nur als Team-Administrator " +
+                            "andere User zu Ihrem Team einladen!")
+                    .setNegativeButton("Ok", null)
+                    .create();
+            alertDialog.show();
         }
     }
 

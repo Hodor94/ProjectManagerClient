@@ -48,57 +48,21 @@ public class EditTeamFragment extends Fragment {
         this.teamDescription.setText(teamDescription);
         this.admin.setText(admin);
         btn = (Button) rootView.findViewById(R.id.edit_team_btn);
-        if (MainActivity.userData.getUserRole().equals("ADMINISTRATOR")) {
+        if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
             btn.setVisibility(View.VISIBLE);
             btn.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    EditTeamTask editTeamTask = new EditTeamTask();
-                    String teamName = getTeamName().getText().toString();
-                    String teamDescription = getTeamDescription().getText().toString();
-                    String admin = getAdmin().getText().toString();
-                    if (teamName != null && !(teamName.equals("")) && teamDescription != null
-                            && !(teamDescription.equals("")) && admin != null
-                            && !(admin.equals(""))) {
-                        String[] params = new String[]{MainActivity.URL + "edit/team",
-                                MainActivity.userData.getToken(), teamName, teamDescription, admin};
-                        try {
-                            JSONObject result = editTeamTask.execute(params).get();
-                            String success = result.getString("success");
-                            if (success.equals("true")) {
-                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                        .setTitle(R.string.success)
-                                        .setMessage(R.string.team_edited)
-                                        .setNegativeButton("OK", null)
-                                        .create();
-                                alertDialog.show();
-                            } else {
-                                String reason = result.getString("reason");
-                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                        .setTitle(R.string.error)
-                                        .setMessage(reason)
-                                        .setNegativeButton("OK", null)
-                                        .create();
-                                alertDialog.show();
-                            }
-                        } catch (InterruptedException e) {
-                            // TODO
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            // TODO
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            // TODO
-                            e.printStackTrace();
-                        }
-                    } else {
-                        // TODO info alert
-                    }
+                    editTeam();
                 }
             });
+        } else {
+            btn.setVisibility(View.INVISIBLE);
         }
+
         return rootView;
     }
+
 
     public TextView getTeamName() {
         return teamName;
@@ -111,4 +75,51 @@ public class EditTeamFragment extends Fragment {
     public TextView getAdmin() {
         return admin;
     }
+
+    public void editTeam() {
+
+        EditTeamTask editTeamTask = new EditTeamTask();
+        String teamName = getTeamName().getText().toString();
+        String teamDescription = getTeamDescription().getText().toString();
+        String admin = getAdmin().getText().toString();
+        if (teamName != null && !(teamName.equals("")) && teamDescription != null
+                && !(teamDescription.equals("")) && admin != null
+                && !(admin.equals(""))) {
+            String[] params = new String[]{MainActivity.URL + "edit/team",
+                    MainActivity.userData.getToken(), teamName, teamDescription, admin};
+            try {
+                JSONObject result = editTeamTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    // TODO open team profile
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.success)
+                            .setMessage(R.string.team_edited)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage(reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            // TODO info alert
+        }
+    }
+
 }
