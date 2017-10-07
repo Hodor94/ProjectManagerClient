@@ -36,12 +36,14 @@ public class MainActivity extends AppCompatActivity {
 
     // For emulator use
     //public final static String URL = "http://10.0.2.2:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
-    // For app use
+    // For smartphone use
     public final static String URL
             = "http://127.0.0.1:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public final static String ADMIN = "ADMINISTRATOR";
     public final static String USER = "USER";
     public final static String  PROJECT_OWNER = "PROJECT_OWNER";
+    public final static String GOOLE_DRIVE_URL = "https://www.google.com/drive/";
+    // For emulator use
     //public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
     public static DataContainer userData = new DataContainer();

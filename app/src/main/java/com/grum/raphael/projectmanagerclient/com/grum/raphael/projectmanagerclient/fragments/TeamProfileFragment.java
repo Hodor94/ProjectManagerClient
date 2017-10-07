@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
@@ -27,6 +28,7 @@ public class TeamProfileFragment extends Fragment {
     private TextView teamDescription;
     private TextView admin;
     private Button btn;
+    private ImageView googleDrive;
 
     public TeamProfileFragment() {
 
@@ -67,6 +69,13 @@ public class TeamProfileFragment extends Fragment {
                 }
             }
         });
+        googleDrive = (ImageView) rootView.findViewById(R.id.google_drive);
+        googleDrive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToGoogleDrive();
+            }
+        });
         String teamName = null;
         String teamDescription = null;
         String admin = null;
@@ -102,5 +111,11 @@ public class TeamProfileFragment extends Fragment {
             // TODO
         }
         return rootView;
+    }
+
+    private void goToGoogleDrive() {
+        Uri googleDriveUri = Uri.parse(MainActivity.GOOLE_DRIVE_URL);
+        Intent intent = new Intent(Intent.ACTION_VIEW, googleDriveUri);
+        startActivity(intent);
     }
 }

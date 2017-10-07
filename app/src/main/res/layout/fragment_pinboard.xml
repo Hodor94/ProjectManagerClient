@@ -1,17 +1,64 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frg_pinboard"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pinnboard"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.ProjectsFragment" >
+    android:theme="@style/FontSizeStyle"
+    android:gravity="center" >
 
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Pinboard fragment" />
+        android:layout_height="match_parent" >
 
-</FrameLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/header_invitations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="@string/invitations" />
+
+            <ListView
+                android:id="@+id/invitations_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:id="@+id/pinnboard_no_invitations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_invitations"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/header_requests"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:text="@string/requests" />
+
+            <ListView
+                android:id="@+id/requests_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" />
+
+            <TextView
+                android:id="@+id/pinnboard_no_requests"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/no_requests"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

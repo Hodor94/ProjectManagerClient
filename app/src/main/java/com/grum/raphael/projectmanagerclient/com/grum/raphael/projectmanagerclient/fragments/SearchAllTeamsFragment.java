@@ -42,6 +42,7 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -71,6 +72,7 @@ public class SearchAllTeamsFragment extends Fragment {
                 fetchedTeams = fetchedTeams.substring(1, fetchedTeams.length() - 1);
                 if (!fetchedTeams.equals("")) {
                     teamNames = fetchedTeams.split(",");
+                    removeOwnTeamName(teamNames);
                     int length = teamNames.length;
                     if (teamNames.length != 0) {
                         arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
@@ -130,6 +132,17 @@ public class SearchAllTeamsFragment extends Fragment {
             e.printStackTrace();
         }
         return rootView;
+    }
+
+    // TODO test
+    private void removeOwnTeamName(String[] teamNames) {
+        String ownTeam = MainActivity.userData.getTeamName();
+        ArrayList<String> tempTeamNames = new ArrayList<>(Arrays.asList(teamNames));
+        if (!(ownTeam.equals("null")) && teamNames.length != 0) {
+            tempTeamNames.remove(ownTeam);
+            teamNames = new String[tempTeamNames.size()];
+            teamNames = tempTeamNames.toArray(teamNames);
+        }
     }
 
     private void dealWithResponse(JSONObject data, View anchorView) {

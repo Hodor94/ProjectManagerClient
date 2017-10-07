@@ -1,4 +1,12 @@
 <resources>
+    <string name="invitation">invitation</string>
+    <string name="request">request</string>
+    <string name="agree">agree</string>
+    <string name="disagree">disagree</string>
+    <string name="no_invitations">Keine Einladungen vorhanden!</string>
+    <string name="no_requests">Keine Anfragen vorhanden!</string>
+    <string name="invitations">Einladungen:</string>
+    <string name="requests">Anfragen:</string>
     <string name="app_name">ProManager</string>
     <string name="logout">Logout</string>
     <string name="team_edited">Sie haben Ihr Team erfolgreich bearbeitet!</string>
