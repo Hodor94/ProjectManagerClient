@@ -134,7 +134,7 @@ public class PinboardFragment extends Fragment {
             result = null;
             e.printStackTrace();
         }
-        if (result != null && result[0].equals("[]")) {
+        if (result != null && result.equals("null")) {
             result = null;
         }
         return result;
@@ -167,7 +167,7 @@ public class PinboardFragment extends Fragment {
             result = null;
             e.printStackTrace();
         }
-        if (result != null && result[0].equals("[]")) {
+        if (result != null && result[0].equals("null")) {
             result = null;
         }
         return result;
@@ -227,7 +227,12 @@ public class PinboardFragment extends Fragment {
                 } else {
                     invitationOrRequest = getResources().getString(R.string.request);
                 }
-                answerInvitationOrRequest(disagree, teamName, popupWindow, invitationOrRequest);
+                if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                    answerInvitationOrRequest(
+                            disagree, finalTeamName, popupWindow, invitationOrRequest);
+                } else {
+                    answerInvitationOrRequest(disagree, text, popupWindow, invitationOrRequest);
+                }
             }
         });
         TextView info = (TextView) popupView.findViewById(R.id.popup_agree_text_info);

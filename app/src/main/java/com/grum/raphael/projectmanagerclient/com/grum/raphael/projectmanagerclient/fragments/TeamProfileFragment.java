@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,11 +26,7 @@ import org.json.JSONObject;
 
 public class TeamProfileFragment extends Fragment {
 
-    private TextView teamName;
-    private TextView teamDescription;
-    private TextView admin;
-    private Button btn;
-    private ImageView googleDrive;
+    private TabLayout tabLayout;
 
     public TeamProfileFragment() {
 
@@ -39,83 +37,57 @@ public class TeamProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_team_profile, container, false);
-        // Fetch all the items inside the fragment
-        teamName = (TextView) rootView.findViewById(R.id.team_profile_name);
-        teamDescription = (TextView) rootView.findViewById(R.id.team_profile_description);
-        admin = (TextView) rootView.findViewById(R.id.team_profile_admin);
-        btn = (Button) rootView.findViewById(R.id.team_profile_btn);
-        btn.setOnClickListener(new View.OnClickListener() {
+        final Bundle bundle = getArguments();
+        tabLayout = (TabLayout) rootView.findViewById(R.id.tab_team_profile);
+        tabLayout.addTab(tabLayout.newTab().setText("Team Übersicht"));
+        tabLayout.addTab(tabLayout.newTab().setText("Gruppen"));
+        tabLayout.addTab(tabLayout.newTab().setText("Mitglieder"));
+        TabLayout.Tab startingTab = tabLayout.getTabAt(0);
+        startingTab.select();
+        Fragment initialFragment = new TeamInformationFragment();
+        initialFragment.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.pager_team_profile, initialFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onClick(View v) {
-                if (MainActivity.userData.getUserRole().equals("ADMINISTRATOR")) {
-                    EditTeamFragment newFragment = new EditTeamFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putString("teamName", teamName.getText().toString());
-                    bundle.putString("teamDescription", teamDescription.getText().toString());
-                    bundle.putString("admin", admin.getText().toString());
+            public void onTabSelected(TabLayout.Tab tab) {
+                FragmentManager manager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                if (tab.getPosition() == 0) {
+                    TeamInformationFragment newFragment = new TeamInformationFragment();
                     newFragment.setArguments(bundle);
-                    FragmentTransaction fragmentTransaction
-                            = getFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                    fragmentTransaction.replace(R.id.pager_team_profile, newFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                } else if (tab.getPosition() == 1) {
+                    fragmentTransaction.replace(R.id.pager_team_profile, new RegisterFragment());
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 } else {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Sie sind zu dieser Aktion nicht berechtigt")
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
-                }
-            }
-        });
-        googleDrive = (ImageView) rootView.findViewById(R.id.google_drive);
-        googleDrive.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToGoogleDrive();
-            }
-        });
-        String teamName = null;
-        String teamDescription = null;
-        String admin = null;
-
-        // Fetch Bundle
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            String fetchedData = bundle.getString("teamData");
-            try {
-                JSONObject data = new JSONObject(fetchedData);
-                String success = data.getString("success");
-                if (success.equals("true")) {
-                    JSONObject team = new JSONObject(data.getString("team"));
-                    teamName = team.getString("name");
-                    teamDescription = team.getString("description");
-                    admin = team.getString("admin");
-                    if (admin.equals(MainActivity.userData.getUsername())) {
-                        btn.setVisibility(View.VISIBLE);
-                    } else {
-                        btn.setVisibility(View.INVISIBLE);
-                    }
-                } else {
                     // TODO
+                    fragmentTransaction.replace(R.id.pager_team_profile,
+                            new SearchAllTeamsFragment());
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
                 }
-                this.teamName.setText(teamName);
-                this.teamDescription.setText(teamDescription);
-                this.admin.setText(admin);
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
             }
-        } else {
-            // TODO
-        }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
+
         return rootView;
     }
 
-    private void goToGoogleDrive() {
-        Uri googleDriveUri = Uri.parse(MainActivity.GOOLE_DRIVE_URL);
-        Intent intent = new Intent(Intent.ACTION_VIEW, googleDriveUri);
-        startActivity(intent);
-    }
 }

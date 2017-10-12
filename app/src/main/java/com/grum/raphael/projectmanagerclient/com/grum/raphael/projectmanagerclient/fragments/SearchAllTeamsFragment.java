@@ -73,48 +73,7 @@ public class SearchAllTeamsFragment extends Fragment {
                 if (!fetchedTeams.equals("")) {
                     teamNames = fetchedTeams.split(",");
                     removeOwnTeamName(teamNames);
-                    int length = teamNames.length;
-                    if (teamNames.length != 0) {
-                        arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                                R.id.list_element, teamNames);
-                        list.setAdapter(arrayAdapter);
-                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                String teamName = (String) list.getAdapter().getItem(position);
-                                String url = MainActivity.URL + "team";
-                                String token = MainActivity.userData.getToken();
-                                String[] params = new String[]{token, url, teamName};
-                                TeamTask teamTask = new TeamTask();
-                                try {
-                                    JSONObject fetchedTeamTask = teamTask.execute(params).get();
-                                    dealWithResponse(fetchedTeamTask, rootView);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                } catch (ExecutionException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        });
-                        search.addTextChangedListener(new TextWatcher() {
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                            }
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                arrayAdapter.getFilter().filter(s);
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {
-
-                            }
-                        });
-                    } else {
-                        // TODO
-                    }
+                    setUpList(rootView);
                 } else {
                     // TODO
                 }
@@ -132,6 +91,50 @@ public class SearchAllTeamsFragment extends Fragment {
             e.printStackTrace();
         }
         return rootView;
+    }
+
+    private void setUpList(final View rootView) {
+        if (teamNames.length != 0) {
+            arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
+                    R.id.list_element, teamNames);
+            list.setAdapter(arrayAdapter);
+            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String teamName = (String) list.getAdapter().getItem(position);
+                    String url = MainActivity.URL + "team";
+                    String token = MainActivity.userData.getToken();
+                    String[] params = new String[]{token, url, teamName};
+                    TeamTask teamTask = new TeamTask();
+                    try {
+                        JSONObject fetchedTeamTask = teamTask.execute(params).get();
+                        dealWithResponse(fetchedTeamTask, rootView);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            search.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    arrayAdapter.getFilter().filter(s);
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+
+                }
+            });
+        } else {
+            // TODO
+        }
     }
 
     // TODO test

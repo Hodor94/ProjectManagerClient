@@ -102,7 +102,7 @@ public class CreateTeamFragment extends Fragment {
     private boolean validateUserInput(String teamName, String teamDescription) {
         boolean result = false;
         if (teamName != null && teamDescription != null && !(teamName.equals(""))
-                && !(teamDescription.equals(""))) {
+                && !(teamDescription.equals("")) && !(teamName.equals("null"))) {
             result = true;
         }
         return result;

@@ -232,7 +232,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private boolean validateUsername(String username) {
         boolean result = false;
-        if (username != "" && username != null) {
+        if (username != "" && username != null && !(username.equals("null"))) {
             for (int i = 0; i < username.length(); i++) {
                 switch (username.charAt(i)) {
                     case ';':

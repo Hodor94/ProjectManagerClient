@@ -1,4 +1,7 @@
 <resources>
+    <string name="create">Erstellen</string>
+    <string name="hint_register_name">Name der Gruppe eingeben</string>
+    <string name="label_name">Name:</string>
     <string name="invitation">invitation</string>
     <string name="request">request</string>
     <string name="agree">agree</string>
