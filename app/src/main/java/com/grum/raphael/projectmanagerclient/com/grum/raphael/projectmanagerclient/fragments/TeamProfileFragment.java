@@ -69,7 +69,7 @@ public class TeamProfileFragment extends Fragment {
                 } else {
                     // TODO
                     fragmentTransaction.replace(R.id.pager_team_profile,
-                            new SearchAllTeamsFragment());
+                            new TeamMembersFragment());
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 }

@@ -1,22 +1,23 @@
 package com.grum.raphael.projectmanagerclient;
 
+import java.util.HashMap;
+
 /**
  * Created by Raphael on 24.08.2017.
  */
 
 public class DataContainer {
-    String token;
-    String username;
-    String teamName;
-    String userRole;
-    String adminOfProject;
+    private String token;
+    private String username;
+    private String teamName;
+    private String userRole;
+    private String adminOfProject;
 
     public DataContainer() {
-
     }
 
     public DataContainer(String token, String username, String teamName, String userRole,
-                         String adminOfProject) {
+                         String adminOfProject, HashMap<String, String> colors) {
         this.token = token;
         this.username = username;
         this.teamName = teamName;

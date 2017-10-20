@@ -2,6 +2,7 @@ package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagercli
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,9 +15,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -31,19 +34,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import yuku.ambilwarna.AmbilWarnaDialog;
+
 public class RegisterFragment extends Fragment {
 
-    private List<String> registers;
+    private List<JSONObject> registers;
     private ListView registersList;
     private Button createRegister;
     private TextView info;
     private EditText registerName;
     private String name;
+    private int defaultColor;
+    private ImageView selectColor;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_register, container, false);
+        selectColor = (ImageView) rootView.findViewById(R.id.select_color_for_register);
+        selectColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openColorPickerDialog(false);
+            }
+        });
+        defaultColor = R.color.white;
         info = (TextView) rootView.findViewById(R.id.text_info_register_fragment);
         info.setVisibility(View.GONE);
         registerName = (EditText) rootView.findViewById(R.id.register_name);
@@ -68,18 +83,28 @@ public class RegisterFragment extends Fragment {
         createRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createRegister();
+                if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                    createRegister();
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Sie haben keine Berechtigung für diese Aktion")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
             }
         });
         registersList = (ListView) rootView.findViewById(R.id.register_list);
         TextView listHeader = new TextView(getContext());
         listHeader.setText("Gruppen:");
         registersList.addHeaderView(listHeader);
-        List<String> registers = getRegisters();
+        this.registers = getRegisters();
+        ArrayList<String> registerNames = getRegisterNames();
         if (registers != null) {
             if (registers.size() != 0) {
                 ArrayAdapter arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                        R.id.list_element, registers);
+                        R.id.list_element, registerNames);
                 registersList.setAdapter(arrayAdapter);
             } else {
                 // TODO set info txt to inform about missing registers
@@ -91,13 +116,27 @@ public class RegisterFragment extends Fragment {
         return rootView;
     }
 
+    private ArrayList<String> getRegisterNames() {
+        ArrayList<String> result = new ArrayList<>();
+        if (registers != null && registers.size() != 0) {
+            for (JSONObject jsonObject : registers) {
+                try {
+                    result.add(jsonObject.getString("registerName"));
+                } catch (JSONException e) {
+                    // TODO alert dialog
+                }
+            }
+        }
+        return result;
+    }
+
     private void createRegister() {
         if (!name.equals("") && name != null) {
             info.setVisibility(View.GONE);
             CreateRegisterTask createRegisterTask = new CreateRegisterTask();
             String[] params = new String[]{MainActivity.URL + "create/register",
                     MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
-                    name, MainActivity.userData.getUsername()};
+                    name, MainActivity.userData.getUsername(), "" + defaultColor};
             try {
                 JSONObject result = createRegisterTask.execute(params).get();
                 String success = result.getString("success");
@@ -141,7 +180,7 @@ public class RegisterFragment extends Fragment {
         }
     }
 
-    private List<String> getRegisters() {
+    private List<JSONObject> getRegisters() {
         String[] params = new String[]{MainActivity.URL + "team/registers",
                 MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
         registers = new ArrayList<>();
@@ -155,7 +194,7 @@ public class RegisterFragment extends Fragment {
                 fetchedRegisters = response.getJSONArray("registers");
                 if (fetchedRegisters != null) {
                     for (int i = 0; i < fetchedRegisters.length(); i++) {
-                        registers.add(fetchedRegisters.getString(i));
+                        registers.add(fetchedRegisters.getJSONObject(i));
                     }
                 }
             }
@@ -174,4 +213,23 @@ public class RegisterFragment extends Fragment {
         }
         return registers;
     }
+
+    private void openColorPickerDialog(boolean AlphaSupport) {
+
+        AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(getActivity(), defaultColor, AlphaSupport, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onOk(AmbilWarnaDialog ambilWarnaDialog, int color) {
+                defaultColor = color;
+                selectColor.setBackgroundColor(defaultColor);
+            }
+
+            @Override
+            public void onCancel(AmbilWarnaDialog ambilWarnaDialog) {
+                Toast.makeText(getActivity(), "Color Picker Closed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        ambilWarnaDialog.show();
+
+    }
+
 }

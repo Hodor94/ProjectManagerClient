@@ -17,28 +17,28 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
 /**
- * Created by Raphael on 09.10.2017.
+ * Created by Raphael on 18.10.2017.
  */
 
-public class CreateRegisterTask extends AsyncTask<String, Void, JSONObject> {
+public class EditTeamMemberTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected JSONObject doInBackground(String... params) {
         JSONObject result;
         String url = params[0];
         String token = params[1];
-        String teamName = params[2];
+        String username = params[2];
         String registerName = params[3];
-        String username = params[4];
-        String color = params[5];
+        String admin = params[4];
+        String teamName = params[5];
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost createRegisterRequest = new HttpPost(url);
+        HttpPost editTeamMemberRequest = new HttpPost(url);
         StringEntity stringEntity
-                = new StringEntity(createRequestData(token, teamName, registerName, username, color),
-                "UTF-8");
+                = new StringEntity(createRequestData(token, username, registerName, admin,
+                teamName), "UTF-8");
         stringEntity.setContentType("application/json");
-        createRegisterRequest.setEntity(stringEntity);
+        editTeamMemberRequest.setEntity(stringEntity);
         try {
-            HttpResponse response = client.execute(createRegisterRequest);
+            HttpResponse response = client.execute(editTeamMemberRequest);
             InputStream input = response.getEntity().getContent();
             if (input != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -49,25 +49,22 @@ public class CreateRegisterTask extends AsyncTask<String, Void, JSONObject> {
                 }
                 result = new JSONObject(stringBuilder.toString());
             } else {
-                // TODO
                 result = null;
             }
         } catch (IOException e) {
             // TODO
-            e.printStackTrace();
             result = null;
+            e.printStackTrace();
         } catch (JSONException e) {
-            // TODO
             result = null;
             e.printStackTrace();
         }
         return result;
     }
 
-    private String createRequestData(String token, String teamName, String registerName,
-                                     String username, String color) {
-        return "{\"token\": \"" + token + "\", \"teamName\": \"" + teamName + "\", \"registerName\":"
-                + " \"" + registerName + "\", \"username\": \"" + username + "\", \"color\": " +
-                "\"" + color + "\"}";
+    private String createRequestData(String token, String username, String registerName,
+                                     String admin, String teamName) {
+        return "{\"token\": \"" + token + "\", \"username\": \"" + username + "\", \"registerName\":" +
+                " \"" + registerName + "\", \"admin\": \"" + admin + "\", \"teamName\": \"" + teamName + "\"}";
     }
 }

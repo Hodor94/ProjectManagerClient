@@ -1,4 +1,13 @@
 <resources>
+    <string-array name="sorting_table">
+        <item>Nach Usernamen sortieren A-Z</item>
+        <item>Nach Usernamen sortieren Z-A</item>
+        <item>Nach Gruppierung sortieren A-Z</item>
+        <item>Nach Gruppierung sortieren Z-A</item>
+    </string-array>
+    <string name="no_rights"></string>
+    <string name="chooseColor">Farbe wählen:</string>
+    <string name="label_registers">Gruppe:</string>
     <string name="create">Erstellen</string>
     <string name="hint_register_name">Name der Gruppe eingeben</string>
     <string name="label_name">Name:</string>

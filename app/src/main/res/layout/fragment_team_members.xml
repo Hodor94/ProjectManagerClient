@@ -2,11 +2,38 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     android:theme="@style/FontSizeStyle"
+    android:gravity="center"
     android:orientation="vertical">
+
+    <Spinner
+        android:id="@+id/dropdown_sort_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown" />
 
     <TableLayout
         android:id="@+id/team_memebers_table"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_table"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:layout_marginBottom="10dp">
+            <TextView
+                android:text="@string/label_username"
+                android:gravity="center"
+                />
+            <TextView
+                android:text="@string/label_registers"
+                android:gravity="center" />
+        </TableRow>
+
+        </TableLayout>
 
 </LinearLayout>
