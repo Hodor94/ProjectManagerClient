@@ -1,0 +1,15 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/FontSizeStyle"
+    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.ProjectsFragment">
+
+    <ListView
+        android:id="@+id/my_projects"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp" />
+
+</LinearLayout>

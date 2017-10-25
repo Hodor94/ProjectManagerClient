@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:orientation="vertical"
+    android:theme="@style/FontSizeStyle"
+    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.CreateTeamFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/label_register" />
+
+    <TextView
+        android:id="@+id/label_register_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="@string/chooseColor" />
+
+    <ImageView
+        android:layout_gravity="center"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/edit_color_for_register"
+        android:background="@drawable/border_table"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:id="@+id/text_edit_register_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="#f00"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"/>
+
+    <Button
+        android:id="@+id/btn_edit_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ready"
+        android:layout_marginBottom="10dp" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/label_delete"
+        android:layout_marginBottom="10dp" />
+
+</LinearLayout>

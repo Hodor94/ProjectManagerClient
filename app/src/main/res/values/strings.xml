@@ -5,7 +5,18 @@
         <item>Nach Gruppierung sortieren A-Z</item>
         <item>Nach Gruppierung sortieren Z-A</item>
     </string-array>
-    <string name="no_rights"></string>
+    <string name="impossible_register_editing">
+        Sie können keine nicht existierende Gruppe bearbeiten!
+    </string>
+    <string name="label_delete">Löschen</string>
+    <string name="my_projects">Übersicht meiner Projekte:</string>
+    <string name="all_projects">Übersicht der Projekte des Teams:</string>
+    <string name="error_fields_filled_wrong">Die benötigten Daten wurden nicht ausgefüllt
+        oder falsch ausgefüllt!</string>
+    <string name="error_deadline">Die Deadline muss in der Zukunft liegen!</string>
+    <string name="hint_deadline">Bitte geben Sie die Deadline an</string>
+    <string name="no_rights">Sie haben keine Berechtigung für die gewählte Aktion!</string>
+    <string name="error_get_members">Die Team-Mitglieder konnten nicht geladen werden!</string>
     <string name="chooseColor">Farbe wählen:</string>
     <string name="label_registers">Gruppe:</string>
     <string name="create">Erstellen</string>
@@ -71,7 +82,7 @@
     <string name="hint_filter">Suchbegriff eingeben</string>
     <string name="error_create_team_input">Fehler!\n
         Ihre Eingaben waren falsch! \n
-        Bitte füllen Sie die Felder aus!
+        Bitte füllen Sie die Felder korrekt aus!
     </string>
     <string name="empty_data">Noch nichts los hier! \n\n
         Werde Teil eines Teams, um alle Funktionen nutzen zu können!</string>

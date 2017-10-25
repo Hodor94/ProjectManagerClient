@@ -114,6 +114,7 @@ public class TeamMembersFragment extends Fragment {
             final TextView usernameText = new TextView(getContext());
             final TextView registerText = new TextView(getContext());
             usernameText.setBackgroundColor(Integer.parseInt(color));
+            registerText.setBackgroundColor(Integer.parseInt(color));
             usernameText.setText(tempUsername);
             if (!tempRegister.equals("null")) {
                 registerText.setText(tempRegister);
@@ -124,8 +125,6 @@ public class TeamMembersFragment extends Fragment {
             registerText.setGravity(Gravity.CENTER);
             registerText.setTextSize(MainActivity.DP_TEXT_SIZE);
             usernameText.setTextSize(MainActivity.DP_TEXT_SIZE);
-            usernameText.setBackgroundResource(R.drawable.border_text_view);
-            registerText.setBackgroundResource(R.drawable.border_text_view);
             usernameText.setLayoutParams(layoutParamsLeftElement);
             registerText.setLayoutParams(layoutParamsRightElement);
             TableRow tableRow = new TableRow(getContext());

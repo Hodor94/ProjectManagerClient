@@ -90,7 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
         register = (Button) findViewById(R.id.button_register);
 
         // Set birthday String
-        birthday = "" + birthdayPicker.getDayOfMonth() + ".0" + (birthdayPicker.getMonth() + 1) + "."
+        birthday = "" + birthdayPicker.getDayOfMonth() + "." + (birthdayPicker.getMonth() + 1) + "."
                 + birthdayPicker.getYear() + " 00:00:00";
 
         // Init DatePicker
@@ -109,7 +109,7 @@ public class RegisterActivity extends AppCompatActivity {
                         } else {
                             mDay = "" + dayOfMonth;
                         }
-                        if (monthOfYear < 10) {
+                        if (monthOfYear < 9) {
                             mMonth = "0" + (monthOfYear + 1);
                         } else {
                             mMonth = "" + (monthOfYear + 1);

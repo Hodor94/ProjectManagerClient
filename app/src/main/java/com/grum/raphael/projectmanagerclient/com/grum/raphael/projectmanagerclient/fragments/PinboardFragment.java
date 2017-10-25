@@ -93,7 +93,7 @@ public class PinboardFragment extends Fragment {
                 requestsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String userName = requests[0];
+                        String userName = requests[position];
                         openPopup(userName, rootView);
                     }
                 });
@@ -134,7 +134,7 @@ public class PinboardFragment extends Fragment {
             result = null;
             e.printStackTrace();
         }
-        if (result != null && result.equals("null")) {
+        if (result != null && result[0].equals("null")) {
             result = null;
         }
         return result;
@@ -300,7 +300,15 @@ public class PinboardFragment extends Fragment {
                         .setTitle(R.string.error)
                         .setMessage("Die Funktion konnte nicht ausgeführt werden!\n" +
                                 reason)
-                        .setNegativeButton("OK", null)
+                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                FragmentTransaction transaction
+                                        = getFragmentManager().beginTransaction();
+                                transaction.replace(R.id.containerFrame, new PinboardFragment());
+                                transaction.commit();
+                            }
+                        })
                         .create();
                 alertDialog.show();
             }

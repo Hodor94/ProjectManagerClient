@@ -101,7 +101,7 @@ public class EditUserProfileFragment extends Fragment {
                             } else {
                                 mDay = "" + dayOfMonth;
                             }
-                            if (monthOfYear < 10) {
+                            if (monthOfYear < 9) {
                                 mMonth = "0" + (monthOfYear + 1);
                             } else {
                                 mMonth = "" + (monthOfYear + 1);

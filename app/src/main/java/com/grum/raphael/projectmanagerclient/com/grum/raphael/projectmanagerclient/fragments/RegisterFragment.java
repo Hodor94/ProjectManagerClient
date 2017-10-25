@@ -9,9 +9,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -98,21 +100,30 @@ public class RegisterFragment extends Fragment {
         registersList = (ListView) rootView.findViewById(R.id.register_list);
         TextView listHeader = new TextView(getContext());
         listHeader.setText("Gruppen:");
+        listHeader.setTextSize(MainActivity.DP_TEXT_SIZE);
+        listHeader.setGravity(Gravity.CENTER);
+        listHeader.setTextColor(Color.BLACK);
         registersList.addHeaderView(listHeader);
         this.registers = getRegisters();
         ArrayList<String> registerNames = getRegisterNames();
         if (registers != null) {
-            if (registers.size() != 0) {
-                ArrayAdapter arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                        R.id.list_element, registerNames);
-                registersList.setAdapter(arrayAdapter);
-            } else {
-                // TODO set info txt to inform about missing registers
-                registersList.setVisibility(View.GONE);
-            }
-        } else {
-            // TODO
+            ArrayAdapter arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
+                    R.id.list_element, registerNames);
+            registersList.setAdapter(arrayAdapter);
         }
+        registersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Bundle bundle = new Bundle();
+                bundle.putString("registerName", registerName.getText().toString());
+                Fragment newFragment = new EditTeamFragment();
+                newFragment.setArguments(bundle);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(R.id.containerFrame, newFragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+        });
         return rootView;
     }
 
