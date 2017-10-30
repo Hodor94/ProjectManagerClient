@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +43,7 @@ import yuku.ambilwarna.AmbilWarnaDialog;
 public class RegisterFragment extends Fragment {
 
     private List<JSONObject> registers;
-    private ListView registersList;
+    private TableLayout registersTable;
     private Button createRegister;
     private TextView info;
     private EditText registerName;
@@ -53,6 +55,7 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_register, container, false);
+        Bundle bundle = getArguments();
         selectColor = (ImageView) rootView.findViewById(R.id.select_color_for_register);
         selectColor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,34 +100,77 @@ public class RegisterFragment extends Fragment {
                 }
             }
         });
-        registersList = (ListView) rootView.findViewById(R.id.register_list);
-        TextView listHeader = new TextView(getContext());
-        listHeader.setText("Gruppen:");
-        listHeader.setTextSize(MainActivity.DP_TEXT_SIZE);
-        listHeader.setGravity(Gravity.CENTER);
-        listHeader.setTextColor(Color.BLACK);
-        registersList.addHeaderView(listHeader);
+        registersTable = (TableLayout) rootView.findViewById(R.id.registers_table);
         this.registers = getRegisters();
         ArrayList<String> registerNames = getRegisterNames();
         if (registers != null) {
-            ArrayAdapter arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                    R.id.list_element, registerNames);
-            registersList.setAdapter(arrayAdapter);
+            setUpTable(registers);
         }
-        registersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+        /*registersTable.(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                name = registersList.getItemAtPosition(position).toString();
                 Bundle bundle = new Bundle();
-                bundle.putString("registerName", registerName.getText().toString());
-                Fragment newFragment = new EditTeamFragment();
+                bundle.putString("registerName", name);
+                Fragment newFragment = new EditRegisterFragment();
                 newFragment.setArguments(bundle);
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.containerFrame, newFragment);
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
-        });
+        }); */
         return rootView;
+    }
+
+    private void setUpTable(List<JSONObject> registers) {
+        TableRow.LayoutParams layoutParams
+                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT);
+        layoutParams.setMargins(0, 0, 0, 10);
+        for (int i = 0; i < registers.size(); i++) {
+            JSONObject register = registers.get(i);
+            String color = null;
+            String registerName = null;
+            try {
+                color = register.getString("color");
+                registerName = register.getString("registerName");
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+            if (registerName != null && color != null) {
+                TableRow tableRow = new TableRow(getContext());
+                tableRow.setLayoutParams(layoutParams);
+                TextView registerNameText = new TextView(getContext());
+                registerNameText.setText(registerName);
+                registerNameText.setBackgroundColor(Integer.parseInt(color));
+                registerNameText.setTextSize(MainActivity.DP_TEXT_SIZE);
+                registerNameText.setTextColor(Color.BLACK);
+                tableRow.setBackgroundColor(Integer.parseInt(color));
+                tableRow.addView(registerNameText);
+                tableRow.setGravity(Gravity.CENTER);
+                tableRow.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TableRow tr = (TableRow) v;
+                        TextView registerName = (TextView) tr.getChildAt(0);
+                        name = registerName.getText().toString();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("registerName", name);
+                        Fragment newFragment = new EditRegisterFragment();
+                        newFragment.setArguments(bundle);
+                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                        transaction.replace(R.id.containerFrame, newFragment);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
+                });
+                registersTable.addView(tableRow);
+            }
+
+        }
     }
 
     private ArrayList<String> getRegisterNames() {

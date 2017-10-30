@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:text="@string/label_register" />
+        android:text="@string/register_name" />
 
     <TextView
         android:id="@+id/label_register_name"
@@ -51,6 +51,7 @@
         android:layout_marginBottom="10dp" />
 
     <Button
+        android:id="@+id/btn_delete_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/label_delete"

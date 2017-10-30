@@ -1,5 +1,6 @@
 package com.grum.raphael.projectmanagerclient;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.*;
+import com.grum.raphael.projectmanagerclient.tasks.LeaveAppTask;
 import com.grum.raphael.projectmanagerclient.tasks.TeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.UserTask;
 
@@ -110,6 +112,8 @@ public class NavigationActivity extends AppCompatActivity
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
             logout();
+        } else if (id == R.id.leave_app) {
+            leaveApp();
         }
 
         return super.onOptionsItemSelected(item);
@@ -233,6 +237,48 @@ public class NavigationActivity extends AppCompatActivity
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    private void leaveApp() {
+        String[] params = new String[] {MainActivity.URL + "unregister",
+                MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
+        LeaveAppTask leaveAppTask = new LeaveAppTask();
+        try {
+            JSONObject result = leaveAppTask.execute(params).get();
+            String success = result.getString("success");
+            if (success.equals("true")) {
+                AlertDialog alertDialog = new AlertDialog.Builder(NavigationActivity.this)
+                        .setTitle(R.string.success)
+                        .setMessage("Sie haben die App erfolgreich verlassen! Auf Wiedersehen!")
+                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivity(new Intent(NavigationActivity.this,
+                                        MainActivity.class));
+                            }
+                        })
+                        .create();
+                alertDialog.show();
+            } else {
+                String reason = result.getString("reason");
+                AlertDialog alertDialog = new AlertDialog.Builder(NavigationActivity.this)
+                        .setTitle(R.string.error)
+                        .setMessage("Sie konnten die App nicht verlassen! Ein Fehler ist " +
+                                "aufgetreten!\n" + reason)
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
+            }
+        } catch (InterruptedException e) {
+            // TODO
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            // TODO
+            e.printStackTrace();
+        } catch (JSONException e) {
+            // TODO
+            e.printStackTrace();
+        }
     }
 
 }

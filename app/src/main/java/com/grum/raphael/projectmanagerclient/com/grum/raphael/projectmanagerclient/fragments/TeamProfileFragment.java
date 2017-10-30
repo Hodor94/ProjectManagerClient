@@ -56,14 +56,16 @@ public class TeamProfileFragment extends Fragment {
             public void onTabSelected(TabLayout.Tab tab) {
                 FragmentManager manager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = manager.beginTransaction();
+                Fragment newFragment;
                 if (tab.getPosition() == 0) {
-                    TeamInformationFragment newFragment = new TeamInformationFragment();
+                    newFragment = new TeamInformationFragment();
                     newFragment.setArguments(bundle);
                     fragmentTransaction.replace(R.id.pager_team_profile, newFragment);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 } else if (tab.getPosition() == 1) {
-                    fragmentTransaction.replace(R.id.pager_team_profile, new RegisterFragment());
+                    newFragment = new RegisterFragment();
+                    fragmentTransaction.replace(R.id.pager_team_profile, newFragment);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 } else {

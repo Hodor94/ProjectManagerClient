@@ -5,9 +5,11 @@
         <item>Nach Gruppierung sortieren A-Z</item>
         <item>Nach Gruppierung sortieren Z-A</item>
     </string-array>
+    <string name="delete_account">Account deaktivieren</string>
     <string name="impossible_register_editing">
         Sie können keine nicht existierende Gruppe bearbeiten!
     </string>
+    <string name="register_name">Gruppenname:</string>
     <string name="label_delete">Löschen</string>
     <string name="my_projects">Übersicht meiner Projekte:</string>
     <string name="all_projects">Übersicht der Projekte des Teams:</string>

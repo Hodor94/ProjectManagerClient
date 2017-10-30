@@ -91,8 +91,6 @@ public class TeamMembersFragment extends Fragment {
             e.printStackTrace();
         }
         table = (TableLayout) rootView.findViewById(R.id.team_memebers_table);
-
-
         return rootView;
     }
 
@@ -133,7 +131,8 @@ public class TeamMembersFragment extends Fragment {
             tableRow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    selectTableRow(usernameText.getText().toString(), registerText.getText().toString());
+                    selectTableRow(usernameText.getText().toString(),
+                            registerText.getText().toString());
                 }
             });
             table.addView(tableRow);

@@ -56,9 +56,22 @@
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"/>
 
-    <ListView
-        android:id="@+id/register_list"
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="Gruppen:"
+        android:gravity="center"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <TableLayout
+        android:background="@drawable/border_table"
+        android:id="@+id/registers_table"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+
+    </ScrollView>
 
 </LinearLayout>

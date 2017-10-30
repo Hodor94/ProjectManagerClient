@@ -2,10 +2,12 @@ package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagercli
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.DeleteRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.EditRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegisterTask;
 
@@ -43,7 +46,7 @@ public class EditRegisterFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_edit_register, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_edit_register, container, false);
         Bundle bundle = getArguments();
         registerName = bundle.getString("registerName");
         JSONObject register = getRegister(registerName);
@@ -66,8 +69,71 @@ public class EditRegisterFragment extends Fragment {
                 editRegister(registerName, defaultColor);
             }
         });
+        deleteRegister = (Button) rootView.findViewById(R.id.btn_delete_register);
+        deleteRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteRegister();
+            }
+        });
+
         return rootView;
     }
+
+    private void deleteRegister() {
+        if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+            String[] params = new String[]{MainActivity.URL + "delete/register",
+                    MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                    registerName, MainActivity.userData.getTeamName()};
+            DeleteRegisterTask deleteRegisterTask = new DeleteRegisterTask();
+            try {
+                JSONObject result = deleteRegisterTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.success)
+                            .setMessage("Die Gruppe " + registerName + " wurde erfolgreich gelöscht")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    Fragment newFragment = new RegisterFragment();
+                                    FragmentTransaction transaction = getFragmentManager()
+                                            .beginTransaction();
+                                    transaction.replace(R.id.containerFrame, newFragment);
+                                    transaction.commit();
+                                }
+                            }).create();
+                    alertDialog.show();
+
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Gruppe konnte nicht gelöscht werden!")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                    .setTitle(R.string.error)
+                    .setMessage(getResources().getString(R.string.no_rights))
+                    .setNegativeButton("OK", null)
+                    .create();
+            alertDialog.show();
+        }
+    }
+
+
 
     private void getColorOfRegister(JSONObject register) {
         if (register == null) {
@@ -129,7 +195,16 @@ public class EditRegisterFragment extends Fragment {
                                     .setTitle(R.string.success)
                                     .setMessage("Die Gruppe " + registerName + " wurde erfolgreich " +
                                             "aktualisiert!")
-                                    .setNegativeButton("OK", null)
+                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Fragment newFragment = new RegisterFragment();
+                                            FragmentTransaction transaction
+                                                    = getFragmentManager().beginTransaction();
+                                            transaction.replace(R.id.containerFrame, newFragment);
+                                            transaction.commit();
+                                        }
+                                    })
                                     .create();
                             alertDialog.show();
                         } else {
