@@ -24,6 +24,7 @@ import com.grum.raphael.projectmanagerclient.R;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.EditRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegisterTask;
+import com.grum.raphael.projectmanagerclient.tasks.TeamTask;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -198,7 +199,23 @@ public class EditRegisterFragment extends Fragment {
                                     .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            Fragment newFragment = new RegisterFragment();
+                                            String[] paramsTeam = new String[]
+                                                    {MainActivity.userData.getToken(), MainActivity.URL + "team",
+                                                            MainActivity.userData.getTeamName()};
+                                            TeamTask teamTask = new TeamTask();
+                                            Bundle bundle = new Bundle();
+                                            try {
+                                                JSONObject fetchedTeamData = teamTask.execute(paramsTeam).get();
+                                                bundle.putString("teamData", fetchedTeamData.toString());
+                                            } catch (InterruptedException e) {
+                                                // TODO
+                                                e.printStackTrace();
+                                            } catch (ExecutionException e) {
+                                                // TODO
+                                                e.printStackTrace();
+                                            }
+                                            Fragment newFragment = new TeamProfileFragment();
+                                            newFragment.setArguments(bundle);
                                             FragmentTransaction transaction
                                                     = getFragmentManager().beginTransaction();
                                             transaction.replace(R.id.containerFrame, newFragment);

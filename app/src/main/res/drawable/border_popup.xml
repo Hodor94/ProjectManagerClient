@@ -7,5 +7,8 @@
         android:angle="90"
         android:startColor="@color/white"
         android:endColor="@color/white" />
+    <corners android:radius="3dp" />
+    <padding android:left="10dp" android:top="5dp"
+        android:right="10dp" android:bottom="5dp" />
 
 </shape>

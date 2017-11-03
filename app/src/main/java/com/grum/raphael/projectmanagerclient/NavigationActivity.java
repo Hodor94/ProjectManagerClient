@@ -240,7 +240,7 @@ public class NavigationActivity extends AppCompatActivity
     }
 
     private void leaveApp() {
-        String[] params = new String[] {MainActivity.URL + "unregister",
+        String[] params = new String[] {MainActivity.URL + "leave",
                 MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
         LeaveAppTask leaveAppTask = new LeaveAppTask();
         try {

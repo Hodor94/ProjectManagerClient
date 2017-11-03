@@ -61,10 +61,17 @@
         android:layout_marginBottom="15dp" />
 
     <Button
-        android:id="@+id/team_profile_btn"
+        android:id="@+id/team_profile_btn_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:text="@string/edit"/>
+
+    <Button
+        android:id="@+id/btn_leave_team"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/leave" />
 
     <ImageView
         android:id="@+id/google_drive"

@@ -105,6 +105,10 @@ public class TeamMembersFragment extends Fragment {
         layoutParamsRightElement.setMargins(5, 10 , 0, 0);
         addHeaderToTable();
         for (int i = 0; i < members.size(); i++) {
+            View separatorHorizontal = new View(getActivity());
+            separatorHorizontal.setLayoutParams(
+                    new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+            separatorHorizontal.setBackgroundColor(Color.rgb(51, 51, 51));
             JSONObject member = members.get(i);
             String tempUsername = member.getString("username");
             String tempRegister = member.getString("register");
@@ -123,6 +127,8 @@ public class TeamMembersFragment extends Fragment {
             registerText.setGravity(Gravity.CENTER);
             registerText.setTextSize(MainActivity.DP_TEXT_SIZE);
             usernameText.setTextSize(MainActivity.DP_TEXT_SIZE);
+            usernameText.setTextColor(Color.BLACK);
+            registerText.setTextColor(Color.BLACK);
             usernameText.setLayoutParams(layoutParamsLeftElement);
             registerText.setLayoutParams(layoutParamsRightElement);
             TableRow tableRow = new TableRow(getContext());
@@ -135,7 +141,11 @@ public class TeamMembersFragment extends Fragment {
                             registerText.getText().toString());
                 }
             });
+
             table.addView(tableRow);
+            if (i != members.size() - 1) {
+                table.addView(separatorHorizontal);
+            }
         }
     }
 

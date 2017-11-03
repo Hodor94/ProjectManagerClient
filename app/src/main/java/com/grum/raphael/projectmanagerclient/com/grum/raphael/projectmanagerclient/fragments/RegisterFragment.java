@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
@@ -125,9 +126,9 @@ public class RegisterFragment extends Fragment {
     }
 
     private void setUpTable(List<JSONObject> registers) {
-        TableRow.LayoutParams layoutParams
-                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT);
+        TableLayout.LayoutParams layoutParams
+                = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                TabLayout.LayoutParams.MATCH_PARENT);
         layoutParams.setMargins(0, 0, 0, 10);
         for (int i = 0; i < registers.size(); i++) {
             JSONObject register = registers.get(i);
@@ -142,7 +143,6 @@ public class RegisterFragment extends Fragment {
             }
             if (registerName != null && color != null) {
                 TableRow tableRow = new TableRow(getContext());
-                tableRow.setLayoutParams(layoutParams);
                 TextView registerNameText = new TextView(getContext());
                 registerNameText.setText(registerName);
                 registerNameText.setBackgroundColor(Integer.parseInt(color));
@@ -167,7 +167,7 @@ public class RegisterFragment extends Fragment {
                         transaction.commit();
                     }
                 });
-                registersTable.addView(tableRow);
+                registersTable.addView(tableRow, layoutParams);
             }
 
         }

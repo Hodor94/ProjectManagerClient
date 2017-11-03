@@ -5,6 +5,7 @@
         <item>Nach Gruppierung sortieren A-Z</item>
         <item>Nach Gruppierung sortieren Z-A</item>
     </string-array>
+    <string name="leave">Verlassen</string>
     <string name="delete_account">Account deaktivieren</string>
     <string name="impossible_register_editing">
         Sie können keine nicht existierende Gruppe bearbeiten!
