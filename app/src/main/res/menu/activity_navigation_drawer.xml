@@ -23,6 +23,10 @@
             android:icon="@drawable/ic_appointments"
             android:title="Meetings" />
         <item
+            android:id="@+id/nav_tasks"
+            android:icon="@drawable/ic_tasks"
+            android:title="@string/label_tasks"/>
+        <item
             android:id="@+id/nav_searchTeams"
             android:icon="@drawable/ic_search_teams"
             android:title="Team finden" />

@@ -7,10 +7,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,8 +47,26 @@ public class MyProjectsFragment extends Fragment {
         List<String> myProjects = getMyProjects();
         ArrayAdapter arrayAdapter = new ArrayAdapter(getActivity(), R.layout.list_item,
                 R.id.list_element, myProjects);
+        myProjectsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String projectName = (String) parent.getItemAtPosition(position);
+                openEditProjectPage(projectName);
+            }
+        });
         myProjectsList.setAdapter(arrayAdapter);
         return rootView;
+    }
+
+    private void openEditProjectPage(String projectName) {
+        Bundle bundle = new Bundle();
+        bundle.putString("projectName", projectName);
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        Fragment newFragment = new EditProjectFragment();
+        newFragment.setArguments(bundle);
+        transaction.replace(R.id.containerFrame, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private List<String> getMyProjects() {

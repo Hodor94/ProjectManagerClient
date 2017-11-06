@@ -184,9 +184,11 @@ public class CreateProjectFragment extends Fragment {
                                 }).create();
                         alertDialog.show();
                     } else {
+                        String reason = result.getString("reason");
                         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                                 .setTitle(R.string.error)
-                                .setMessage("Das Projekt " + projectName + " konnte nicht angelegt werden!")
+                                .setMessage("Das Projekt " + projectName
+                                        + " konnte nicht angelegt werden!\n" + reason)
                                 .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {

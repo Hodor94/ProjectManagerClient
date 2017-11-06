@@ -1,10 +1,16 @@
 <resources>
+    <string name="label_tasks">Aufgaben</string>
+    <string name="label_edit_membership">Mitgliedschaft bearbeiten</string>
+    <string name="label_remove_members">Entfernen:</string>
+    <string name="label_add">Hinzufügen:</string>
+    <string name="project_users_header">Mitlgieder-Übersicht für:</string>
     <string-array name="sorting_table">
         <item>Nach Usernamen sortieren A-Z</item>
         <item>Nach Usernamen sortieren Z-A</item>
         <item>Nach Gruppierung sortieren A-Z</item>
         <item>Nach Gruppierung sortieren Z-A</item>
     </string-array>
+    <string name="label_edit_project_user">Projekt-Mitglieder verwalten</string>
     <string name="leave">Verlassen</string>
     <string name="delete_account">Account deaktivieren</string>
     <string name="impossible_register_editing">

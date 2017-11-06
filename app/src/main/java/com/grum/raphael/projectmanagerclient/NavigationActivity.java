@@ -189,6 +189,8 @@ public class NavigationActivity extends AppCompatActivity
                     alertDialog.show();
                     newFragment = new EmptyDataFragment();
                 }
+            } else if (id == R.id.nav_tasks) {
+                newFragment = new TaskFragment();
             } else if (id == R.id.nav_searchTeams) {
                 newFragment = new SearchTeamsFragment();
             } else if (id == R.id.nav_searchUsers) {
