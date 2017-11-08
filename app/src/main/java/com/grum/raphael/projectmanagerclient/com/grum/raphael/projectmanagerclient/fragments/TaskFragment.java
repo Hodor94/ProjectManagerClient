@@ -23,20 +23,36 @@ public class TaskFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_task, container, false);
         tab = (TabLayout) rootView.findViewById(R.id.tab_tasks);
         if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
-            tab.setVisibility(View.GONE);
+            Fragment newFragment = new MyTasksFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.replace(R.id.containerFrame, newFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         } else {
             tab.addTab(tab.newTab().setText("Task Erstellen"));
             tab.addTab(tab.newTab().setText("Meine Tasks"));
+            tab.addTab(tab.newTab().setText("Alle Aufgaben"));
+            TabLayout.Tab startingTab = tab.getTabAt(0);
+            startingTab.select();
+            Fragment initialFragment = new CreateTaskFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.pager_tasks, initialFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
             tab.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    Fragment newFragment;
                     if (tab.getPosition() == 0) {
-                        // TODO
+                        newFragment = new CreateTaskFragment();
+                    } else if (tab.getPosition() == 1) {
+                        newFragment = new MyTasksFragment();
                     } else {
                         // TODO
+                        newFragment = new TeamsTasksFragment();
                     }
-                    // TODO
+                    transaction.replace(R.id.pager_tasks, newFragment);
                     transaction.commit();
                 }
 

@@ -1,0 +1,116 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="15dp"
+    android:layout_marginRight="15dp"
+    android:background="@drawable/border_popup"
+    android:orientation="vertical"
+    android:theme="@style/FontSizeStyle"
+    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.PopupUserFragment">
+
+    <Button
+        android:id="@+id/close_btn_popup_own_task"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="right"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/round_btn"
+        android:text="X"
+        android:textColor="@color/white" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/label_name" />
+
+        <TextView
+            android:id="@+id/popup_edit_task_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/label_description" />
+
+        <EditText
+            android:id="@+id/popup_edit_task_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/label_deadline" />
+
+        <DatePicker
+            android:id="@+id/popup_edit_task_deadline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:datePickerMode="spinner"
+            android:calendarViewShown="false"
+            android:hint="@string/hint_deadline"
+            android:inputType="date"
+            android:theme="@style/FragmentDatePickerStyle"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/label_worker" />
+
+        <TextView
+            android:id="@+id/popup_edit_task_worker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" />
+
+        <Button
+            android:id="@+id/popup_btn_edit_task_ready"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/ready" />
+
+        <Button
+            android:id="@+id/popup_btn_delete_task"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/label_delete" />
+
+        <TextView
+            android:id="@+id/popup_edit_task_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textStyle="bold"
+            android:textColor="#f00"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"/>
+
+    </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

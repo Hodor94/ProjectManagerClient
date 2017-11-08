@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
@@ -43,11 +44,13 @@ public class EditProjectFragment extends Fragment {
     private TextView projectNameTextView;
     private EditText projectDescriptionTextView;
     private DatePicker datePickerDeadline;
+    private TimePicker timePicker;
     private TextView projectManagerTextView;
     private Button edit;
     private Button delete;
     private Button editUsers;
     private TextView info;
+    private String time;
 
     @Nullable
     @Override
@@ -59,6 +62,12 @@ public class EditProjectFragment extends Fragment {
         projectNameTextView = (TextView) rootView.findViewById(R.id.edit_project_name);
         projectDescriptionTextView = (EditText) rootView.findViewById(R.id.edit_project_description);
         datePickerDeadline = (DatePicker) rootView.findViewById(R.id.edit_project_deadline);
+        timePicker = (TimePicker) rootView.findViewById(R.id.time_picker_edit_project);
+        timePicker.setIs24HourView(true);
+        Calendar calendar = Calendar.getInstance();
+        String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
+        String currentMinutes = "" + calendar.get(Calendar.MONTH);
+        time = currentHour + ":" + currentMinutes + ":00";
         projectManagerTextView = (TextView) rootView.findViewById(R.id.edit_project_manager);
         edit = (Button) rootView.findViewById(R.id.edit_project_button);
         delete = (Button) rootView.findViewById(R.id.edit_project_delete);
@@ -66,6 +75,12 @@ public class EditProjectFragment extends Fragment {
         getProjectData();
         projectNameTextView.setText(projectName);
         projectDescriptionTextView.setText(description);
+        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                time = "" + hourOfDay + ":" + minute + ":00";
+            }
+        });
         currentDate = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
         try {
@@ -74,7 +89,7 @@ public class EditProjectFragment extends Fragment {
             e.printStackTrace();
         }
         deadline = "" + datePickerDeadline.getDayOfMonth() + "." + (datePickerDeadline.getMonth() + 1) + "."
-                + datePickerDeadline.getYear() + " 00:00:00";
+                + datePickerDeadline.getYear();
         datePickerDeadline.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
                 currentDate.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
@@ -96,10 +111,9 @@ public class EditProjectFragment extends Fragment {
                         }
                         mYear = "" + year;
                         // The 00:00:00 is for the formatter on server side
-                        deadline = mDay + "." + mMonth + "." + mYear + " 00:00:00";
+                        deadline = mDay + "." + mMonth + "." + mYear;
                     }
                 });
-        projectManagerTextView.setText(manager);
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -197,6 +211,7 @@ public class EditProjectFragment extends Fragment {
 
     private void editProject() {
         info.setText("");
+        deadline = concatenateDeadline(deadline, time);
         if (description != null && !(description.equals("")) && deadline != null
                 && !(deadline.equals(""))) {
             if (validateDeadline()) {
@@ -245,6 +260,10 @@ public class EditProjectFragment extends Fragment {
         } else {
             info.setText(R.string.error_fields_empty);
         }
+    }
+
+    private String concatenateDeadline(String deadline, String time) {
+        return deadline + " " + time;
     }
 
     private boolean validateDeadline() {

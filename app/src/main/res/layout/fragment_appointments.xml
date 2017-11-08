@@ -1,16 +1,30 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frg_appointments"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.ProjectsFragment" >
+    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.ProjectsFragment">
 
-    <TextView
-        android:id="@+id/textViewAppointments"
+    <Spinner
+        android:id="@+id/choose_project"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Appointments fragment" />
+        android:layout_marginBottom="10dp"
+        android:spinnerMode="dropdown" />
+
+    <FrameLayout
+        android:id="@+id/container_caldroid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp" />
+
+    <Button
+        android:id="@+id/btn_create_appointment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="@string/create_appointment" />
+
 
 </LinearLayout>

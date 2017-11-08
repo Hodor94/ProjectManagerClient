@@ -1,9 +1,7 @@
 package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -34,7 +33,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -44,12 +42,14 @@ public class CreateProjectFragment extends Fragment {
     private EditText projectNameItem;
     private EditText projectDescriptionItem;
     private DatePicker datePicker;
+    private TimePicker timePicker;
     private Button createProject;
     private TextView info;
     private String projectName;
     private String projectDescription;
     private String projectManager;
     private String deadline;
+    private String time;
 
     @Nullable
     @Override
@@ -58,6 +58,12 @@ public class CreateProjectFragment extends Fragment {
         List<String> members = getTeamMembers();
         info = (TextView) rootView.findViewById(R.id.text_create_project_info);
         datePicker = (DatePicker) rootView.findViewById(R.id.deadline_project);
+        timePicker = (TimePicker) rootView.findViewById(R.id.time_picker_create_project);
+        timePicker.setIs24HourView(true);
+        Calendar calendar = Calendar.getInstance();
+        String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
+        String currentMinutes = "" + calendar.get(Calendar.MONTH);
+        time = currentHour + ":" + currentMinutes + ":00";
         createProject = (Button) rootView.findViewById(R.id.btn_create_project);
         dropDownProjectManager = (Spinner) rootView.findViewById(R.id.dropdown_project_owner);
         projectNameItem = (EditText) rootView.findViewById(R.id.project_name);
@@ -108,12 +114,8 @@ public class CreateProjectFragment extends Fragment {
             }
         });
         Calendar currentDate = Calendar.getInstance();
-        int currentDay = datePicker.getDayOfMonth();
-        if (currentDay < 10) {
-
-        }
         deadline = "" + datePicker.getDayOfMonth() + "." + (datePicker.getMonth() + 1) + "."
-                + datePicker.getYear() + " 00:00:00";
+                + datePicker.getYear();
         datePicker.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
                 currentDate.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
@@ -135,19 +137,29 @@ public class CreateProjectFragment extends Fragment {
                         }
                         mYear = "" + year;
                         // The 00:00:00 is for the formatter on server side
-                        deadline = mDay + "." + mMonth + "." + mYear + " 00:00:00";
+                        deadline = mDay + "." + mMonth + "." + mYear;
                     }
                 });
         createProject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 info.setText("");
+                deadline = concatenateDeadline(deadline, time);
                 createNewProject(MainActivity.userData.getTeamName(), projectName,
                         projectDescription, projectManager, deadline);
             }
         });
-
+        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                time = "" + hourOfDay + ":" + minute + ":00";
+            }
+        });
         return rootView;
+    }
+
+    private String concatenateDeadline(String deadline, String time) {
+        return deadline + " " + time;
     }
 
     private void createNewProject(String teamName, String projectName, String projectDescription,
@@ -163,12 +175,13 @@ public class CreateProjectFragment extends Fragment {
                     String success = result.getString("success");
 
                     if (success.equals("true")) {
-                        String newUserRole = result.getString("userRole");
+                        String adminOfProject = result.getString("adminOfProject");
                         String token = result.getString("token");
                         if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
                             MainActivity.userData.setUserRole(MainActivity.PROJECT_OWNER);
                         }
                         MainActivity.userData.setToken(token);
+                        MainActivity.userData.setAdminOfProject(adminOfProject);
                         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                                 .setTitle(R.string.success)
                                 .setMessage("Das Projekt " + projectName + " wurde erfolgreich angelegt")

@@ -110,8 +110,10 @@ public class SearchAllTeamsFragment extends Fragment {
                         JSONObject fetchedTeamTask = teamTask.execute(params).get();
                         dealWithResponse(fetchedTeamTask, rootView);
                     } catch (InterruptedException e) {
+                        // TODO
                         e.printStackTrace();
                     } catch (ExecutionException e) {
+                        // TODO
                         e.printStackTrace();
                     }
                 }
