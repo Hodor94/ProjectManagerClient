@@ -12,72 +12,72 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:textColor="@color/text"
                 android:textSize="20dp"
+                android:textColor="@color/text"
                 android:text="@string/label_name" />
 
             <EditText
-                android:id="@+id/task_name"
+                android:id="@+id/appointment_detail_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textColor="@color/text"
-                android:textSize="20dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text"
                 android:textSize="20dp"
-                android:layout_marginBottom="5dp"
-                android:text="@string/label_description" />
-
-            <EditText
-                android:id="@+id/task_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:textColor="@color/text"
-                android:textSize="20dp"
                 android:layout_marginBottom="5dp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:textColor="@color/text"
                 android:textSize="20dp"
-                android:text="@string/label_deadline" />
+                android:textColor="@color/text"
+                android:text="@string/label_description" />
 
-            <DatePicker
-                android:id="@+id/deadline_task"
+            <EditText
+                android:id="@+id/appointment_detail_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20dp"
+                android:textColor="@color/text"
+                android:layout_marginBottom="5dp" />
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:textSize="20dp"
+                android:textColor="@color/text"
+                android:text="@string/label_date" />
+
+            <DatePicker
+                android:id="@+id/appointment_detail_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
-                android:hint="@string/hint_birthday"
+                android:hint="@string/hint_deadline"
                 android:inputType="date"
                 android:theme="@style/FragmentDatePickerStyle" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textColor="@color/text"
+                android:layout_marginBottom="5dp"
                 android:textSize="20dp"
+                android:textColor="@color/text"
                 android:text="@string/label_time" />
 
             <TimePicker
-                android:layout_gravity="center"
-                android:id="@+id/create_task_time"
+                android:id="@+id/appointment_detail_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginBottom="10dp"
                 android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
@@ -86,30 +86,24 @@
                 android:numbersTextColor="@color/text"
                 android:timePickerMode="spinner" />
 
-            <TextView
+            <Button
+                android:id="@+id/appointment_detail_edit_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
                 android:textColor="@color/text"
-                android:textSize="20dp"
-                android:layout_marginBottom="5dp"
-                android:text="@string/label_worker" />
-
-            <Spinner
-                android:id="@+id/dropdown_task_worker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:spinnerMode="dropdown" />
+                android:text="@string/edit" />
 
             <Button
-                android:id="@+id/btn_create_task"
+                android:id="@+id/appointment_detail_delete_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/ready" />
+                android:textColor="@color/text"
+                android:text="@string/label_delete" />
 
             <TextView
-                android:id="@+id/text_create_task_info"
+                android:id="@+id/appointment_detail_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20dp"

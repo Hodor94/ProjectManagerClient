@@ -20,6 +20,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -39,6 +40,7 @@ import java.util.concurrent.ExecutionException;
 
 public class CreateTaskFragment extends Fragment {
 
+    private String time;
     private String name;
     private String description;
     private String deadline;
@@ -47,6 +49,7 @@ public class CreateTaskFragment extends Fragment {
     private EditText taskName;
     private EditText taskDescription;
     private DatePicker deadlineDatePicker;
+    private TimePicker timePicker;
     private Spinner dropdownWorker;
     private Button createTaskBtn;
     private TextView info;
@@ -59,6 +62,13 @@ public class CreateTaskFragment extends Fragment {
         taskName = (EditText) rootView.findViewById(R.id.task_name);
         taskDescription = (EditText) rootView.findViewById(R.id.task_description);
         deadlineDatePicker = (DatePicker) rootView.findViewById(R.id.deadline_task);
+        timePicker = (TimePicker) rootView.findViewById(R.id.create_task_time);
+        timePicker.setIs24HourView(true);
+        timePicker.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
+        Calendar calendar = Calendar.getInstance();
+        String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
+        String currentMinutes = "" + calendar.get(Calendar.MONTH);
+        time = currentHour + ":" + currentMinutes + ":00";
         dropdownWorker = (Spinner) rootView.findViewById(R.id.dropdown_task_worker);
         createTaskBtn = (Button) rootView.findViewById(R.id.btn_create_task);
         info = (TextView) rootView.findViewById(R.id.text_create_task_info);
@@ -90,12 +100,13 @@ public class CreateTaskFragment extends Fragment {
                 description = taskDescription.getText().toString();
             }
         });
-        final Calendar currentDate = Calendar.getInstance();
-        this.deadlineDatePicker.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
-                currentDate.get(Calendar.DAY_OF_MONTH),
-                new DatePicker.OnDateChangedListener() {
+        Calendar currentDate = Calendar.getInstance();
+        deadlineDatePicker.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
+                currentDate.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+
                     @Override
-                    public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                    public void onDateChanged(DatePicker view, int year, int monthOfYear,
+                                              int dayOfMonth) {
                         String mDay;
                         String mMonth;
                         String mYear;
@@ -111,12 +122,29 @@ public class CreateTaskFragment extends Fragment {
                         }
                         mYear = "" + year;
                         // The 00:00:00 is for the formatter on server side
-                        deadline = mDay + "." + mMonth + "." + mYear + " 00:00:00";
+                        deadline = mDay + "." + mMonth + "." + mYear;
                     }
                 });
         deadline = "" + deadlineDatePicker.getDayOfMonth() + "."
-                + (deadlineDatePicker.getMonth() + 1) + "."
-                + deadlineDatePicker.getYear() + " 00:00:00";
+                + (deadlineDatePicker.getMonth() + 1) + "." + deadlineDatePicker.getYear();
+        timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                String hour;
+                String minutes;
+                if (minute < 10) {
+                    minutes = "0" + minute;
+                } else {
+                    minutes = "" + minute;
+                }
+                if (hourOfDay < 10) {
+                    hour = "0" + hourOfDay;
+                } else {
+                    hour = "" + hourOfDay;
+                }
+                time = hour + ":" + minutes + ":00";
+            }
+        });
         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(),
                 R.layout.drop_down, R.id.drop_down_element, teamMembers);
         dropdownWorker.setAdapter(arrayAdapter);
@@ -141,8 +169,13 @@ public class CreateTaskFragment extends Fragment {
         return rootView;
     }
 
+    private String concatenateDeadline(String deadline, String time) {
+        return deadline + " " + time;
+    }
+
     private void createTask() {
         info.setText("");
+        deadline = concatenateDeadline(deadline, time);
         if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
             if (validateInput(name, description, worker)) {
                 if (validateDeadline()) {

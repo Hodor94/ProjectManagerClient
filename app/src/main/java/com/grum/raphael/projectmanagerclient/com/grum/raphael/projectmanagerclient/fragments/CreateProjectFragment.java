@@ -60,6 +60,7 @@ public class CreateProjectFragment extends Fragment {
         datePicker = (DatePicker) rootView.findViewById(R.id.deadline_project);
         timePicker = (TimePicker) rootView.findViewById(R.id.time_picker_create_project);
         timePicker.setIs24HourView(true);
+        timePicker.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
         Calendar calendar = Calendar.getInstance();
         String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
         String currentMinutes = "" + calendar.get(Calendar.MONTH);
@@ -114,8 +115,6 @@ public class CreateProjectFragment extends Fragment {
             }
         });
         Calendar currentDate = Calendar.getInstance();
-        deadline = "" + datePicker.getDayOfMonth() + "." + (datePicker.getMonth() + 1) + "."
-                + datePicker.getYear();
         datePicker.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
                 currentDate.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
@@ -140,6 +139,8 @@ public class CreateProjectFragment extends Fragment {
                         deadline = mDay + "." + mMonth + "." + mYear;
                     }
                 });
+        deadline = "" + datePicker.getDayOfMonth() + "." + (datePicker.getMonth() + 1) + "."
+                + datePicker.getYear();
         createProject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,7 +153,19 @@ public class CreateProjectFragment extends Fragment {
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                time = "" + hourOfDay + ":" + minute + ":00";
+                String hour;
+                String minutes;
+                if (minute < 10) {
+                    minutes = "0" + minute;
+                } else {
+                    minutes = "" + minute;
+                }
+                if (hourOfDay < 10) {
+                    hour = "0" + hourOfDay;
+                } else {
+                    hour = "" + hourOfDay;
+                }
+                time = hour + ":" + minutes + ":00";
             }
         });
         return rootView;

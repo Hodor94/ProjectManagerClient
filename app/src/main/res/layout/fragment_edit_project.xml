@@ -1,8 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/FontSizeStyle">
+    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.ProjectsFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -17,31 +18,41 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
+                android:textSize="20dp"
+                android:textColor="@color/text"
                 android:text="@string/label_project_name" />
 
             <TextView
                 android:id="@+id/edit_project_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:textSize="20dp"
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/text" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/label_description" />
+                android:textSize="20dp"
+                android:text="@string/label_description"
+                android:textColor="@color/text" />
 
             <EditText
                 android:id="@+id/edit_project_description"
+                android:textSize="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5dp"
+                android:textColor="@color/text" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/label_deadline" />
+                android:text="@string/label_deadline"
+                android:textSize="20dp"
+                android:textColor="@color/text" />
 
             <DatePicker
                 android:id="@+id/edit_project_deadline"
@@ -58,53 +69,62 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:text="@string/label_time"/>
+                android:textSize="20dp"
+                android:text="@string/label_time"
+                android:textColor="@color/text" />
 
-            <com.grum.raphael.projectmanagerclient.CustomTimePicker
+            <TimePicker
+                android:layout_gravity="center"
                 android:id="@+id/time_picker_edit_project"
-                android:background="@drawable/border_table"
-                android:numbersTextColor="@color/text"
-                android:numbersInnerTextColor="@color/text"
-                android:numbersSelectorColor="@color/toolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:timePickerMode="clock"
+                android:layout_marginLeft="25dp"
                 android:layout_marginRight="25dp"
-                android:layout_marginLeft="25dp"/>
+                android:numbersInnerTextColor="@color/text"
+                android:numbersSelectorColor="@color/toolbar"
+                android:numbersTextColor="@color/text"
+                android:timePickerMode="spinner" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/label_project_manager" />
+                android:text="@string/label_project_manager"
+                android:textSize="20dp"
+                android:textColor="@color/text" />
 
             <TextView
                 android:id="@+id/edit_project_manager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5dp"
+                android:textSize="20dp"
+                android:textColor="@color/text" />
 
             <Button
                 android:id="@+id/edit_project_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/ready" />
+                android:text="@string/ready"
+                android:textColor="@color/text" />
 
             <Button
                 android:id="@+id/edit_project_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/label_delete" />
+                android:text="@string/label_delete"
+                android:textColor="@color/text" />
 
             <Button
                 android:id="@+id/edit_project_users"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="@string/label_edit_project_user" />
+                android:text="@string/label_edit_project_user"
+                android:textColor="@color/text" />
 
             <TextView
                 android:id="@+id/edit_project_info"

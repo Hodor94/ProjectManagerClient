@@ -1,76 +1,90 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:theme="@style/FontSizeStyle">
+    tools:context="com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.ProjectsFragment">
+
 
     <TextView
         android:id="@+id/label_name_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
-        android:text="@string/label_name" />
+        android:textColor="@color/text"
+        android:text="@string/label_name"
+        android:textSize="20dp" />
 
     <EditText
         android:id="@+id/register_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/label_name_register"
+        android:textColor="@color/text"
         android:layout_marginBottom="5dp"
+        android:textSize="20dp"
         android:hint="@string/hint_register_name" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/text"
         android:layout_marginBottom="5dp"
+        android:textSize="20dp"
         android:text="@string/chooseColor" />
 
     <ImageView
-        android:layout_gravity="center"
+        android:id="@+id/select_color_for_register"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:id="@+id/select_color_for_register"
-        android:background="@drawable/border_table"
-        android:layout_marginBottom="10dp" />
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/border_table" />
 
     <Button
         android:id="@+id/create_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/create"
-        android:layout_marginBottom="5dp" />
+        android:textColor="@color/text"
+        android:layout_marginBottom="5dp"
+        android:text="@string/create" />
 
     <TextView
         android:id="@+id/text_info_register_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:textStyle="bold"
-        android:textColor="#da0a0a"
+        android:layout_marginBottom="10dp"
         android:gravity="center"
-        android:layout_marginBottom="10dp" />
+        android:textColor="#da0a0a"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray"/>
+        android:background="@android:color/darker_gray" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:text="Gruppen:"
-        android:gravity="center"/>
+        android:textColor="@color/text"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:text="Gruppen:" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-    <TableLayout
-        android:background="@drawable/border_table"
-        android:id="@+id/registers_table"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <TableLayout
+            android:id="@+id/registers_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="@color/text"
+            android:background="@drawable/border_table" />
 
     </ScrollView>
 

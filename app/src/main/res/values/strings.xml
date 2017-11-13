@@ -23,7 +23,7 @@
     <string name="all_projects">Übersicht der Projekte des Teams:</string>
     <string name="error_fields_filled_wrong">Die benötigten Daten wurden nicht ausgefüllt
         oder falsch ausgefüllt!</string>
-    <string name="error_deadline">Die Deadline muss in der Zukunft liegen!</string>
+    <string name="error_deadline">Das Datum muss in der Zukunft liegen!</string>
     <string name="hint_deadline">Bitte geben Sie die Deadline an</string>
     <string name="no_rights">Sie haben keine Berechtigung für die gewählte Aktion!</string>
     <string name="error_get_members">Die Team-Mitglieder konnten nicht geladen werden!</string>
@@ -125,5 +125,8 @@
     <string name="no_projects">Sie nehmen momentan noch an keinem Projekt teil und haben deshalb auch keine Meetings!</string>
     <string name="create_appointment">Meeting Erstellen</string>
     <string name="label_time">Uhrzeit:</string>
+    <string name="choose_time">Uhrzeit wählen</string>
+    <string name="choose_appointment">Wählen Sie ein Meeting am</string>
+    <string name="label_date">Datum:</string>
 
 </resources>

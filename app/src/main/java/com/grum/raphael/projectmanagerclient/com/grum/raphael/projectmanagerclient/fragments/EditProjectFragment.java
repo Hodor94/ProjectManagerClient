@@ -28,6 +28,7 @@ import com.grum.raphael.projectmanagerclient.tasks.GetProjectTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.SQLOutput;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -64,11 +65,13 @@ public class EditProjectFragment extends Fragment {
         datePickerDeadline = (DatePicker) rootView.findViewById(R.id.edit_project_deadline);
         timePicker = (TimePicker) rootView.findViewById(R.id.time_picker_edit_project);
         timePicker.setIs24HourView(true);
+        timePicker.setDescendantFocusability(TimePicker.FOCUS_BLOCK_DESCENDANTS);
         Calendar calendar = Calendar.getInstance();
         String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
         String currentMinutes = "" + calendar.get(Calendar.MONTH);
         time = currentHour + ":" + currentMinutes + ":00";
         projectManagerTextView = (TextView) rootView.findViewById(R.id.edit_project_manager);
+        projectManagerTextView.setText(MainActivity.userData.getUsername());
         edit = (Button) rootView.findViewById(R.id.edit_project_button);
         delete = (Button) rootView.findViewById(R.id.edit_project_delete);
         editUsers = (Button) rootView.findViewById(R.id.edit_project_users);
@@ -78,7 +81,19 @@ public class EditProjectFragment extends Fragment {
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                time = "" + hourOfDay + ":" + minute + ":00";
+                String hour;
+                String minutes;
+                if (minute < 10) {
+                    minutes = "0" + minute;
+                } else {
+                    minutes = "" + minute;
+                }
+                if (hourOfDay < 10) {
+                    hour = "0" + hourOfDay;
+                } else {
+                    hour = "" + hourOfDay;
+                }
+                time = hour + ":" + minutes + ":00";
             }
         });
         currentDate = Calendar.getInstance();
@@ -88,8 +103,6 @@ public class EditProjectFragment extends Fragment {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        deadline = "" + datePickerDeadline.getDayOfMonth() + "." + (datePickerDeadline.getMonth() + 1) + "."
-                + datePickerDeadline.getYear();
         datePickerDeadline.init(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
                 currentDate.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
 
@@ -114,6 +127,8 @@ public class EditProjectFragment extends Fragment {
                         deadline = mDay + "." + mMonth + "." + mYear;
                     }
                 });
+        deadline = "" + datePickerDeadline.getDayOfMonth() + "." + (datePickerDeadline.getMonth() + 1) + "."
+                + datePickerDeadline.getYear();
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,6 +284,7 @@ public class EditProjectFragment extends Fragment {
     private boolean validateDeadline() {
         boolean result = false;
         Calendar chosenDeadline = Calendar.getInstance();
+        Calendar currentDate = Calendar.getInstance();
         SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
         try {
             chosenDeadline.setTime(formatter.parse(deadline));

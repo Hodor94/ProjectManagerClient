@@ -72,7 +72,7 @@ public class SearchAllTeamsFragment extends Fragment {
                 fetchedTeams = fetchedTeams.substring(1, fetchedTeams.length() - 1);
                 if (!fetchedTeams.equals("")) {
                     teamNames = fetchedTeams.split(",");
-                    removeOwnTeamName(teamNames);
+                    teamNames = removeOwnTeamName(teamNames);
                     setUpList(rootView);
                 } else {
                     // TODO
@@ -139,15 +139,19 @@ public class SearchAllTeamsFragment extends Fragment {
         }
     }
 
-    // TODO test
-    private void removeOwnTeamName(String[] teamNames) {
+    private String[] removeOwnTeamName(String[] teamNames) {
         String ownTeam = MainActivity.userData.getTeamName();
-        ArrayList<String> tempTeamNames = new ArrayList<>(Arrays.asList(teamNames));
+        ArrayList<String> tempTeamNames = new ArrayList<>();
         if (!(ownTeam.equals("null")) && teamNames.length != 0) {
-            tempTeamNames.remove(ownTeam);
+            for (String teamName : teamNames) {
+                if (!teamName.equals(MainActivity.userData.getTeamName())) {
+                    tempTeamNames.add(teamName);
+                }
+            }
             teamNames = new String[tempTeamNames.size()];
             teamNames = tempTeamNames.toArray(teamNames);
         }
+        return teamNames;
     }
 
     private void dealWithResponse(JSONObject data, View anchorView) {

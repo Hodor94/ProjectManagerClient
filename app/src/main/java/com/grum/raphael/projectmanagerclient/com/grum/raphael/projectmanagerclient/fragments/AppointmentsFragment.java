@@ -7,8 +7,10 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -22,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -63,6 +66,7 @@ public class AppointmentsFragment extends Fragment {
         caldroidFragment.setArguments(bundle);
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container_caldroid, caldroidFragment).commit();
+        createAppointment = (Button) rootView.findViewById(R.id.btn_create_appointment);
         chooseProject = (Spinner) rootView.findViewById(R.id.choose_project);
         myProjects = getMyProjects();
         ArrayAdapter arrayAdapter = new ArrayAdapter(getContext(),
@@ -97,7 +101,61 @@ public class AppointmentsFragment extends Fragment {
             appointments = getAppointments(chosenProject);
             highlightExistingEvents(caldroidFragment, appointments);
         }
+        createAppointment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createAppointment();
+            }
+
+        });
+        caldroidFragment.setCaldroidListener(setUpCaldroidListener());
         return rootView;
+    }
+
+    private CaldroidListener setUpCaldroidListener() {
+        return new CaldroidListener() {
+            @Override
+            public void onSelectDate(Date date, View view) {
+                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+                String dateString = formatter.format(date);
+                ArrayList<String> relevantAppointments = new ArrayList<>();
+                for (JSONObject appointment : appointments) {
+                    try {
+                        String appointmentsDate = appointment.getString("deadline");
+                        String[] dateAndTimeSplit = appointmentsDate.split(" ");
+                        if (dateAndTimeSplit[0].equals(dateString)) {
+                            relevantAppointments.add(appointment.toString());
+                        }
+                    } catch (JSONException e) {
+                        // TODO
+                        e.printStackTrace();
+                    }
+                }
+                if (relevantAppointments.size() != 0) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("date", dateString);
+                    bundle.putStringArrayList("appointments", relevantAppointments);
+                    Fragment newFragment = new ChooseAppointmentFragment();
+                    newFragment.setArguments(bundle);
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                    transaction.replace(R.id.containerFrame, newFragment);
+                    transaction.addToBackStack(null);
+                    transaction.commit();
+                } else {
+                    Toast.makeText(getContext(), "Am " + dateString
+                            + " sind keine Meetings geplant!", Toast.LENGTH_LONG).show();
+                }
+            }
+        };
+    }
+
+    private void createAppointment() {
+        // GetMyProjectTask getMyProjectTask = new GetMyProjectTask();
+        CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.containerFrame, createAppointmentFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void highlightExistingEvents(CaldroidFragment caldroidFragment,

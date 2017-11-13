@@ -29,6 +29,7 @@ import com.grum.raphael.projectmanagerclient.tasks.UserTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -43,8 +44,6 @@ public class SearchUsersFragment extends Fragment {
     public SearchUsersFragment() {
 
     }
-
-    // TODO Debug - Not all users are shown
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -61,6 +60,7 @@ public class SearchUsersFragment extends Fragment {
                 String fetchedUsers = fetchedData.getString("users");
                 fetchedUsers = fetchedUsers.substring(1, fetchedUsers.length() - 1);
                 userData = fetchedUsers.split(",");
+                userData = removeOwnUsername(userData);
                 if (userData.length != 0) {
                     // Fill list with items
                     arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
@@ -120,6 +120,20 @@ public class SearchUsersFragment extends Fragment {
             e.printStackTrace();
         }
         return rootView;
+    }
+
+    private String[] removeOwnUsername(String[] userData) {
+        if (userData.length != 0) {
+            ArrayList<String> usernames = new ArrayList<>();
+            for (String username : userData) {
+                if (!username.equals(MainActivity.userData.getUsername())) {
+                    usernames.add(username);
+                }
+            }
+            userData = new String[usernames.size()];
+            userData = usernames.toArray(userData);
+        }
+        return userData;
     }
 
     private void dealWithResponse(JSONObject data, View anchorView) {
