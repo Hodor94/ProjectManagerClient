@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.EditProjectMembershipTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetProjectMembersTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamMembersTask;
@@ -93,49 +94,54 @@ public class EditProjectUsersFragment extends Fragment {
     }
 
     private void editMembership() {
-        if (usernamesToEdit.size() != 0) {
-            EditProjectMembershipTask editProjectMembershipTask = new EditProjectMembershipTask();
-            try {
-                JSONObject result = editProjectMembershipTask.execute(usernamesToEdit).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage("Sie haben die Zugehörigkeiten erfolgreich geändert.")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    reloadPage();
-                                }
-                            })
-                            .create();
-                    alertDialog.show();
-                } else {
-                    String reason = result.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Die Zugehörigkeiten zum Projekt konnten nicht " +
-                                    "erfolgreich bearbeitet werden!\n" + reason)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (usernamesToEdit.size() != 0) {
+                EditProjectMembershipTask editProjectMembershipTask = new EditProjectMembershipTask();
+                try {
+                    JSONObject result = editProjectMembershipTask.execute(usernamesToEdit).get();
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage("Sie haben die Zugehörigkeiten erfolgreich geändert.")
+                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        reloadPage();
+                                    }
+                                })
+                                .create();
+                        alertDialog.show();
+                    } else {
+                        String reason = result.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage("Die Zugehörigkeiten zum Projekt konnten nicht " +
+                                        "erfolgreich bearbeitet werden!\n" + reason)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error)
+                        .setMessage("Sie haben níchts ausgewählt!")
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
             }
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.error)
-                    .setMessage("Sie haben níchts ausgewählt!")
-                    .setNegativeButton("OK", null)
-                    .create();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
     }
@@ -159,79 +165,89 @@ public class EditProjectUsersFragment extends Fragment {
 
     private List<String> getMembers() {
         List<String> usernames = new ArrayList<>();
-        String[] params = new String[]{MainActivity.URL + "project/members",
-                MainActivity.userData.getToken(), projectName, MainActivity.userData.getTeamName(),
-                MainActivity.userData.getUsername()};
-        GetProjectMembersTask getProjectMembersTask = new GetProjectMembersTask();
-        try {
-            JSONObject result = getProjectMembersTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray membersInfo = result.getJSONArray("members");
-                for (int i = 0; i < membersInfo.length(); i++) {
-                    String username = membersInfo.getString(i);
-                    if (!username.equals(MainActivity.userData.getUsername())) {
-                        usernames.add(username);
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "project/members",
+                    MainActivity.userData.getToken(), projectName, MainActivity.userData.getTeamName(),
+                    MainActivity.userData.getUsername()};
+            GetProjectMembersTask getProjectMembersTask = new GetProjectMembersTask();
+            try {
+                JSONObject result = getProjectMembersTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray membersInfo = result.getJSONArray("members");
+                    for (int i = 0; i < membersInfo.length(); i++) {
+                        String username = membersInfo.getString(i);
+                        if (!username.equals(MainActivity.userData.getUsername())) {
+                            usernames.add(username);
+                        }
                     }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Projekt-Mitglieder konnten nicht geladen werden!\n"
+                                    + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Projekt-Mitglieder konnten nicht geladen werden!\n"
-                                + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return usernames;
     }
 
     private List<String> getTeamMembers() {
         List<String> teamMembers = new ArrayList<>();
-        String[] params = new String[] {MainActivity.URL + "team/members",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
-        GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
-        try {
-            JSONObject result = getTeamMembersTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray fetchedMembers = result.getJSONArray("members");
-                for (int i = 0; i < fetchedMembers.length(); i++) {
-                    JSONObject teamMember = fetchedMembers.getJSONObject(i);
-                    String username = teamMember.getString("username");
-                    if (!username.equals(projectManagerUsername)) {
-                        teamMembers.add(username);
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "team/members",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
+            GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
+            try {
+                JSONObject result = getTeamMembersTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray fetchedMembers = result.getJSONArray("members");
+                    for (int i = 0; i < fetchedMembers.length(); i++) {
+                        JSONObject teamMember = fetchedMembers.getJSONObject(i);
+                        String username = teamMember.getString("username");
+                        if (!username.equals(projectManagerUsername)) {
+                            teamMembers.add(username);
+                        }
                     }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Team-Mitglierder konnten nicht geladen werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Team-Mitglierder konnten nicht geladen werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return teamMembers;
     }
@@ -252,7 +268,6 @@ public class EditProjectUsersFragment extends Fragment {
                     } else {
                         ctv.setChecked(true);
                         usernamesToEdit.add(checkedUsername);
-                        System.out.println("" + usernamesToEdit.size());
                     }
                 }
             });

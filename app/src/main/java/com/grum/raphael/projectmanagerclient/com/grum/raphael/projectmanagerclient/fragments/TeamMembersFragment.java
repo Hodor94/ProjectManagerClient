@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamMembersTask;
 
 import org.json.JSONArray;
@@ -62,35 +63,39 @@ public class TeamMembersFragment extends Fragment {
 
             }
         });
-        GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
-        String[] params = new String[]{MainActivity.URL + "team/members",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
-        try {
-            JSONObject result = getTeamMembersTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray fetchedMembers = result.getJSONArray("members");
-                members = extractMembers(fetchedMembers);
-                setUpTable(members);
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Teammitglieder konnten nicht abgefragt werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
+            String[] params = new String[]{MainActivity.URL + "team/members",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
+            try {
+                JSONObject result = getTeamMembersTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray fetchedMembers = result.getJSONArray("members");
+                    members = extractMembers(fetchedMembers);
+                    setUpTable(members);
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Teammitglieder konnten nicht abgefragt werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
-        table = (TableLayout) rootView.findViewById(R.id.team_memebers_table);
         return rootView;
     }
 

@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteTeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.LeaveTeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.UserTask;
@@ -139,20 +140,119 @@ public class TeamInformationFragment extends Fragment {
     }
 
     private void leaveTeam() {
-        if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
-            String[] params = new String[]{MainActivity.URL + "leave/team",
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                String[] params = new String[]{MainActivity.URL + "leave/team",
+                        MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                        MainActivity.userData.getTeamName()};
+                LeaveTeamTask leaveTeamTask = new LeaveTeamTask();
+                try {
+                    JSONObject response = leaveTeamTask.execute(params).get();
+                    String success = response.getString("success");
+                    if (success.equals("true")) {
+                        String token = response.getString("token");
+                        MainActivity.userData.setToken(token);
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage("Sie haben das Team erfolgreich verlassen!")
+                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        goToUserProfile();
+                                    }
+                                })
+                                .create();
+                        alertDialog.show();
+                    } else {
+                        String reason = response.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage("Sie konnten das Team nicht verlassen!\n" + reason)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
+                }
+                MainActivity.userData.setTeamName("null");
+                MainActivity.userData.setUserRole(MainActivity.USER);
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error)
+                        .setMessage("Sie sind Administrator des Teams!\n " +
+                                "Das Team wäre nutzlos ohne Sie! Wenn Sie trotzdem das Team verlassen " +
+                                "wollen, bitte löschen Sie dieses nun.")
+                        .setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteTeam();
+                            }
+                        })
+                        .create();
+                alertDialog.show();
+            }
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
+        }
+    }
+
+    private void goToUserProfile() {
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            UserTask userTask = new UserTask();
+            String[] params = new String[]{MainActivity.URL + "user",
+                    MainActivity.userData.getUsername(),
+                    MainActivity.userData.getToken()};
+            try {
+                JSONObject userData = userTask.execute(params).get();
+                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                Fragment newFragment;
+                if (userData != null) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("userData", userData.toString());
+                    newFragment = new UserProfileFragment();
+                    newFragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                    fragmentTransaction.commit();
+                } else {
+                    newFragment = new PinboardFragment();
+                    fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                    fragmentTransaction.commit();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else  {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
+        }
+    }
+
+    private void deleteTeam() {
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "delete/team",
                     MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
                     MainActivity.userData.getTeamName()};
-            LeaveTeamTask leaveTeamTask = new LeaveTeamTask();
+            DeleteTeamTask deleteTeamTask = new DeleteTeamTask();
             try {
-                JSONObject response = leaveTeamTask.execute(params).get();
-                String success = response.getString("success");
+                JSONObject result = deleteTeamTask.execute(params).get();
+                String success = result.getString("success");
                 if (success.equals("true")) {
-                    String token = response.getString("token");
-                    MainActivity.userData.setToken(token);
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.success)
-                            .setMessage("Sie haben das Team erfolgreich verlassen!")
+                            .setMessage("Sie haben das Team erfolgreich gelöscht!")
                             .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -161,11 +261,13 @@ public class TeamInformationFragment extends Fragment {
                             })
                             .create();
                     alertDialog.show();
+                    MainActivity.userData.setTeamName("null");
+                    MainActivity.userData.setUserRole(MainActivity.USER);
                 } else {
-                    String reason = response.getString("reason");
+                    String reason = result.getString("reason");
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.error)
-                            .setMessage("Sie konnten das Team nicht verlassen!\n" + reason)
+                            .setMessage("Das Team konnte nicht gelöscht werden!\n" + reason)
                             .setNegativeButton("OK", null)
                             .create();
                     alertDialog.show();
@@ -180,95 +282,9 @@ public class TeamInformationFragment extends Fragment {
                 // TODO
                 e.printStackTrace();
             }
-            MainActivity.userData.setTeamName("null");
-            MainActivity.userData.setUserRole(MainActivity.USER);
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.error)
-                    .setMessage("Sie sind Administrator des Teams!\n " +
-                            "Das Team wäre nutzlos ohne Sie! Wenn Sie trotzdem das Team verlassen " +
-                            "wollen, bitte löschen Sie dieses nun.")
-                    .setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            deleteTeam();
-                        }
-                    })
-                    .create();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
-        }
-    }
-
-    private void goToUserProfile() {
-        UserTask userTask = new UserTask();
-        String[] params = new String[]{MainActivity.URL + "user",
-                MainActivity.userData.getUsername(),
-                MainActivity.userData.getToken()};
-        try {
-            JSONObject userData = userTask.execute(params).get();
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            Fragment newFragment;
-            if (userData != null) {
-                Bundle bundle = new Bundle();
-                bundle.putString("userData", userData.toString());
-                newFragment = new UserProfileFragment();
-                newFragment.setArguments(bundle);
-                fragmentTransaction.replace(R.id.containerFrame, newFragment);
-                fragmentTransaction.commit();
-            } else {
-                newFragment = new PinboardFragment();
-                fragmentTransaction.replace(R.id.containerFrame, newFragment);
-                fragmentTransaction.commit();
-            }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        }
-    }
-
-    private void deleteTeam() {
-        String[] params = new String[] {MainActivity.URL + "delete/team",
-                MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
-                MainActivity.userData.getTeamName()};
-        DeleteTeamTask deleteTeamTask = new DeleteTeamTask();
-        try {
-            JSONObject result = deleteTeamTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.success)
-                        .setMessage("Sie haben das Team erfolgreich gelöscht!")
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                               goToUserProfile();
-                            }
-                        })
-                        .create();
-                alertDialog.show();
-                MainActivity.userData.setTeamName("null");
-                MainActivity.userData.setUserRole(MainActivity.USER);
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Das Team konnte nicht gelöscht werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
-            }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
         }
     }
 }

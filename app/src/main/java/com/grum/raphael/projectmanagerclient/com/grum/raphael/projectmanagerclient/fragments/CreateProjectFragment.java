@@ -22,6 +22,7 @@ import android.widget.TimePicker;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.CreateProjectTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamMembersTask;
 
@@ -279,36 +280,41 @@ public class CreateProjectFragment extends Fragment {
 
     private List<String> getTeamMembers() {
         List<String> members = new ArrayList<>();
-        GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
-        String[] params = new String[] {MainActivity.URL + "team/members",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
-        JSONObject result;
-        try {
-            result = getTeamMembersTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray array = result.getJSONArray("members");
-                for (int i = 0; i < array.length(); i++) {
-                    JSONObject temp = array.getJSONObject(i);
-                    members.add(temp.getString("username"));
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
+            String[] params = new String[]{MainActivity.URL + "team/members",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
+            JSONObject result;
+            try {
+                result = getTeamMembersTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray array = result.getJSONArray("members");
+                    for (int i = 0; i < array.length(); i++) {
+                        JSONObject temp = array.getJSONObject(i);
+                        members.add(temp.getString("username"));
+                    }
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage(R.string.error_get_members)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage(R.string.error_get_members)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return members;
     }

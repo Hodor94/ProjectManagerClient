@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetTaskTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamsTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamsTasksTask;
@@ -65,37 +66,42 @@ public class TeamsTasksFragment extends Fragment {
                 String url = MainActivity.URL + "task";
                 String token = MainActivity.userData.getToken();
                 String[] params = new String[]{url, token, taskName, teamName};
-                GetTaskTask getTaskTask = new GetTaskTask();
-                try {
-                    JSONObject result = getTaskTask.execute(params).get();
-                    String success = result.getString("success");
-                    if (success.equals("true")) {
-                        JSONObject task = result.getJSONObject("task");
-                        String fetchedTaskName = task.getString("name" +
-                                "");
-                        String fetchedTaskDescription = task.getString("description");
-                        String fetchedTaskDeadline = task.getString("deadline");
-                        String fetchedTaskWorker = task.getString("worker");
-                        dealWithResponse(fetchedTaskName, fetchedTaskDescription,
-                                fetchedTaskDeadline, fetchedTaskWorker, rootView);
-                    } else {
-                        String reason = result.getString("reason");
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.error)
-                                .setMessage("Die Aufgabe konnte nicht geladen werden!\n" + reason)
-                                .setNegativeButton("OK", null)
-                                .create();
-                        alertDialog.show();
+                if (CheckInternet.isNetworkAvailable(getContext())) {
+                    GetTaskTask getTaskTask = new GetTaskTask();
+                    try {
+                        JSONObject result = getTaskTask.execute(params).get();
+                        String success = result.getString("success");
+                        if (success.equals("true")) {
+                            JSONObject task = result.getJSONObject("task");
+                            String fetchedTaskName = task.getString("name" +
+                                    "");
+                            String fetchedTaskDescription = task.getString("description");
+                            String fetchedTaskDeadline = task.getString("deadline");
+                            String fetchedTaskWorker = task.getString("worker");
+                            dealWithResponse(fetchedTaskName, fetchedTaskDescription,
+                                    fetchedTaskDeadline, fetchedTaskWorker, rootView);
+                        } else {
+                            String reason = result.getString("reason");
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.error)
+                                    .setMessage("Die Aufgabe konnte nicht geladen werden!\n" + reason)
+                                    .setNegativeButton("OK", null)
+                                    .create();
+                            alertDialog.show();
+                        }
+                    } catch (InterruptedException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        // TODO
+                        e.printStackTrace();
                     }
-                } catch (InterruptedException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO
-                    e.printStackTrace();
+                } else {
+                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+                    alertDialog.show();
                 }
             }
         });
@@ -143,37 +149,42 @@ public class TeamsTasksFragment extends Fragment {
 
     private List<String> getTasks() {
         List<String> tasks = new ArrayList<>();
-        GetTeamsTasksTask getTeamsTask = new GetTeamsTasksTask();
-        String[] params = new String[]{MainActivity.URL + "team/tasks",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
-                MainActivity.userData.getUsername()};
-        try {
-            JSONObject result = getTeamsTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray fetchedTasks = result.getJSONArray("tasks");
-                for (int i = 0; i < fetchedTasks.length(); i++) {
-                    tasks.add(fetchedTasks.getString(i));
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetTeamsTasksTask getTeamsTask = new GetTeamsTasksTask();
+            String[] params = new String[]{MainActivity.URL + "team/tasks",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
+                    MainActivity.userData.getUsername()};
+            try {
+                JSONObject result = getTeamsTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray fetchedTasks = result.getJSONArray("tasks");
+                    for (int i = 0; i < fetchedTasks.length(); i++) {
+                        tasks.add(fetchedTasks.getString(i));
+                    }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Aufgaben des Teams konnten nicht geladen werden!\n"
+                                    + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Aufgaben des Teams konnten nicht geladen werden!\n"
-                                + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return tasks;
     }

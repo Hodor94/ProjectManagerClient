@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteTaskTask;
 import com.grum.raphael.projectmanagerclient.tasks.EditTaskTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetMyTasksTask;
@@ -77,41 +78,46 @@ public class MyTasksFragment extends Fragment {
                 String token = MainActivity.userData.getToken();
                 String teamName = MainActivity.userData.getTeamName();
                 String[] params = new String[]{url, token, tempTaskName, teamName};
-                GetTaskTask getTaskTask = new GetTaskTask();
-                try {
-                    JSONObject result = getTaskTask.execute(params).get();
-                    String success = result.getString("success");
-                    if (success.equals("true")) {
-                        JSONObject task = result.getJSONObject("task");
-                        String fetchedTaskName = task.getString("name");
-                        String fetchedTaskDescription = task.getString("description");
-                        String fetchedTaskDeadline = task.getString("deadline");
-                        deadline = fetchedTaskDeadline;
-                        taskName = fetchedTaskName;
-                        taskDescription = fetchedTaskDescription;
-                        String fetchedTaskWorker = task.getString("worker");
-                        taskWorker = fetchedTaskWorker;
-                        dealWithResponse(fetchedTaskName, fetchedTaskDescription,
-                                fetchedTaskDeadline,
-                                fetchedTaskWorker, view);
-                    } else {
-                        String reason = result.getString("reason");
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.error)
-                                .setMessage("Die Aufgabe konnte nicht geladen werden!\n" + reason)
-                                .setNegativeButton("OK", null)
-                                .create();
-                        alertDialog.show();
+                if (CheckInternet.isNetworkAvailable(getContext())) {
+                    GetTaskTask getTaskTask = new GetTaskTask();
+                    try {
+                        JSONObject result = getTaskTask.execute(params).get();
+                        String success = result.getString("success");
+                        if (success.equals("true")) {
+                            JSONObject task = result.getJSONObject("task");
+                            String fetchedTaskName = task.getString("name");
+                            String fetchedTaskDescription = task.getString("description");
+                            String fetchedTaskDeadline = task.getString("deadline");
+                            deadline = fetchedTaskDeadline;
+                            taskName = fetchedTaskName;
+                            taskDescription = fetchedTaskDescription;
+                            String fetchedTaskWorker = task.getString("worker");
+                            taskWorker = fetchedTaskWorker;
+                            dealWithResponse(fetchedTaskName, fetchedTaskDescription,
+                                    fetchedTaskDeadline,
+                                    fetchedTaskWorker, view);
+                        } else {
+                            String reason = result.getString("reason");
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.error)
+                                    .setMessage("Die Aufgabe konnte nicht geladen werden!\n" + reason)
+                                    .setNegativeButton("OK", null)
+                                    .create();
+                            alertDialog.show();
+                        }
+                    } catch (InterruptedException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        // TODO
+                        e.printStackTrace();
                     }
-                } catch (InterruptedException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO
-                    e.printStackTrace();
+                } else {
+                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+                    alertDialog.show();
                 }
             }
         });
@@ -169,57 +175,62 @@ public class MyTasksFragment extends Fragment {
         deleteTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (taskWorker.equals(MainActivity.userData.getUsername())) {
-                    String[] params = new String[]{MainActivity.URL + "delete/task",
-                            MainActivity.userData.getToken(), taskName, MainActivity.userData.getTeamName(),
-                            MainActivity.userData.getUsername()};
-                    DeleteTaskTask deleteTaskTask = new DeleteTaskTask();
-                    try {
-                        JSONObject result = deleteTaskTask.execute(params).get();
-                        String success = result.getString("success");
-                        if (success.equals("true")) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.success)
-                                    .setMessage("Die Aufgabe wurde erfolgreich gelöscht!")
-                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Fragment taskFragment = new TaskFragment();
-                                            FragmentTransaction transaction
-                                                    = getFragmentManager().beginTransaction();
-                                            transaction.replace(R.id.containerFrame, taskFragment);
-                                            transaction.commit();
-                                            popupWindow.dismiss();
-                                        }
-                                    })
-                                    .create();
-                            alertDialog.show();
-                        } else {
-                            String reason = result.getString("reason");
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.error)
-                                    .setMessage("Die Aufgabe konnte nicht gelöscht werden!\n"
-                                            + reason)
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
+                if (CheckInternet.isNetworkAvailable(getContext())) {
+                    if (taskWorker.equals(MainActivity.userData.getUsername())) {
+                        String[] params = new String[]{MainActivity.URL + "delete/task",
+                                MainActivity.userData.getToken(), taskName, MainActivity.userData.getTeamName(),
+                                MainActivity.userData.getUsername()};
+                        DeleteTaskTask deleteTaskTask = new DeleteTaskTask();
+                        try {
+                            JSONObject result = deleteTaskTask.execute(params).get();
+                            String success = result.getString("success");
+                            if (success.equals("true")) {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.success)
+                                        .setMessage("Die Aufgabe wurde erfolgreich gelöscht!")
+                                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Fragment taskFragment = new TaskFragment();
+                                                FragmentTransaction transaction
+                                                        = getFragmentManager().beginTransaction();
+                                                transaction.replace(R.id.containerFrame, taskFragment);
+                                                transaction.commit();
+                                                popupWindow.dismiss();
+                                            }
+                                        })
+                                        .create();
+                                alertDialog.show();
+                            } else {
+                                String reason = result.getString("reason");
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error)
+                                        .setMessage("Die Aufgabe konnte nicht gelöscht werden!\n"
+                                                + reason)
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } catch (InterruptedException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            // TODO
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        // TODO
-                        e.printStackTrace();
+                    } else {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage(getResources().getString(R.string.no_rights))
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
                     }
                 } else {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage(getResources().getString(R.string.no_rights))
-                            .setNegativeButton("OK", null)
-                            .create();
+                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
                     alertDialog.show();
                 }
             }
@@ -231,66 +242,71 @@ public class MyTasksFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 info.setText("");
-                if (taskWorker.equals(MainActivity.userData.getUsername())) {
-                    if (validateInput(taskDescription, deadline)) {
-                        if (validateDeadline(deadline)) {
-                            EditTaskTask editTaskTask = new EditTaskTask();
-                            String[] params = new String[]{MainActivity.URL + "edit/task",
-                                    MainActivity.userData.getToken(), taskName, taskDescription, deadline,
-                                    MainActivity.userData.getTeamName(), MainActivity.userData.getUsername()};
-                            try {
-                                JSONObject result = editTaskTask.execute(params).get();
-                                String success = result.getString("success");
-                                if (success.equals("true")) {
-                                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                            .setTitle(R.string.success)
-                                            .setMessage("Die Aufgabe wurde erfolgreich editiert!")
-                                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    Fragment taskFragment = new TaskFragment();
-                                                    FragmentTransaction transaction
-                                                            = getFragmentManager().beginTransaction();
-                                                    transaction.replace(R.id.containerFrame, taskFragment);
-                                                    transaction.commit();
-                                                    popupWindow.dismiss();
-                                                }
-                                            })
-                                            .create();
-                                    alertDialog.show();
-                                } else {
-                                    String reason = result.getString("reason");
-                                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                            .setTitle(R.string.error)
-                                            .setMessage("Die Aufgabe konnte nicht editiert werden!\n"
-                                                    + reason)
-                                            .setNegativeButton("OK", null)
-                                            .create();
-                                    alertDialog.show();
+                if (CheckInternet.isNetworkAvailable(getContext())) {
+                    if (taskWorker.equals(MainActivity.userData.getUsername())) {
+                        if (validateInput(taskDescription, deadline)) {
+                            if (validateDeadline(deadline)) {
+                                EditTaskTask editTaskTask = new EditTaskTask();
+                                String[] params = new String[]{MainActivity.URL + "edit/task",
+                                        MainActivity.userData.getToken(), taskName, taskDescription, deadline,
+                                        MainActivity.userData.getTeamName(), MainActivity.userData.getUsername()};
+                                try {
+                                    JSONObject result = editTaskTask.execute(params).get();
+                                    String success = result.getString("success");
+                                    if (success.equals("true")) {
+                                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                                .setTitle(R.string.success)
+                                                .setMessage("Die Aufgabe wurde erfolgreich editiert!")
+                                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        Fragment taskFragment = new TaskFragment();
+                                                        FragmentTransaction transaction
+                                                                = getFragmentManager().beginTransaction();
+                                                        transaction.replace(R.id.containerFrame, taskFragment);
+                                                        transaction.commit();
+                                                        popupWindow.dismiss();
+                                                    }
+                                                })
+                                                .create();
+                                        alertDialog.show();
+                                    } else {
+                                        String reason = result.getString("reason");
+                                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                                .setTitle(R.string.error)
+                                                .setMessage("Die Aufgabe konnte nicht editiert werden!\n"
+                                                        + reason)
+                                                .setNegativeButton("OK", null)
+                                                .create();
+                                        alertDialog.show();
+                                    }
+                                } catch (InterruptedException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                } catch (JSONException e) {
+                                    // TODO
+                                    e.printStackTrace();
                                 }
-                            } catch (InterruptedException e) {
-                                // TODO
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                // TODO
-                                e.printStackTrace();
-                            } catch (JSONException e) {
-                                // TODO
-                                e.printStackTrace();
+                            } else {
+                                info.setText(getResources().getString(R.string.error_deadline));
+
                             }
                         } else {
-                            info.setText(getResources().getString(R.string.error_deadline));
-
+                            info.setText(getResources().getString(R.string.error_fields_filled_wrong));
                         }
                     } else {
-                        info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage(getResources().getString(R.string.no_rights))
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
                     }
                 } else {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage(getResources().getString(R.string.no_rights))
-                            .setNegativeButton("OK", null)
-                            .create();
+                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
                     alertDialog.show();
                 }
             }
@@ -381,36 +397,41 @@ public class MyTasksFragment extends Fragment {
 
     private List<String> getMyTasks() {
         List<String> myTasks = new ArrayList<>();
-        GetMyTasksTask getMyTasksTask = new GetMyTasksTask();
-        String[] params = new String[]{MainActivity.URL + "user/tasks",
-                MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
-        try {
-            JSONObject result = getMyTasksTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray tasks = result.getJSONArray("tasks");
-                for (int i = 0; i < tasks.length(); i++) {
-                    String task = tasks.getString(i);
-                    myTasks.add(task);
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetMyTasksTask getMyTasksTask = new GetMyTasksTask();
+            String[] params = new String[]{MainActivity.URL + "user/tasks",
+                    MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
+            try {
+                JSONObject result = getMyTasksTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray tasks = result.getJSONArray("tasks");
+                    for (int i = 0; i < tasks.length(); i++) {
+                        String task = tasks.getString(i);
+                        myTasks.add(task);
+                    }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Ihre Aufgaben konnten nicht geladen werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Ihre Aufgaben konnten nicht geladen werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return myTasks;
     }

@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetUsersTask;
 import com.grum.raphael.projectmanagerclient.tasks.InviteUserTask;
 import com.grum.raphael.projectmanagerclient.tasks.UserTask;
@@ -51,73 +52,78 @@ public class SearchUsersFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_search_users, container, false);
         list = (ListView) rootView.findViewById(R.id.list_users);
         search = (EditText) rootView.findViewById(R.id.filter_users);
-        GetUsersTask getUsersTask = new GetUsersTask();
-        try {
-            final JSONObject fetchedData
-                    = getUsersTask.execute(new String[]{MainActivity.URL + "users"}).get();
-            String success = fetchedData.getString("success");
-            if (success.equals("true")) {
-                String fetchedUsers = fetchedData.getString("users");
-                fetchedUsers = fetchedUsers.substring(1, fetchedUsers.length() - 1);
-                userData = fetchedUsers.split(",");
-                userData = removeOwnUsername(userData);
-                if (userData.length != 0) {
-                    // Fill list with items
-                    arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                            R.id.list_element, userData);
-                    arrayAdapter.notifyDataSetChanged();
-                    list.setAdapter(arrayAdapter);
-                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            String username = (String) list.getAdapter().getItem(position);
-                            String url = MainActivity.URL + "user";
-                            String token = MainActivity.userData.getToken();
-                            String[] params = new String[] {url, username, token};
-                            UserTask userTask = new UserTask();
-                            try {
-                                JSONObject fetchedUserData = userTask.execute(params).get();
-                                dealWithResponse(fetchedUserData, rootView);
-                            } catch (InterruptedException e) {
-                                // TODO
-                                e.printStackTrace();
-                            } catch (ExecutionException e) {
-                                // TODO
-                                e.printStackTrace();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetUsersTask getUsersTask = new GetUsersTask();
+            try {
+                final JSONObject fetchedData
+                        = getUsersTask.execute(new String[]{MainActivity.URL + "users"}).get();
+                String success = fetchedData.getString("success");
+                if (success.equals("true")) {
+                    String fetchedUsers = fetchedData.getString("users");
+                    fetchedUsers = fetchedUsers.substring(1, fetchedUsers.length() - 1);
+                    userData = fetchedUsers.split(",");
+                    userData = removeOwnUsername(userData);
+                    if (userData.length != 0) {
+                        // Fill list with items
+                        arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
+                                R.id.list_element, userData);
+                        arrayAdapter.notifyDataSetChanged();
+                        list.setAdapter(arrayAdapter);
+                        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                String username = (String) list.getAdapter().getItem(position);
+                                String url = MainActivity.URL + "user";
+                                String token = MainActivity.userData.getToken();
+                                String[] params = new String[]{url, username, token};
+                                UserTask userTask = new UserTask();
+                                try {
+                                    JSONObject fetchedUserData = userTask.execute(params).get();
+                                    dealWithResponse(fetchedUserData, rootView);
+                                } catch (InterruptedException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    });
-                    search.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                        });
+                        search.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                        }
+                            }
 
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-                            arrayAdapter.getFilter().filter(s);
-                        }
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                arrayAdapter.getFilter().filter(s);
+                            }
 
-                        @Override
-                        public void afterTextChanged(Editable s) {
+                            @Override
+                            public void afterTextChanged(Editable s) {
 
-                        }
-                    });
+                            }
+                        });
+                    } else {
+                        // TODO
+                    }
                 } else {
                     // TODO
                 }
-            } else {
+            } catch (InterruptedException e) {
                 // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return rootView;
     }
@@ -190,47 +196,52 @@ public class SearchUsersFragment extends Fragment {
         String token = MainActivity.userData.getToken();
         String teamName = MainActivity.userData.getTeamName();
         String url = MainActivity.URL + "invite";
-        if (teamName != null && !(teamName.equals(""))) {
-            String[] params = new String[] {url, token, usernameToInvite, teamName};
-            InviteUserTask inviteUserTask = new InviteUserTask();
-            try {
-                JSONObject response = inviteUserTask.execute(params).get();
-                String success = response.getString("success");
-                if (success.equals("true")) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage("Sie haben den User " + usernameToInvite + " erfolgreich " +
-                                    "eingeladen.")
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
-                } else {
-                    String reason = response.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Der User " + usernameToInvite + " konnte nicht eingeladen "
-                                    + "werden. " + reason)
-                            .setNegativeButton("Ok", null)
-                            .create();
-                    alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (teamName != null && !(teamName.equals(""))) {
+                String[] params = new String[]{url, token, usernameToInvite, teamName};
+                InviteUserTask inviteUserTask = new InviteUserTask();
+                try {
+                    JSONObject response = inviteUserTask.execute(params).get();
+                    String success = response.getString("success");
+                    if (success.equals("true")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage("Sie haben den User " + usernameToInvite + " erfolgreich " +
+                                        "eingeladen.")
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    } else {
+                        String reason = response.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage("Der User " + usernameToInvite + " konnte nicht eingeladen "
+                                        + "werden. " + reason)
+                                .setNegativeButton("Ok", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error)
+                        .setMessage("Sie sind in keinem Team! Sie können nur als Team-Administrator " +
+                                "andere User zu Ihrem Team einladen!")
+                        .setNegativeButton("Ok", null)
+                        .create();
+                alertDialog.show();
             }
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.error)
-                    .setMessage("Sie sind in keinem Team! Sie können nur als Team-Administrator " +
-                            "andere User zu Ihrem Team einladen!")
-                    .setNegativeButton("Ok", null)
-                    .create();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
     }

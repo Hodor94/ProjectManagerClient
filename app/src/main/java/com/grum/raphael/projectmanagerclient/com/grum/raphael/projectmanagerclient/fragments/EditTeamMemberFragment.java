@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.EditTeamMemberTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegistersTask;
 
@@ -85,96 +86,106 @@ public class EditTeamMemberFragment extends Fragment {
     }
 
     private ArrayList<String> getRegisters() {
-        String[] params = new String[]{MainActivity.URL + "team/registers",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
-        GetRegistersTask getRegistersTask = new GetRegistersTask();
-        JSONObject result;
         ArrayList<String> registerNames = new ArrayList<>();
-        try {
-            result = getRegistersTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray registers = result.getJSONArray("registers");
-                if (registers.length() != 0) {
-                    for (int i = 0; i < registers.length(); i++) {
-                        JSONObject tempJsonObject = registers.getJSONObject(i);
-                        this.registers.add(tempJsonObject);
-                        registerNames.add(tempJsonObject.getString("registerName"));
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "team/registers",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
+            GetRegistersTask getRegistersTask = new GetRegistersTask();
+            JSONObject result;
+            try {
+                result = getRegistersTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray registers = result.getJSONArray("registers");
+                    if (registers.length() != 0) {
+                        for (int i = 0; i < registers.length(); i++) {
+                            JSONObject tempJsonObject = registers.getJSONObject(i);
+                            this.registers.add(tempJsonObject);
+                            registerNames.add(tempJsonObject.getString("registerName"));
 
+                        }
                     }
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Gruppen des Teams konnten nicht abgefragt werden!")
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    int index = getActivity().getFragmentManager()
+                                            .getBackStackEntryCount() - 1;
+                                    FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(index);
+                                    String tag = backEntry.getName();
+                                    Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+                                    FragmentTransaction fragmentTransaction
+                                            = getFragmentManager().beginTransaction();
+                                    fragmentTransaction.replace(R.id.pager_team_profile, fragment);
+                                    fragmentTransaction.commit();
+                                }
+                            })
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Gruppen des Teams konnten nicht abgefragt werden!")
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                int index = getActivity().getFragmentManager()
-                                        .getBackStackEntryCount() - 1;
-                                FragmentManager.BackStackEntry backEntry = getFragmentManager().getBackStackEntryAt(index);
-                                String tag = backEntry.getName();
-                                Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-                                FragmentTransaction fragmentTransaction
-                                        = getFragmentManager().beginTransaction();
-                                fragmentTransaction.replace(R.id.pager_team_profile, fragment);
-                                fragmentTransaction.commit();
-                            }
-                        })
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            android.app.AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return registerNames;
     }
 
     private void editTeamMember(String username) {
-        registerName = dropDownRegsiters.getSelectedItem().toString();
-        String[] params = new String[] {MainActivity.URL + "member/edit",
-                MainActivity.userData.getToken(), username, registerName,
-                MainActivity.userData.getUsername(), MainActivity.userData.getTeamName()};
-        EditTeamMemberTask editTeamMemberTask = new EditTeamMemberTask();
-        try {
-            JSONObject result = editTeamMemberTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.success)
-                        .setMessage("Sie haben die Daten des Team-Mitglieds erfolgreich bearbeitet!")
-                        .setNegativeButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FragmentTransaction transaction
-                                                = getFragmentManager().beginTransaction();
-                                        transaction.replace(R.id.pager_team_profile,
-                                                new TeamMembersFragment());
-                                        transaction.commit();
-                                    }
-                                })
-                        .create();
-                alertDialog.show();
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Das Team-Mitglied konnte nicht bearbeitet werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            registerName = dropDownRegsiters.getSelectedItem().toString();
+            String[] params = new String[]{MainActivity.URL + "member/edit",
+                    MainActivity.userData.getToken(), username, registerName,
+                    MainActivity.userData.getUsername(), MainActivity.userData.getTeamName()};
+            EditTeamMemberTask editTeamMemberTask = new EditTeamMemberTask();
+            try {
+                JSONObject result = editTeamMemberTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.success)
+                            .setMessage("Sie haben die Daten des Team-Mitglieds erfolgreich bearbeitet!")
+                            .setNegativeButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            FragmentTransaction transaction
+                                                    = getFragmentManager().beginTransaction();
+                                            transaction.replace(R.id.pager_team_profile,
+                                                    new TeamMembersFragment());
+                                            transaction.commit();
+                                        }
+                                    })
+                            .create();
+                    alertDialog.show();
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Das Team-Mitglied konnte nicht bearbeitet werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            android.app.AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 }

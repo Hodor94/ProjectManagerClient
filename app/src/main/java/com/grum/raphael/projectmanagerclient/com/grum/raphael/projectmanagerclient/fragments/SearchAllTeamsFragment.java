@@ -32,6 +32,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamsTask;
 import com.grum.raphael.projectmanagerclient.tasks.RequestTeamMembershipTask;
 import com.grum.raphael.projectmanagerclient.tasks.TeamTask;
@@ -232,53 +233,58 @@ public class SearchAllTeamsFragment extends Fragment {
     }
 
     private void requestTeamMembership() {
-        if (MainActivity.userData.getTeamName().equals("null")) {
-            String url = MainActivity.URL + "request";
-            String token = MainActivity.userData.getToken();
-            String teamName = teamNameToRequest.getText().toString();
-            String username = MainActivity.userData.getUsername();
-            String[] params = new String[]{url, token, teamName, username};
-            RequestTeamMembershipTask teamMembershipTask = new RequestTeamMembershipTask();
-            try {
-                JSONObject result = teamMembershipTask.execute(params).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage("Die Anfrage an das Team " + teamName + " wurde erfolgreich " +
-                                    "verschickt!")
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (MainActivity.userData.getTeamName().equals("null")) {
+                String url = MainActivity.URL + "request";
+                String token = MainActivity.userData.getToken();
+                String teamName = teamNameToRequest.getText().toString();
+                String username = MainActivity.userData.getUsername();
+                String[] params = new String[]{url, token, teamName, username};
+                RequestTeamMembershipTask teamMembershipTask = new RequestTeamMembershipTask();
+                try {
+                    JSONObject result = teamMembershipTask.execute(params).get();
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage("Die Anfrage an das Team " + teamName + " wurde erfolgreich " +
+                                        "verschickt!")
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
 
-                } else {
-                    String reason = result.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Die Anfrage an das Team " + teamName + " konnte nicht " +
-                                    "durchgeführt werden! \n " + reason)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+                    } else {
+                        String reason = result.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage("Die Anfrage an das Team " + teamName + " konnte nicht " +
+                                        "durchgeführt werden! \n " + reason)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error)
+                        .setMessage("Sie sind schon in einem Team! " +
+                                "\nSie können erst wieder einem Team beitreten, " +
+                                "wenn Sie kein Teammitglied mehr sind!")
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
             }
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.error)
-                    .setMessage("Sie sind schon in einem Team! " +
-                            "\nSie können erst wieder einem Team beitreten, " +
-                            "wenn Sie kein Teammitglied mehr sind!")
-                    .setNegativeButton("OK", null)
-                    .create();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
     }

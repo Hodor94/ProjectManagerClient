@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.EditRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegisterTask;
@@ -82,54 +83,59 @@ public class EditRegisterFragment extends Fragment {
     }
 
     private void deleteRegister() {
-        if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
-            String[] params = new String[]{MainActivity.URL + "delete/register",
-                    MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
-                    registerName, MainActivity.userData.getTeamName()};
-            DeleteRegisterTask deleteRegisterTask = new DeleteRegisterTask();
-            try {
-                JSONObject result = deleteRegisterTask.execute(params).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage("Die Gruppe " + registerName + " wurde erfolgreich gelöscht")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    Fragment newFragment = new RegisterFragment();
-                                    FragmentTransaction transaction = getFragmentManager()
-                                            .beginTransaction();
-                                    transaction.replace(R.id.containerFrame, newFragment);
-                                    transaction.commit();
-                                }
-                            }).create();
-                    alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                String[] params = new String[]{MainActivity.URL + "delete/register",
+                        MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                        registerName, MainActivity.userData.getTeamName()};
+                DeleteRegisterTask deleteRegisterTask = new DeleteRegisterTask();
+                try {
+                    JSONObject result = deleteRegisterTask.execute(params).get();
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage("Die Gruppe " + registerName + " wurde erfolgreich gelöscht")
+                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Fragment newFragment = new RegisterFragment();
+                                        FragmentTransaction transaction = getFragmentManager()
+                                                .beginTransaction();
+                                        transaction.replace(R.id.containerFrame, newFragment);
+                                        transaction.commit();
+                                    }
+                                }).create();
+                        alertDialog.show();
 
-                } else {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Die Gruppe konnte nicht gelöscht werden!")
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+                    } else {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage("Die Gruppe konnte nicht gelöscht werden!")
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error)
+                        .setMessage(getResources().getString(R.string.no_rights))
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
             }
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.error)
-                    .setMessage(getResources().getString(R.string.no_rights))
-                    .setNegativeButton("OK", null)
-                    .create();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
     }
@@ -149,114 +155,124 @@ public class EditRegisterFragment extends Fragment {
     }
 
     private JSONObject getRegister(String registerName) {
-        String[] params = new String[]{MainActivity.URL + "register",
-                MainActivity.userData.getToken(), registerName, MainActivity.userData.getTeamName()};
-        JSONObject result;
-        GetRegisterTask getRegisterTask = new GetRegisterTask();
-        try {
-            JSONObject response = getRegisterTask.execute(params).get();
-            String success = response.getString("success");
-            if (success.equals("true")) {
-                result = response.getJSONObject("register");
-            } else {
+        JSONObject result = new JSONObject();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "register",
+                    MainActivity.userData.getToken(), registerName, MainActivity.userData.getTeamName()};
+            GetRegisterTask getRegisterTask = new GetRegisterTask();
+            try {
+                JSONObject response = getRegisterTask.execute(params).get();
+                String success = response.getString("success");
+                if (success.equals("true")) {
+                    result = response.getJSONObject("register");
+                } else {
+                    // TODO
+                    result = null;
+                }
+            } catch (InterruptedException e) {
                 // TODO
                 result = null;
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                result = null;
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                result = null;
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            result = null;
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            result = null;
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            result = null;
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return result;
     }
 
     private void editRegister(String registerName, int color) {
-        if (!registerName.equals(getResources().getString(R.string.blank))) {
-            info.setText("");
-            info.setVisibility(View.GONE);
-            if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
-                String[] params = new String[]{MainActivity.URL + "edit/register",
-                        MainActivity.userData.getToken(), registerName, "" + color,
-                        MainActivity.userData.getTeamName()};
-                if (validateInput(params)) {
-                    EditRegisterTask editRegisterTask = new EditRegisterTask();
-                    try {
-                        JSONObject result = editRegisterTask.execute(params).get();
-                        String success = result.getString("success");
-                        if (success.equals("true")) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.success)
-                                    .setMessage("Die Gruppe " + registerName + " wurde erfolgreich " +
-                                            "aktualisiert!")
-                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            String[] paramsTeam = new String[]
-                                                    {MainActivity.userData.getToken(), MainActivity.URL + "team",
-                                                            MainActivity.userData.getTeamName()};
-                                            TeamTask teamTask = new TeamTask();
-                                            Bundle bundle = new Bundle();
-                                            try {
-                                                JSONObject fetchedTeamData = teamTask.execute(paramsTeam).get();
-                                                bundle.putString("teamData", fetchedTeamData.toString());
-                                            } catch (InterruptedException e) {
-                                                // TODO
-                                                e.printStackTrace();
-                                            } catch (ExecutionException e) {
-                                                // TODO
-                                                e.printStackTrace();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (!registerName.equals(getResources().getString(R.string.blank))) {
+                info.setText("");
+                info.setVisibility(View.GONE);
+                if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                    String[] params = new String[]{MainActivity.URL + "edit/register",
+                            MainActivity.userData.getToken(), registerName, "" + color,
+                            MainActivity.userData.getTeamName()};
+                    if (validateInput(params)) {
+                        EditRegisterTask editRegisterTask = new EditRegisterTask();
+                        try {
+                            JSONObject result = editRegisterTask.execute(params).get();
+                            String success = result.getString("success");
+                            if (success.equals("true")) {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.success)
+                                        .setMessage("Die Gruppe " + registerName + " wurde erfolgreich " +
+                                                "aktualisiert!")
+                                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                String[] paramsTeam = new String[]
+                                                        {MainActivity.userData.getToken(), MainActivity.URL + "team",
+                                                                MainActivity.userData.getTeamName()};
+                                                TeamTask teamTask = new TeamTask();
+                                                Bundle bundle = new Bundle();
+                                                try {
+                                                    JSONObject fetchedTeamData = teamTask.execute(paramsTeam).get();
+                                                    bundle.putString("teamData", fetchedTeamData.toString());
+                                                } catch (InterruptedException e) {
+                                                    // TODO
+                                                    e.printStackTrace();
+                                                } catch (ExecutionException e) {
+                                                    // TODO
+                                                    e.printStackTrace();
+                                                }
+                                                Fragment newFragment = new TeamProfileFragment();
+                                                newFragment.setArguments(bundle);
+                                                FragmentTransaction transaction
+                                                        = getFragmentManager().beginTransaction();
+                                                transaction.replace(R.id.containerFrame, newFragment);
+                                                transaction.commit();
                                             }
-                                            Fragment newFragment = new TeamProfileFragment();
-                                            newFragment.setArguments(bundle);
-                                            FragmentTransaction transaction
-                                                    = getFragmentManager().beginTransaction();
-                                            transaction.replace(R.id.containerFrame, newFragment);
-                                            transaction.commit();
-                                        }
-                                    })
-                                    .create();
-                            alertDialog.show();
-                        } else {
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.error)
-                                    .setMessage("Die Gruppe konnte nicht erfolgreich editiert werden!")
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
+                                        })
+                                        .create();
+                                alertDialog.show();
+                            } else {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error)
+                                        .setMessage("Die Gruppe konnte nicht erfolgreich editiert werden!")
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } catch (InterruptedException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            // TODO
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        // TODO
-                        e.printStackTrace();
+                    } else {
+                        info.setText(R.string.error_create_team_input);
+                        info.setVisibility(View.VISIBLE);
                     }
                 } else {
-                    info.setText(R.string.error_create_team_input);
-                    info.setVisibility(View.VISIBLE);
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Sie haben keine Berechtigung für diese Aktion!")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
             } else {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Sie haben keine Berechtigung für diese Aktion!")
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+                info.setText(R.string.impossible_register_editing);
+                info.setVisibility(View.VISIBLE);
             }
         } else {
-            info.setText(R.string.impossible_register_editing);
-            info.setVisibility(View.VISIBLE);
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 
@@ -274,7 +290,8 @@ public class EditRegisterFragment extends Fragment {
 
     private void openColorPickerDialog(boolean AlphaSupport) {
 
-        AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(getActivity(), defaultColor, AlphaSupport, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+        AmbilWarnaDialog ambilWarnaDialog = new AmbilWarnaDialog(getActivity(),
+                defaultColor, AlphaSupport, new AmbilWarnaDialog.OnAmbilWarnaListener() {
             @Override
             public void onOk(AmbilWarnaDialog ambilWarnaDialog, int color) {
                 defaultColor = color;

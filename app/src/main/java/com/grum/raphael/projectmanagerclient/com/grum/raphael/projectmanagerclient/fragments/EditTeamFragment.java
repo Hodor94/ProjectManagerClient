@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.EditTeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.TeamTask;
 
@@ -27,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 public class EditTeamFragment extends Fragment {
 
+    private TextView info;
     private TextView teamName;
     private EditText teamDescription;
     private TextView admin;
@@ -38,6 +40,7 @@ public class EditTeamFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Bundle bundle = getArguments();
         View rootView = inflater.inflate(R.layout.fragment_edit_team, container, false);
+        info = (TextView) rootView.findViewById(R.id.edit_team_info);
         teamName = (TextView) rootView.findViewById(R.id.edit_team_profile_name);
         teamDescription = (EditText) rootView.findViewById(R.id.edit_team_profile_description);
         admin = (TextView) rootView.findViewById(R.id.edit_team_profile_admin);
@@ -77,48 +80,53 @@ public class EditTeamFragment extends Fragment {
     }
 
     public void editTeam() {
-
-        EditTeamTask editTeamTask = new EditTeamTask();
-        String teamName = getTeamName().getText().toString();
-        String teamDescription = getTeamDescription().getText().toString();
-        String admin = getAdmin().getText().toString();
-        if (teamName != null && !(teamName.equals("")) && teamDescription != null
-                && !(teamDescription.equals("")) && admin != null
-                && !(admin.equals(""))) {
-            String[] params = new String[]{MainActivity.URL + "edit/team",
-                    MainActivity.userData.getToken(), teamName, teamDescription, admin};
-            try {
-                JSONObject result = editTeamTask.execute(params).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    // TODO open team profile
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage(R.string.team_edited)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
-                } else {
-                    String reason = result.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage(reason)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+        info.setText("");
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            EditTeamTask editTeamTask = new EditTeamTask();
+            String teamName = getTeamName().getText().toString();
+            String teamDescription = getTeamDescription().getText().toString();
+            String admin = getAdmin().getText().toString();
+            if (teamName != null && !(teamName.equals("")) && teamDescription != null
+                    && !(teamDescription.equals("")) && admin != null
+                    && !(admin.equals(""))) {
+                String[] params = new String[]{MainActivity.URL + "edit/team",
+                        MainActivity.userData.getToken(), teamName, teamDescription, admin};
+                try {
+                    JSONObject result = editTeamTask.execute(params).get();
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        // TODO open team profile
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage(R.string.team_edited)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    } else {
+                        String reason = result.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage(reason)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                info.setText(getResources().getString(R.string.error_fields_filled_wrong));
             }
         } else {
-            // TODO info alert
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 

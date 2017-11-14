@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.CreateRegisterTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegistersTask;
 
@@ -188,52 +189,57 @@ public class RegisterFragment extends Fragment {
     }
 
     private void createRegister() {
-        if (!name.equals("") && name != null) {
-            info.setVisibility(View.GONE);
-            CreateRegisterTask createRegisterTask = new CreateRegisterTask();
-            String[] params = new String[]{MainActivity.URL + "create/register",
-                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
-                    name, MainActivity.userData.getUsername(), "" + defaultColor};
-            try {
-                JSONObject result = createRegisterTask.execute(params).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage("Die Gruppe wurde erfolgreich angelegt!")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    FragmentTransaction transaction
-                                            = getFragmentManager().beginTransaction();
-                                    transaction.replace(R.id.pager_team_profile,
-                                            new RegisterFragment());
-                                    transaction.commit();
-                                }
-                            }).create();
-                    alertDialog.show();
-                } else {
-                    String reason = result.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Die Gruppe konnte nicht angelegt werden!\n"
-                                    + reason)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (!name.equals("") && name != null) {
+                info.setVisibility(View.GONE);
+                CreateRegisterTask createRegisterTask = new CreateRegisterTask();
+                String[] params = new String[]{MainActivity.URL + "create/register",
+                        MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
+                        name, MainActivity.userData.getUsername(), "" + defaultColor};
+                try {
+                    JSONObject result = createRegisterTask.execute(params).get();
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        final AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.success)
+                                .setMessage("Die Gruppe wurde erfolgreich angelegt!")
+                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        FragmentTransaction transaction
+                                                = getFragmentManager().beginTransaction();
+                                        transaction.replace(R.id.pager_team_profile,
+                                                new RegisterFragment());
+                                        transaction.commit();
+                                    }
+                                }).create();
+                        alertDialog.show();
+                    } else {
+                        String reason = result.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage("Die Gruppe konnte nicht angelegt werden!\n"
+                                        + reason)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                info.setText(R.string.error_create_team_input);
+                info.setVisibility(View.VISIBLE);
             }
         } else {
-            info.setText(R.string.error_create_team_input);
-            info.setVisibility(View.VISIBLE);
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 

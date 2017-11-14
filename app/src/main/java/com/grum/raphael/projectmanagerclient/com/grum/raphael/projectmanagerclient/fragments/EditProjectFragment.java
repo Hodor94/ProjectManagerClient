@@ -20,6 +20,7 @@ import android.widget.TimePicker;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteProjectTask;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteTeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.EditProjectTask;
@@ -170,82 +171,27 @@ public class EditProjectFragment extends Fragment {
     }
 
     private void deleteProject() {
-        if (manager.equals(MainActivity.userData.getUsername())) {
-            String[] params = new String[] {MainActivity.URL + "delete/project",
-                    MainActivity.userData.getToken(), projectName,
-                    MainActivity.userData.getTeamName(), MainActivity.userData.getUsername()};
-            DeleteProjectTask deleteProjectTask = new DeleteProjectTask();
-            try {
-                JSONObject result = deleteProjectTask.execute(params).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.success)
-                            .setMessage("Sie haben das Projekt " + projectName
-                                    + " erfolgreich gelöscht!")
-                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                    FragmentTransaction transaction = getFragmentManager()
-                                            .beginTransaction();
-                                    transaction.replace(R.id.containerFrame, new ProjectsFragment());
-                                    transaction.commit();
-                                }
-                            })
-                            .create();
-                    alertDialog.show();
-                } else {
-                    String reason = result.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage("Das Projekt " + projectName
-                                    + " konnte nicht gelöscht werden!\n" + reason)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
-                }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
-            }
-        } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.error)
-                    .setMessage(getResources().getString(R.string.no_rights))
-                    .setNegativeButton("OK", null)
-                    .create();
-            alertDialog.show();
-        }
-    }
-
-    private void editProject() {
-        info.setText("");
-        deadline = concatenateDeadline(deadline, time);
-        if (description != null && !(description.equals("")) && deadline != null
-                && !(deadline.equals(""))) {
-            if (validateDeadline()) {
-                description = projectDescriptionTextView.getText().toString();
-                String[] params = new String[]{MainActivity.URL + "edit/project",
-                        MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
-                        projectName, MainActivity.userData.getTeamName(), description, deadline};
-                EditProjectTask editProjectTask = new EditProjectTask();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (manager.equals(MainActivity.userData.getUsername())) {
+                String[] params = new String[]{MainActivity.URL + "delete/project",
+                        MainActivity.userData.getToken(), projectName,
+                        MainActivity.userData.getTeamName(), MainActivity.userData.getUsername()};
+                DeleteProjectTask deleteProjectTask = new DeleteProjectTask();
                 try {
-                    JSONObject result = editProjectTask.execute(params).get();
+                    JSONObject result = deleteProjectTask.execute(params).get();
                     String success = result.getString("success");
                     if (success.equals("true")) {
                         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                                 .setTitle(R.string.success)
-                                .setMessage("Sie haben das Projekt erfolgreich editiert!")
+                                .setMessage("Sie haben das Projekt " + projectName
+                                        + " erfolgreich gelöscht!")
                                 .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        leavePage();
+                                        FragmentTransaction transaction = getFragmentManager()
+                                                .beginTransaction();
+                                        transaction.replace(R.id.containerFrame, new ProjectsFragment());
+                                        transaction.commit();
                                     }
                                 })
                                 .create();
@@ -254,7 +200,8 @@ public class EditProjectFragment extends Fragment {
                         String reason = result.getString("reason");
                         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                                 .setTitle(R.string.error)
-                                .setMessage("Das Projekt konnte nicht bearbeitet werden!\n" + reason)
+                                .setMessage("Das Projekt " + projectName
+                                        + " konnte nicht gelöscht werden!\n" + reason)
                                 .setNegativeButton("OK", null)
                                 .create();
                         alertDialog.show();
@@ -270,10 +217,74 @@ public class EditProjectFragment extends Fragment {
                     e.printStackTrace();
                 }
             } else {
-                info. setText(getResources().getString(R.string.error_deadline));
+                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.error)
+                        .setMessage(getResources().getString(R.string.no_rights))
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
             }
         } else {
-            info.setText(R.string.error_fields_empty);
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
+        }
+    }
+
+    private void editProject() {
+        info.setText("");
+        deadline = concatenateDeadline(deadline, time);
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (description != null && !(description.equals("")) && deadline != null
+                    && !(deadline.equals(""))) {
+                if (validateDeadline()) {
+                    description = projectDescriptionTextView.getText().toString();
+                    String[] params = new String[]{MainActivity.URL + "edit/project",
+                            MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                            projectName, MainActivity.userData.getTeamName(), description, deadline};
+                    EditProjectTask editProjectTask = new EditProjectTask();
+                    try {
+                        JSONObject result = editProjectTask.execute(params).get();
+                        String success = result.getString("success");
+                        if (success.equals("true")) {
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.success)
+                                    .setMessage("Sie haben das Projekt erfolgreich editiert!")
+                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            leavePage();
+                                        }
+                                    })
+                                    .create();
+                            alertDialog.show();
+                        } else {
+                            String reason = result.getString("reason");
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.error)
+                                    .setMessage("Das Projekt konnte nicht bearbeitet werden!\n" + reason)
+                                    .setNegativeButton("OK", null)
+                                    .create();
+                            alertDialog.show();
+                        }
+                    } catch (InterruptedException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        // TODO
+                        e.printStackTrace();
+                    }
+                } else {
+                    info.setText(getResources().getString(R.string.error_deadline));
+                }
+            } else {
+                info.setText(R.string.error_fields_empty);
+            }
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 
@@ -305,36 +316,41 @@ public class EditProjectFragment extends Fragment {
     }
 
     private void getProjectData() {
-        String[] params = new String[]{MainActivity.URL + "project",
-                MainActivity.userData.getToken(), projectName,
-                MainActivity.userData.getTeamName()};
-        GetProjectTask getProjectTask = new GetProjectTask();
-        try {
-            JSONObject result = getProjectTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONObject projectData = new JSONObject(result.getString("project"));
-                description = projectData.getString("description");
-                deadline = projectData.getString("deadline");
-                JSONObject projectManager = new JSONObject(projectData.getString("manager"));
-                manager = projectManager.getString("username");
-            } else {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Das Projekt " + projectName + " konnte nicht geladen werden!")
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "project",
+                    MainActivity.userData.getToken(), projectName,
+                    MainActivity.userData.getTeamName()};
+            GetProjectTask getProjectTask = new GetProjectTask();
+            try {
+                JSONObject result = getProjectTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONObject projectData = new JSONObject(result.getString("project"));
+                    description = projectData.getString("description");
+                    deadline = projectData.getString("deadline");
+                    JSONObject projectManager = new JSONObject(projectData.getString("manager"));
+                    manager = projectManager.getString("username");
+                } else {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Das Projekt " + projectName + " konnte nicht geladen werden!")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 }

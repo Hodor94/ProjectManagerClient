@@ -1,5 +1,6 @@
 package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetAllProjectsTask;
 
 import org.json.JSONArray;
@@ -51,28 +53,33 @@ public class AllProjectsFragment extends Fragment {
     }
 
     private List<String> getAllProjects() {
-        String[] params = new String[] {MainActivity.URL + "team/projects",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
-        GetAllProjectsTask getAllProjectsTask = new GetAllProjectsTask();
         List<String> allProjects = new ArrayList<>();
-        try {
-            JSONObject response = getAllProjectsTask.execute(params).get();
-            String success = response.getString("success");
-            if (success.equals("true")) {
-                JSONArray projects = response.getJSONArray("projects");
-                for (int i = 0; i < projects.length(); i++) {
-                    allProjects.add(projects.getString(i));
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "team/projects",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
+            GetAllProjectsTask getAllProjectsTask = new GetAllProjectsTask();
+            try {
+                JSONObject response = getAllProjectsTask.execute(params).get();
+                String success = response.getString("success");
+                if (success.equals("true")) {
+                    JSONArray projects = response.getJSONArray("projects");
+                    for (int i = 0; i < projects.length(); i++) {
+                        allProjects.add(projects.getString(i));
+                    }
                 }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return allProjects;
     }

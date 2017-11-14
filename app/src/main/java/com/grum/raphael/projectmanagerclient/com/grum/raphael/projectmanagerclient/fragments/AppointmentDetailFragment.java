@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.DeleteAppointmentTask;
 import com.grum.raphael.projectmanagerclient.tasks.EditAppointmentTask;
 
@@ -193,50 +194,55 @@ public class AppointmentDetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 info.setText("");
-                if (validateInput(name, description)) {
-                    String[] params = new String[]{MainActivity.URL + "delete/appointment",
-                            MainActivity.userData.getToken(), MainActivity.userData.getAdminOfProject(),
-                            MainActivity.userData.getTeamName(), MainActivity.userData.getUsername(), id};
-                    DeleteAppointmentTask deleteAppointmentTask = new DeleteAppointmentTask();
-                    try {
-                        JSONObject result = deleteAppointmentTask.execute(params).get();
-                        String success = result.getString("success");
-                        if (success.equals("true")) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.success)
-                                    .setMessage("Das Meeting wurde erfolgreich gelöscht!")
-                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Fragment newFragment = new AppointmentsFragment();
-                                            FragmentTransaction transaction
-                                                    = getFragmentManager().beginTransaction();
-                                            transaction.replace(R.id.containerFrame, newFragment);
-                                            transaction.commit();
-                                        }
-                                    }).create();
-                            alertDialog.show();
-                        } else {
-                            String reason = result.getString("reason");
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.error)
-                                    .setMessage("Das Meeting konnte nicht gelöscht werden!\n" + reason)
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
+                if (CheckInternet.isNetworkAvailable(getContext())) {
+                    if (validateInput(name, description)) {
+                        String[] params = new String[]{MainActivity.URL + "delete/appointment",
+                                MainActivity.userData.getToken(), MainActivity.userData.getAdminOfProject(),
+                                MainActivity.userData.getTeamName(), MainActivity.userData.getUsername(), id};
+                        DeleteAppointmentTask deleteAppointmentTask = new DeleteAppointmentTask();
+                        try {
+                            JSONObject result = deleteAppointmentTask.execute(params).get();
+                            String success = result.getString("success");
+                            if (success.equals("true")) {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.success)
+                                        .setMessage("Das Meeting wurde erfolgreich gelöscht!")
+                                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Fragment newFragment = new AppointmentsFragment();
+                                                FragmentTransaction transaction
+                                                        = getFragmentManager().beginTransaction();
+                                                transaction.replace(R.id.containerFrame, newFragment);
+                                                transaction.commit();
+                                            }
+                                        }).create();
+                                alertDialog.show();
+                            } else {
+                                String reason = result.getString("reason");
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error)
+                                        .setMessage("Das Meeting konnte nicht gelöscht werden!\n" + reason)
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } catch (InterruptedException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            // TODO
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        // TODO
-                        e.printStackTrace();
+                    } else {
+                        info.setText(getResources().getString(R.string.error_fields_filled_wrong));
                     }
                 } else {
-                    info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+                    alertDialog.show();
                 }
             }
         };

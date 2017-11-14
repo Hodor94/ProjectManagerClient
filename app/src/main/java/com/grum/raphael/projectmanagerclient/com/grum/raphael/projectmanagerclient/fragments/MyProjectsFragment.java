@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetMyProjectsTask;
 
 import org.json.JSONArray;
@@ -71,36 +72,41 @@ public class MyProjectsFragment extends Fragment {
 
     private List<String> getMyProjects() {
         List<String> myProjects = new ArrayList<>();
-        String[] params = new String[]{MainActivity.URL + "user/projects",
-                MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
-                MainActivity.userData.getTeamName()};
-        GetMyProjectsTask getMyProjectsTask = new GetMyProjectsTask();
-        try {
-            JSONObject result = getMyProjectsTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray projects = result.getJSONArray("projects");
-                for (int i = 0; i < projects.length(); i++) {
-                    myProjects.add(projects.get(i).toString());
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "user/projects",
+                    MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                    MainActivity.userData.getTeamName()};
+            GetMyProjectsTask getMyProjectsTask = new GetMyProjectsTask();
+            try {
+                JSONObject result = getMyProjectsTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray projects = result.getJSONArray("projects");
+                    for (int i = 0; i < projects.length(); i++) {
+                        myProjects.add(projects.get(i).toString());
+                    }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Ihre Projekte konnten nicht geladen werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Ihre Projekte konnten nicht geladen werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return myProjects;
     }

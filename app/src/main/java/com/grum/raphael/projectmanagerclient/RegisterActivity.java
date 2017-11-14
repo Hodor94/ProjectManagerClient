@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -275,23 +276,28 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registerUser() {
         info.setText("");
-        RegisterUserTask registerTask = new RegisterUserTask();
-        // Getting all the user input made in the register form.
-        String firstName = this.firstName.getText().toString().trim();
-        String surname = this.surname.getText().toString().trim();
-        String address = this.address.getText().toString().trim();
-        String email = this.email.getText().toString().trim();
-        String phoneNr = this.phoneNr.getText().toString().trim();
-        String username = this.username.getText().toString().trim();
-        String password = this.password.getText().toString().trim();
-        String passwordValidation = this.passwordValidation.getText().toString();
-        String url = "";
+        if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
+            RegisterUserTask registerTask = new RegisterUserTask();
+            // Getting all the user input made in the register form.
+            String firstName = this.firstName.getText().toString().trim();
+            String surname = this.surname.getText().toString().trim();
+            String address = this.address.getText().toString().trim();
+            String email = this.email.getText().toString().trim();
+            String phoneNr = this.phoneNr.getText().toString().trim();
+            String username = this.username.getText().toString().trim();
+            String password = this.password.getText().toString().trim();
+            String passwordValidation = this.passwordValidation.getText().toString();
+            String url = "";
 
-        if (validateInput(email, phoneNr, birthday, username, password, passwordValidation)) {
-            url = MainActivity.URL + "register/user";
-            String[] params = {url, firstName, surname, birthday, address, email, phoneNr,
-                    username, password};
-            registerTask.execute(params);
+            if (validateInput(email, phoneNr, birthday, username, password, passwordValidation)) {
+                url = MainActivity.URL + "register/user";
+                String[] params = {url, firstName, surname, birthday, address, email, phoneNr,
+                        username, password};
+                registerTask.execute(params);
+            }
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(this);
+            alertDialog.show();
         }
     }
 

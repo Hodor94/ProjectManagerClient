@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // For smartphone use
-        public final static String URL
+    public final static String URL
             = "http://127.0.0.1:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public final static String ADMIN = "ADMINISTRATOR";
     public final static String USER = "USER";
@@ -103,19 +104,22 @@ public class MainActivity extends AppCompatActivity {
     private void login() {
         final String username = this.username.getText().toString().trim();
         final String password = this.password.getText().toString().trim();
-
-
-        if (validateInput(username, password)) {
-            LoginTask loginTask = new LoginTask();
-            String url = MainActivity.URL + "login";
-            String[] params = {url, username, password};
-            loginTask.execute(params);
+        if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
+            if (validateInput(username, password)) {
+                LoginTask loginTask = new LoginTask();
+                String url = MainActivity.URL + "login";
+                String[] params = {url, username, password};
+                loginTask.execute(params);
+            } else {
+                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
+                        .setTitle(R.string.error_login_title)
+                        .setMessage("Bitte füllen Sie die Felder für Usernamen und Passwort aus!")
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
+            }
         } else {
-            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                    .setTitle(R.string.error_login_title)
-                    .setMessage("Bitte füllen Sie die Felder für Usernamen und Passwort aus!")
-                    .setNegativeButton("OK", null)
-                    .create();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(this);
             alertDialog.show();
         }
     }

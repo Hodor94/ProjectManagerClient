@@ -21,6 +21,7 @@ import android.widget.TimePicker;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.CreateAppointmentTask;
 
 import org.json.JSONException;
@@ -76,52 +77,57 @@ public class CreateAppointmentFragment extends Fragment {
     private void createAppointment() {
         info.setText("");
         deadline = concatenateDeadline(deadline, time);
-        if (validateInput(name, description)) {
-            if (validateDeadline(deadline)) {
-                String[] params = new String[] {MainActivity.URL + "create/appointment",
-                        MainActivity.userData.getToken(), MainActivity.userData.getAdminOfProject(),
-                MainActivity.userData.getTeamName(), name, description, deadline,
-                        MainActivity.userData.getUsername()};
-                CreateAppointmentTask createAppointmentTask = new CreateAppointmentTask();
-                try {
-                    JSONObject result = createAppointmentTask.execute(params).get();
-                    String success = result.getString("success");
-                    if (success.equals("true")) {
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.success)
-                                .setMessage("Das Meeting wurde erfolgreich angelegt!")
-                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        openMeetingsPage();
-                                    }
-                                })
-                                .create();
-                        alertDialog.show();
-                    } else {
-                        String reason = result.getString("reason");
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.error)
-                                .setMessage("Das Meeting konnte nicht erstellt werden!\n" + reason)
-                                .setNegativeButton("OK", null)
-                                .create();
-                        alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (validateInput(name, description)) {
+                if (validateDeadline(deadline)) {
+                    String[] params = new String[]{MainActivity.URL + "create/appointment",
+                            MainActivity.userData.getToken(), MainActivity.userData.getAdminOfProject(),
+                            MainActivity.userData.getTeamName(), name, description, deadline,
+                            MainActivity.userData.getUsername()};
+                    CreateAppointmentTask createAppointmentTask = new CreateAppointmentTask();
+                    try {
+                        JSONObject result = createAppointmentTask.execute(params).get();
+                        String success = result.getString("success");
+                        if (success.equals("true")) {
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.success)
+                                    .setMessage("Das Meeting wurde erfolgreich angelegt!")
+                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            openMeetingsPage();
+                                        }
+                                    })
+                                    .create();
+                            alertDialog.show();
+                        } else {
+                            String reason = result.getString("reason");
+                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                    .setTitle(R.string.error)
+                                    .setMessage("Das Meeting konnte nicht erstellt werden!\n" + reason)
+                                    .setNegativeButton("OK", null)
+                                    .create();
+                            alertDialog.show();
+                        }
+                    } catch (InterruptedException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        // TODO
+                        e.printStackTrace();
                     }
-                } catch (InterruptedException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO
-                    e.printStackTrace();
+                } else {
+                    info.setText(getResources().getString(R.string.error_deadline));
                 }
             } else {
-                info.setText(getResources().getString(R.string.error_deadline));
+                info.setText(getResources().getString(R.string.error_fields_filled_wrong));
             }
         } else {
-        info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 

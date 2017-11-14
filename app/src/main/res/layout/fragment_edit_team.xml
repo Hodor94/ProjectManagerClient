@@ -54,4 +54,14 @@
         android:onClick="editTeam"
         android:text="@string/ready"/>
 
+    <TextView
+        android:id="@+id/edit_team_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:textStyle="bold"
+        android:textColor="#f00"
+        android:gravity="center"
+        android:layout_marginBottom="10dp"/>
+
 </LinearLayout>

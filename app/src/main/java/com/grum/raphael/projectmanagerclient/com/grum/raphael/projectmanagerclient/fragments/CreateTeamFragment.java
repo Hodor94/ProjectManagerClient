@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.grum.raphael.projectmanagerclient.ErrorAlertExpiredRights;
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.CreateTeamTask;
 
 import org.json.JSONException;
@@ -55,46 +56,51 @@ public class CreateTeamFragment extends Fragment {
     }
 
     private void createTeam() {
-        if (!MainActivity.userData.isEmpty()) {
-            String teamName = this.teamName.getText().toString();
-            String teamDescription = this.teamDescription.getText().toString();
-            if (validateUserInput(teamName, teamDescription)) {
-                info.setText("");
-                CreateTeamTask createTeamTask = new CreateTeamTask();
-                try {
-                    JSONObject fetchedData
-                            = createTeamTask.execute(new String[]{MainActivity.URL + "create/team",
-                            teamName, teamDescription, MainActivity.userData.getUsername(),
-                            MainActivity.userData.getToken()}).get();
-                    String success = fetchedData.getString("success");
-                    String token = fetchedData.getString("token");
-                    if (success.equals("true")) {
-                        teamName = fetchedData.getString("teamName");
-                        MainActivity.userData.setTeamName(teamName);
-                        MainActivity.userData.setUserRole(MainActivity.ADMIN);
-                        MainActivity.userData.setToken(token);
-                        AlertDialog alertDialog = creatingTeamSuccessfulAlert(teamName);
-                        alertDialog.show();
-                    } else {
-                        String reason = fetchedData.getString("reason");
-                        AlertDialog alertDialog = creatingTeamNotSuccessfulAlert(reason);
-                        alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (!MainActivity.userData.isEmpty()) {
+                String teamName = this.teamName.getText().toString();
+                String teamDescription = this.teamDescription.getText().toString();
+                if (validateUserInput(teamName, teamDescription)) {
+                    info.setText("");
+                    CreateTeamTask createTeamTask = new CreateTeamTask();
+                    try {
+                        JSONObject fetchedData
+                                = createTeamTask.execute(new String[]{MainActivity.URL + "create/team",
+                                teamName, teamDescription, MainActivity.userData.getUsername(),
+                                MainActivity.userData.getToken()}).get();
+                        String success = fetchedData.getString("success");
+                        String token = fetchedData.getString("token");
+                        if (success.equals("true")) {
+                            teamName = fetchedData.getString("teamName");
+                            MainActivity.userData.setTeamName(teamName);
+                            MainActivity.userData.setUserRole(MainActivity.ADMIN);
+                            MainActivity.userData.setToken(token);
+                            AlertDialog alertDialog = creatingTeamSuccessfulAlert(teamName);
+                            alertDialog.show();
+                        } else {
+                            String reason = fetchedData.getString("reason");
+                            AlertDialog alertDialog = creatingTeamNotSuccessfulAlert(reason);
+                            alertDialog.show();
+                        }
+                    } catch (InterruptedException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        // TODO
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        // TODO
+                        e.printStackTrace();
                     }
-                } catch (InterruptedException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO
-                    e.printStackTrace();
+                } else {
+                    info.setText(R.string.error_create_team_input);
                 }
             } else {
-                info.setText(R.string.error_create_team_input);
+                AlertDialog alertDialog = new ErrorAlertExpiredRights(getActivity()).getAlertDialog();
+                alertDialog.show();
             }
         } else {
-            AlertDialog alertDialog = new ErrorAlertExpiredRights(getActivity()).getAlertDialog();
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
     }

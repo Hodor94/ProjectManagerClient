@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetMyProjectsTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetProjectsAppointmentsTask;
 import com.roomorama.caldroid.CaldroidFragment;
@@ -150,7 +151,6 @@ public class AppointmentsFragment extends Fragment {
     }
 
     private void createAppointment() {
-        // GetMyProjectTask getMyProjectTask = new GetMyProjectTask();
         CreateAppointmentFragment createAppointmentFragment = new CreateAppointmentFragment();
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.containerFrame, createAppointmentFragment);
@@ -180,75 +180,85 @@ public class AppointmentsFragment extends Fragment {
 
     private ArrayList<JSONObject> getAppointments(String chosenProject) {
         ArrayList<JSONObject> appointments = new ArrayList<>();
-        GetProjectsAppointmentsTask getProjectsAppointmentsTask = new GetProjectsAppointmentsTask();
-        String[] params = new String[] {MainActivity.URL + "project/appointments",
-                MainActivity.userData.getToken(), chosenProject,
-                MainActivity.userData.getTeamName()};
-        try {
-            JSONObject result = getProjectsAppointmentsTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray fetchedAppointments = result.getJSONArray("appointments");
-                for (int i = 0; i < fetchedAppointments.length(); i++) {
-                    JSONObject currentAppointment = fetchedAppointments.getJSONObject(i);
-                    appointments.add(currentAppointment);
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetProjectsAppointmentsTask getProjectsAppointmentsTask = new GetProjectsAppointmentsTask();
+            String[] params = new String[]{MainActivity.URL + "project/appointments",
+                    MainActivity.userData.getToken(), chosenProject,
+                    MainActivity.userData.getTeamName()};
+            try {
+                JSONObject result = getProjectsAppointmentsTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray fetchedAppointments = result.getJSONArray("appointments");
+                    for (int i = 0; i < fetchedAppointments.length(); i++) {
+                        JSONObject currentAppointment = fetchedAppointments.getJSONObject(i);
+                        appointments.add(currentAppointment);
+                    }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Meetings des Projekts " + chosenProject + " konnten " +
+                                    "nicht geladen werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Meetings des Projekts " + chosenProject + " konnten " +
-                                "nicht geladen werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return appointments;
     }
 
     private ArrayList<String> getMyProjects() {
         ArrayList<String> myProjects = new ArrayList<>();
-        String[] params = new String[]{MainActivity.URL + "user/projects",
-                MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
-                MainActivity.userData.getTeamName()};
-        GetMyProjectsTask getMyProjectsTask = new GetMyProjectsTask();
-        try {
-            JSONObject result = getMyProjectsTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray projects = result.getJSONArray("projects");
-                for (int i = 0; i < projects.length(); i++) {
-                    String projectName = projects.getString(i);
-                    myProjects.add(projectName);
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "user/projects",
+                    MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                    MainActivity.userData.getTeamName()};
+            GetMyProjectsTask getMyProjectsTask = new GetMyProjectsTask();
+            try {
+                JSONObject result = getMyProjectsTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray projects = result.getJSONArray("projects");
+                    for (int i = 0; i < projects.length(); i++) {
+                        String projectName = projects.getString(i);
+                        myProjects.add(projectName);
+                    }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Ihre Projekte konnten nicht geladen werden!\n")
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Ihre Projekte konnten nicht geladen werden!\n")
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return myProjects;
     }

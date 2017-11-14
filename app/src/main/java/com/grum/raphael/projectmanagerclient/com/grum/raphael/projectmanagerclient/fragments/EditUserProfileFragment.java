@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.EditUserTask;
 
 import org.json.JSONException;
@@ -118,60 +119,65 @@ public class EditUserProfileFragment extends Fragment {
         ready.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText firstName = (EditText) getActivity().findViewById(R.id.edit_firstName);
-                EditText surname = (EditText) getActivity().findViewById(R.id.edit_surname);
-                EditText address = (EditText) getActivity().findViewById(R.id.edit_address);
-                EditText phoneNr = (EditText) getActivity().findViewById(R.id.edit_phoneNr);
-                EditText email = (EditText) getActivity().findViewById(R.id.edit_email);
-                if (validateInput(firstName.getText().toString(), surname.getText().toString(),
-                        address.getText().toString(), phoneNr.getText().toString(),
-                        email.getText().toString(), userBirthday)) {
-                    String[] params = new String[]{MainActivity.URL + "edit/user",
-                            MainActivity.userData.getToken(), username,
-                            firstName.getText().toString(), surname.getText().toString(),
+                if (CheckInternet.isNetworkAvailable(getContext())) {
+                    EditText firstName = (EditText) getActivity().findViewById(R.id.edit_firstName);
+                    EditText surname = (EditText) getActivity().findViewById(R.id.edit_surname);
+                    EditText address = (EditText) getActivity().findViewById(R.id.edit_address);
+                    EditText phoneNr = (EditText) getActivity().findViewById(R.id.edit_phoneNr);
+                    EditText email = (EditText) getActivity().findViewById(R.id.edit_email);
+                    if (validateInput(firstName.getText().toString(), surname.getText().toString(),
                             address.getText().toString(), phoneNr.getText().toString(),
-                            email.getText().toString(), userBirthday};
-                    EditUserTask editUserTask = new EditUserTask();
-                    try {
-                        JSONObject response = editUserTask.execute(params).get();
-                        String success = response.getString("success");
-                        if (success.equals("true")) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.success)
-                                    .setMessage("Sie haben Ihr Profil erfolgreich aktualisiert")
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
-                        } else {
-                            // TODO open User Profile
-                            String reason = response.getString("reason");
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.error)
-                                    .setMessage("Ihr Profil konnte nicht erfolgreich aktualisiert " +
-                                            "werden. \n" + reason)
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
+                            email.getText().toString(), userBirthday)) {
+                        String[] params = new String[]{MainActivity.URL + "edit/user",
+                                MainActivity.userData.getToken(), username,
+                                firstName.getText().toString(), surname.getText().toString(),
+                                address.getText().toString(), phoneNr.getText().toString(),
+                                email.getText().toString(), userBirthday};
+                        EditUserTask editUserTask = new EditUserTask();
+                        try {
+                            JSONObject response = editUserTask.execute(params).get();
+                            String success = response.getString("success");
+                            if (success.equals("true")) {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.success)
+                                        .setMessage("Sie haben Ihr Profil erfolgreich aktualisiert")
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            } else {
+                                // TODO open User Profile
+                                String reason = response.getString("reason");
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error)
+                                        .setMessage("Ihr Profil konnte nicht erfolgreich aktualisiert " +
+                                                "werden. \n" + reason)
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } catch (InterruptedException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            // TODO
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        // TODO
-                        e.printStackTrace();
+                    } else {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                .setTitle(R.string.error)
+                                .setMessage(R.string.error_fields_empty)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
                     }
+
                 } else {
-                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.error)
-                            .setMessage(R.string.error_fields_empty)
-                            .setNegativeButton("OK", null)
-                            .create();
+                   AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
                     alertDialog.show();
                 }
-
             }
         });
         return rootView;

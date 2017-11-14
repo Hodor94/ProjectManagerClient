@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
 import com.grum.raphael.projectmanagerclient.tasks.AnswerInvitationOrRequestTask;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetMyInvitationsTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamRequests;
 
@@ -141,34 +142,39 @@ public class PinboardFragment extends Fragment {
     }
 
     private String[] getInvitations() {
-        String[] result;
-        GetMyInvitationsTask getMyInvitationsTask = new GetMyInvitationsTask();
-        String[] params = new String[]{MainActivity.URL + "invitations",
-                MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
-        try {
-            JSONObject response = getMyInvitationsTask.execute(params).get();
-            String success = response.getString("success");
-            if (success.equals("true")) {
-                String invitations = response.getString("invitations");
-                result = invitations.split(",");
-            } else {
+        String[] result = null;
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetMyInvitationsTask getMyInvitationsTask = new GetMyInvitationsTask();
+            String[] params = new String[]{MainActivity.URL + "invitations",
+                    MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
+            try {
+                JSONObject response = getMyInvitationsTask.execute(params).get();
+                String success = response.getString("success");
+                if (success.equals("true")) {
+                    String invitations = response.getString("invitations");
+                    result = invitations.split(",");
+                } else {
+                    result = null;
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+                result = null;
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+                result = null;
+            } catch (JSONException e) {
+                // TODO
+                result = null;
+                e.printStackTrace();
+            }
+            if (result != null && result[0].equals("null")) {
                 result = null;
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-            result = null;
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-            result = null;
-        } catch (JSONException e) {
-            // TODO
-            result = null;
-            e.printStackTrace();
-        }
-        if (result != null && result[0].equals("null")) {
-            result = null;
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return result;
     }
@@ -247,80 +253,85 @@ public class PinboardFragment extends Fragment {
     private void answerInvitationOrRequest(String agreeOrDisagree, String teamName,
                                            final PopupWindow popupWindow, String invitationOrRequest) {
         String[] params;
-        if (invitationOrRequest.equals(getResources().getString(R.string.invitation))) {
-            params = new String[]{MainActivity.URL + "answer",
-                    MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
-                    teamName, agreeOrDisagree, invitationOrRequest};
-        } else {
-            TextView textView = (TextView) popupWindow.getContentView()
-                    .findViewById(R.id.popup_agree_text_info);
-            String usernameOfRequest = textView.getText().toString();
-            params = new String[]{MainActivity.URL + "answer", MainActivity.userData.getToken(),
-                    usernameOfRequest, teamName, agreeOrDisagree, invitationOrRequest};
-        }
-        AnswerInvitationOrRequestTask answerInvitationTask = new AnswerInvitationOrRequestTask();
-        try {
-            JSONObject response = answerInvitationTask.execute(params).get();
-            String success = response.getString("success");
-            if (success.equals("true")) {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.success)
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                FragmentManager fragmentManager = getFragmentManager();
-                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                PinboardFragment newFragment = new PinboardFragment();
-                                fragmentTransaction.replace(R.id.containerFrame, newFragment);
-                                fragmentTransaction.addToBackStack(null);
-                                fragmentTransaction.commit();
-                                popupWindow.dismiss();
-                            }
-                        })
-                        .create();
-                String type = response.getString("type");
-                if (agreeOrDisagree.equals(getResources().getString(R.string.agree))) {
-                    MainActivity.userData.setTeamName(teamName);
-                    if (type.equals(getResources().getString(R.string.request)) ) {
-                    alertDialog.setMessage("Der User wurde erfolgreich zum Team hinzugefügt.");
-                    } else {
-                        alertDialog.setMessage("Sie sind dem Team erfolgreich beigetreten!");
-                    }
-                } else {
-                    if (type.equals(getResources().getString(R.string.request))) {
-                        alertDialog.setMessage("Die Anfrage wurde erfolgreich abgelehnt.");
-                    } else {
-                        alertDialog.setMessage("Sie haben die Einladung erfolreich abgelehnt!");
-                    }
-                }
-                alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            if (invitationOrRequest.equals(getResources().getString(R.string.invitation))) {
+                params = new String[]{MainActivity.URL + "answer",
+                        MainActivity.userData.getToken(), MainActivity.userData.getUsername(),
+                        teamName, agreeOrDisagree, invitationOrRequest};
             } else {
-                String reason = response.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Funktion konnte nicht ausgeführt werden!\n" +
-                                reason)
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                FragmentTransaction transaction
-                                        = getFragmentManager().beginTransaction();
-                                transaction.replace(R.id.containerFrame, new PinboardFragment());
-                                transaction.commit();
-                            }
-                        })
-                        .create();
-                alertDialog.show();
+                TextView textView = (TextView) popupWindow.getContentView()
+                        .findViewById(R.id.popup_agree_text_info);
+                String usernameOfRequest = textView.getText().toString();
+                params = new String[]{MainActivity.URL + "answer", MainActivity.userData.getToken(),
+                        usernameOfRequest, teamName, agreeOrDisagree, invitationOrRequest};
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+            AnswerInvitationOrRequestTask answerInvitationTask = new AnswerInvitationOrRequestTask();
+            try {
+                JSONObject response = answerInvitationTask.execute(params).get();
+                String success = response.getString("success");
+                if (success.equals("true")) {
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.success)
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    FragmentManager fragmentManager = getFragmentManager();
+                                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                    PinboardFragment newFragment = new PinboardFragment();
+                                    fragmentTransaction.replace(R.id.containerFrame, newFragment);
+                                    fragmentTransaction.addToBackStack(null);
+                                    fragmentTransaction.commit();
+                                    popupWindow.dismiss();
+                                }
+                            })
+                            .create();
+                    String type = response.getString("type");
+                    if (agreeOrDisagree.equals(getResources().getString(R.string.agree))) {
+                        MainActivity.userData.setTeamName(teamName);
+                        if (type.equals(getResources().getString(R.string.request))) {
+                            alertDialog.setMessage("Der User wurde erfolgreich zum Team hinzugefügt.");
+                        } else {
+                            alertDialog.setMessage("Sie sind dem Team erfolgreich beigetreten!");
+                        }
+                    } else {
+                        if (type.equals(getResources().getString(R.string.request))) {
+                            alertDialog.setMessage("Die Anfrage wurde erfolgreich abgelehnt.");
+                        } else {
+                            alertDialog.setMessage("Sie haben die Einladung erfolreich abgelehnt!");
+                        }
+                    }
+                    alertDialog.show();
+                } else {
+                    String reason = response.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Funktion konnte nicht ausgeführt werden!\n" +
+                                    reason)
+                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    FragmentTransaction transaction
+                                            = getFragmentManager().beginTransaction();
+                                    transaction.replace(R.id.containerFrame, new PinboardFragment());
+                                    transaction.commit();
+                                }
+                            })
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 }

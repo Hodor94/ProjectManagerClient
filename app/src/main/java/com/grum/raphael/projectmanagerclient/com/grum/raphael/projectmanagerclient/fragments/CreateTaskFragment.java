@@ -24,6 +24,7 @@ import android.widget.TimePicker;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.CreateTaskTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamMembersTask;
 
@@ -175,61 +176,66 @@ public class CreateTaskFragment extends Fragment {
 
     private void createTask() {
         info.setText("");
-        deadline = concatenateDeadline(deadline, time);
-        if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
-            if (validateInput(name, description, worker)) {
-                if (validateDeadline()) {
-                    CreateTaskTask createTaskTask = new CreateTaskTask();
-                    String[] params = new String[]{MainActivity.URL + "create/task",
-                            MainActivity.userData.getToken(), name, description, worker,
-                            MainActivity.userData.getTeamName(), deadline};
-                    try {
-                        JSONObject result = createTaskTask.execute(params).get();
-                        String success = result.getString("success");
-                        if (success.equals("true")) {
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.success)
-                                    .setMessage("Die Aufgabe " + name + " wurde erfolgreich erstellt!")
-                                    .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            Fragment newFragment = new TaskFragment();
-                                            FragmentTransaction transaction
-                                                    = getFragmentManager().beginTransaction();
-                                            transaction.replace(R.id.containerFrame, newFragment);
-                                            transaction.commit();
-                                        }
-                                    })
-                                    .create();
-                            alertDialog.show();
-                        } else {
-                            String reason = result.getString("reason");
-                            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                    .setTitle(R.string.error)
-                                    .setMessage("Die Aufgabe " + name
-                                            + " konnte nicht erstellt werden!\n" + reason)
-                                    .setNegativeButton("OK", null)
-                                    .create();
-                            alertDialog.show();
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            deadline = concatenateDeadline(deadline, time);
+            if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+                if (validateInput(name, description, worker)) {
+                    if (validateDeadline()) {
+                        CreateTaskTask createTaskTask = new CreateTaskTask();
+                        String[] params = new String[]{MainActivity.URL + "create/task",
+                                MainActivity.userData.getToken(), name, description, worker,
+                                MainActivity.userData.getTeamName(), deadline};
+                        try {
+                            JSONObject result = createTaskTask.execute(params).get();
+                            String success = result.getString("success");
+                            if (success.equals("true")) {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.success)
+                                        .setMessage("Die Aufgabe " + name + " wurde erfolgreich erstellt!")
+                                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Fragment newFragment = new TaskFragment();
+                                                FragmentTransaction transaction
+                                                        = getFragmentManager().beginTransaction();
+                                                transaction.replace(R.id.containerFrame, newFragment);
+                                                transaction.commit();
+                                            }
+                                        })
+                                        .create();
+                                alertDialog.show();
+                            } else {
+                                String reason = result.getString("reason");
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error)
+                                        .setMessage("Die Aufgabe " + name
+                                                + " konnte nicht erstellt werden!\n" + reason)
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } catch (InterruptedException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (ExecutionException e) {
+                            // TODO
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            // TODO
+                            e.printStackTrace();
                         }
-                    } catch (InterruptedException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (ExecutionException e) {
-                        // TODO
-                        e.printStackTrace();
-                    } catch (JSONException e) {
-                        // TODO
-                        e.printStackTrace();
+                    } else {
+                        info.setText(getResources().getString(R.string.error_deadline));
                     }
                 } else {
-                    info.setText(getResources().getString(R.string.error_deadline));
+                    info.setText(getResources().getString(R.string.error_fields_filled_wrong));
                 }
             } else {
-                info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                info.setText(getResources().getString(R.string.no_rights));
             }
         } else {
-            info.setText(getResources().getString(R.string.no_rights));
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
     }
 
@@ -260,36 +266,41 @@ public class CreateTaskFragment extends Fragment {
 
     private ArrayList<String> getTeamMembers() {
         ArrayList<String> members = new ArrayList<>();
-        GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
-        String[] params = new String[] {MainActivity.URL + "team/members",
-                MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
-        try {
-            JSONObject result = getTeamMembersTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONArray fetchedUsers = result.getJSONArray("members");
-                for (int i = 0; i < fetchedUsers.length(); i++) {
-                    JSONObject tempUser = fetchedUsers.getJSONObject(i);
-                    members.add(tempUser.getString("username"));
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            GetTeamMembersTask getTeamMembersTask = new GetTeamMembersTask();
+            String[] params = new String[]{MainActivity.URL + "team/members",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName()};
+            try {
+                JSONObject result = getTeamMembersTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONArray fetchedUsers = result.getJSONArray("members");
+                    for (int i = 0; i < fetchedUsers.length(); i++) {
+                        JSONObject tempUser = fetchedUsers.getJSONObject(i);
+                        members.add(tempUser.getString("username"));
+                    }
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.error)
+                            .setMessage("Die Team-Mitglieder konnten nicht geladen werden!\n" + reason)
+                            .setNegativeButton("OK", null)
+                            .create();
+                    alertDialog.show();
                 }
-            } else {
-                String reason = result.getString("reason");
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage("Die Team-Mitglieder konnten nicht geladen werden!\n" + reason)
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
             }
-        } catch (InterruptedException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            // TODO
-            e.printStackTrace();
-        } catch (JSONException e) {
-            // TODO
-            e.printStackTrace();
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
         }
         return members;
     }

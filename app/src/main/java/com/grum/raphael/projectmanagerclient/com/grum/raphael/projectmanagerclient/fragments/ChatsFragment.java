@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.grum.raphael.projectmanagerclient.R;
 
-
 public class ChatsFragment extends Fragment {
 
     public ChatsFragment() {
