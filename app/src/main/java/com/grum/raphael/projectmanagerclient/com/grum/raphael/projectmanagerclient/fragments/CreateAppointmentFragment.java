@@ -65,6 +65,10 @@ public class CreateAppointmentFragment extends Fragment {
         deadlinePicker.init(currentCalendar.get(Calendar.YEAR), currentCalendar.get(Calendar.MONTH),
                 currentCalendar.get(Calendar.DAY_OF_MONTH), setUpOnDateChangedListener());
         timePicker.setOnTimeChangedListener(setTimeChangedListener());
+        Calendar calendar = Calendar.getInstance();
+        String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
+        String currentMinutes = "" + calendar.get(Calendar.MONTH);
+        time = currentHour + ":" + currentMinutes + ":00";
         createAppointment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

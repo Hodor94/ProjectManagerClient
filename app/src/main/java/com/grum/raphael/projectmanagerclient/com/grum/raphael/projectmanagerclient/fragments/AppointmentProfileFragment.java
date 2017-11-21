@@ -24,10 +24,9 @@ public class AppointmentProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_appointment_profile, container, false);
         final Bundle bundle = getArguments();
-        String appointment = bundle.getString("appointment");
         tabLayout = (TabLayout) rootView.findViewById(R.id.tab_appointment_profile);
         tabLayout.addTab(tabLayout.newTab().setText("Meeting bearbeiten"));
-        tabLayout.addTab(tabLayout.newTab().setText("Statistik"));
+        tabLayout.addTab(tabLayout.newTab().setText("Beteilgung"));
         TabLayout.Tab startingTab = tabLayout.getTabAt(0);
         startingTab.select();
         Fragment initialFragment = new AppointmentDetailFragment();
@@ -49,13 +48,11 @@ public class AppointmentProfileFragment extends Fragment {
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                 } else {
-                    // TODO
-                    /*
-                    newFragment = new RegisterFragment();
-                    fragmentTransaction.replace(R.id.pager_team_profile, newFragment);
+                    newFragment = new ParticipationAppointmentFragment();
+                    newFragment.setArguments(bundle);
+                    fragmentTransaction.replace(R.id.pager_appointment_profile, newFragment);
                     fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
-                    */
                 }
             }
 

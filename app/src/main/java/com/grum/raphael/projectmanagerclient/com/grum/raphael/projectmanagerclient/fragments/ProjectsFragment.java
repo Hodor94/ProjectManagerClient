@@ -53,7 +53,6 @@ public class ProjectsFragment extends Fragment {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                // TODO
                 Fragment newFragment = null;
                 switch (tab.getPosition()) {
                     case 0 :

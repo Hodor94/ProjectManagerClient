@@ -75,8 +75,7 @@ public class ChooseAppointmentFragment extends Fragment {
                 JSONObject appointment = null;
                 String data = (String) parent.getAdapter().getItem(position);
                 if (!identifyAsDeadline(data)) {
-                    String[] dataSplit = data.split(" ");
-                    dataSplit[0] = dataSplit[0].substring(0, dataSplit[0].length() - 1);
+                    String[] dataSplit = data.split(": ");
                     for (JSONObject object : appointments) {
                         try {
                             String name = object.getString("name");

@@ -17,8 +17,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_name" />
 
@@ -26,15 +26,15 @@
                 android:id="@+id/appointment_detail_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_description" />
 
@@ -42,15 +42,15 @@
                 android:id="@+id/appointment_detail_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_date" />
 
@@ -58,7 +58,7 @@
                 android:id="@+id/appointment_detail_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:hint="@string/hint_deadline"
@@ -68,8 +68,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_time" />
 
@@ -78,9 +78,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
                 android:numbersInnerTextColor="@color/text"
                 android:numbersSelectorColor="@color/toolbar"
                 android:numbersTextColor="@color/text"
@@ -90,7 +90,7 @@
                 android:id="@+id/appointment_detail_edit_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text"
                 android:text="@string/edit" />
 
@@ -98,7 +98,7 @@
                 android:id="@+id/appointment_detail_delete_btn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text"
                 android:text="@string/label_delete" />
 
@@ -106,11 +106,11 @@
                 android:id="@+id/appointment_detail_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#f00"
                 android:gravity="center"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10sp"/>
 
         </LinearLayout>
 

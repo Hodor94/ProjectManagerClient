@@ -2,8 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="15dp"
-    android:layout_marginRight="15dp"
+    android:layout_marginLeft="15sp"
+    android:layout_marginRight="15sp"
     android:background="@drawable/border_popup"
     android:orientation="vertical"
     android:theme="@style/FontSizeStyle"
@@ -11,12 +11,12 @@
 
     <Button
         android:id="@+id/close_btn_popup_agree"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="30sp"
+        android:layout_height="30sp"
         android:layout_gravity="right"
-        android:layout_marginBottom="5dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginBottom="5sp"
+        android:layout_marginRight="8sp"
+        android:layout_marginTop="8sp"
         android:background="@drawable/round_btn"
         android:text="X"
         android:textColor="@color/white" />
@@ -24,8 +24,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
         android:orientation="vertical" >
 
 
@@ -45,18 +45,18 @@
 
             <ImageView
                 android:id="@+id/agree"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
                 android:layout_alignRight="@+id/popup_agree_text_info"
-                android:layout_marginRight="5dp"
+                android:layout_marginRight="5sp"
                 android:background="@drawable/ic_agree" />
 
             <ImageView
                 android:id="@+id/disagree"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
+                android:layout_width="30sp"
+                android:layout_height="30sp"
                 android:layout_alignRight="@+id/agree"
-                android:layout_marginLeft="5dp"
+                android:layout_marginLeft="5sp"
                 android:background="@drawable/ic_disagree" />
 
         </LinearLayout>

@@ -17,8 +17,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_project_name" />
 
@@ -26,39 +26,39 @@
                 android:id="@+id/edit_project_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
-                android:layout_marginBottom="5dp"
+                android:textSize="20sp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:text="@string/label_description"
                 android:textColor="@color/text" />
 
             <EditText
                 android:id="@+id/edit_project_description"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_deadline"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/text" />
 
             <DatePicker
                 android:id="@+id/edit_project_deadline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:hint="@string/hint_deadline"
@@ -68,8 +68,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="10sp"
+                android:textSize="20sp"
                 android:text="@string/label_time"
                 android:textColor="@color/text" />
 
@@ -78,9 +78,9 @@
                 android:id="@+id/time_picker_edit_project"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
                 android:numbersInnerTextColor="@color/text"
                 android:numbersSelectorColor="@color/toolbar"
                 android:numbersTextColor="@color/text"
@@ -89,24 +89,24 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_project_manager"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/text" />
 
             <TextView
                 android:id="@+id/edit_project_manager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="5sp"
+                android:textSize="20sp"
                 android:textColor="@color/text" />
 
             <Button
                 android:id="@+id/edit_project_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/ready"
                 android:textColor="@color/text" />
 
@@ -114,7 +114,7 @@
                 android:id="@+id/edit_project_delete"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_delete"
                 android:textColor="@color/text" />
 
@@ -122,7 +122,7 @@
                 android:id="@+id/edit_project_users"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_edit_project_user"
                 android:textColor="@color/text" />
 
@@ -130,10 +130,10 @@
                 android:id="@+id/edit_project_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:gravity="center"
                 android:textColor="#f00"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
         </LinearLayout>

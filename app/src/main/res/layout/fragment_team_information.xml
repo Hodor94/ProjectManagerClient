@@ -13,18 +13,18 @@
         android:layout_width="match_parent"
         android:layout_below="@+id/toolbar_team_profile"
         android:background="?attr/colorPrimary"
-        android:elevation="6dp"
+        android:elevation="6sp"
         android:minHeight="?attr/actionBarSize"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:layout_marginBottom="20dp" />
+        android:layout_marginBottom="20sp" />
         -->
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textStyle="bold"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textColor="@color/text"
         android:text="@string/label_team_name"
         />
@@ -34,15 +34,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text"
-        android:textSize="20dp"
-        android:layout_marginBottom="5dp" />
+        android:textSize="20sp"
+        android:layout_marginBottom="5sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textColor="@color/text"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:text="@string/label_description"
         />
@@ -52,16 +52,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text"
-        android:textSize="20dp"
-        android:layout_marginBottom="5dp" />
+        android:textSize="20sp"
+        android:layout_marginBottom="5sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textColor="@color/text"
         android:textStyle="bold"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:text="@string/label_admin"
         />
 
@@ -69,14 +69,14 @@
         android:id="@+id/team_profile_admin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:layout_marginBottom="15dp" />
+        android:textSize="20sp"
+        android:layout_marginBottom="15sp" />
 
     <Button
         android:id="@+id/team_profile_btn_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textColor="@color/text"
         android:text="@string/edit"/>
 
@@ -92,7 +92,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="25sp"
         android:scaleType="fitXY"
         android:background="@drawable/drive_dark_large"/>
 

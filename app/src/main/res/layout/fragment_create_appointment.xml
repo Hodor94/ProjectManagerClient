@@ -18,38 +18,38 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_name" />
 
             <EditText
                 android:id="@+id/create_appointment_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_description" />
 
             <EditText
                 android:id="@+id/create_appointment_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp" />
+                android:layout_marginBottom="5sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:text="@string/label_deadline" />
 
             <DatePicker
                 android:id="@+id/create_appointment_deadline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:hint="@string/hint_deadline"
@@ -59,7 +59,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:text="@string/label_time" />
 
             <TimePicker
@@ -67,9 +67,9 @@
                 android:id="@+id/create_appointment_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
                 android:numbersInnerTextColor="@color/text"
                 android:numbersSelectorColor="@color/toolbar"
                 android:numbersTextColor="@color/text"
@@ -79,18 +79,18 @@
                 android:id="@+id/btn_create_appointment_rdy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/ready" />
 
             <TextView
                 android:id="@+id/text_create_appointment_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#f00"
                 android:gravity="center"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10sp"/>
 
         </LinearLayout>
 

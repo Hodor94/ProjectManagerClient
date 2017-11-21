@@ -9,7 +9,7 @@
             android:id="@+id/filter_users"
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
-            android:layout_marginBottom="10dp"/>
+            android:layout_marginBottom="10sp"/>
 
         <ListView
             android:id="@+id/list_users"

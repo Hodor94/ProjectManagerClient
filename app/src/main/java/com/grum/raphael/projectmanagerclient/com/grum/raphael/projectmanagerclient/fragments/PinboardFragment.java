@@ -4,9 +4,11 @@ package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagercli
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,6 +23,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
@@ -29,14 +33,32 @@ import com.grum.raphael.projectmanagerclient.tasks.AnswerInvitationOrRequestTask
 import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.GetMyInvitationsTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetTeamRequests;
+import com.grum.raphael.projectmanagerclient.tasks.NewsflashTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+
+import static com.grum.raphael.projectmanagerclient.R.id.list_element;
 
 public class PinboardFragment extends Fragment {
 
+    private final String CAT_PROJECT = "Projekt Deadline";
+    private final String CAT_TASK = "Aufgabe Deadline";
+    private final String CAT_APPOINTMENT = "Meeting";
+    private final String CAT_BIRTHDAY = "Geburtstag";
     private ListView invitationsList;
     private String[] invitations;
     private TextView headerInvitations;
@@ -45,6 +67,12 @@ public class PinboardFragment extends Fragment {
     private String[] requests;
     private TextView headerRequests;
     private TextView noRequests;
+    private TableLayout newsflashTable;
+    private JSONArray projects;
+    private JSONArray tasks;
+    private JSONArray appointments;
+    private JSONArray birthdays;
+    private SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy dd:mm:ss");
 
     public PinboardFragment() {
 
@@ -55,6 +83,7 @@ public class PinboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_pinboard, container, false);
+        newsflashTable = (TableLayout) rootView.findViewById(R.id.newsflash);
         headerInvitations = (TextView) rootView.findViewById(R.id.header_invitations);
         invitationsList = (ListView) rootView.findViewById(R.id.invitations_list);
         noInvitations = (TextView) rootView.findViewById(R.id.pinnboard_no_invitations);
@@ -62,10 +91,9 @@ public class PinboardFragment extends Fragment {
         if (MainActivity.userData.getTeamName().equals("null")) {
             invitations = getInvitations();
             if (invitations != null) {
-                // TODO set on Click Listener
                 noInvitations.setVisibility(View.GONE);
                 ArrayAdapter arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                        R.id.list_element, invitations);
+                        list_element, invitations);
                 invitationsList.setAdapter(arrayAdapter);
                 invitationsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -89,7 +117,7 @@ public class PinboardFragment extends Fragment {
             if (requests != null) {
                 noRequests.setVisibility(View.GONE);
                 ArrayAdapter arrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.list_item,
-                        R.id.list_element, requests);
+                        list_element, requests);
                 requestsList.setAdapter(arrayAdapter);
                 requestsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -106,7 +134,184 @@ public class PinboardFragment extends Fragment {
             headerRequests.setVisibility(View.GONE);
             requestsList.setVisibility(View.GONE);
         }
+        getNewsflashData();
+        setUpTable();
         return rootView;
+    }
+
+    private void setUpTable() {
+        TableRow.LayoutParams layoutParamsLeftElement
+                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParamsLeftElement.setMargins(0, 0, 10, 0);
+        TableRow.LayoutParams layoutParamsRightElement
+                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParamsRightElement.setMargins(10, 0, 0, 0);
+        TableRow.LayoutParams layoutParamsMidElement
+                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParamsMidElement.setMargins(5, 0 , 5, 0);
+        setUpHeaderRow(layoutParamsLeftElement, layoutParamsMidElement, layoutParamsRightElement);
+        ArrayList<JSONObject> projectsList = editProjects();
+        ArrayList<JSONObject> tasksList = editTasks();
+        ArrayList<JSONObject> appointmentsList = editAppointments();
+        ArrayList<JSONObject> birthdaysList = editBirthdays();
+        addToTable(projectsList, "project", layoutParamsLeftElement, layoutParamsMidElement,
+                layoutParamsRightElement);
+        addToTable(tasksList, "task", layoutParamsLeftElement, layoutParamsMidElement,
+                layoutParamsRightElement);
+        addToTable(appointmentsList, "appointment", layoutParamsLeftElement, layoutParamsMidElement,
+                layoutParamsRightElement);
+        addToTable(birthdaysList, "user", layoutParamsLeftElement, layoutParamsMidElement,
+                layoutParamsRightElement);
+    }
+
+    private void addToTable(ArrayList<JSONObject> list, String objectName,
+                            TableRow.LayoutParams paramsLeft,
+                            TableRow.LayoutParams paramsMid,
+                            TableRow.LayoutParams paramsRight) {
+        View separatorHorizontal = new View(getActivity());
+        separatorHorizontal.setLayoutParams(
+                new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+        separatorHorizontal.setBackgroundColor(Color.rgb(51, 51, 51));
+        try {
+            for (JSONObject jsonObject : list) {
+                String name = jsonObject.getString(objectName);
+                String time = jsonObject.getString("deadline").split(" ")[1];
+                String category = jsonObject.getString("category");
+                TableRow row = new TableRow(getContext());
+                TextView textName = new TextView(getContext());
+                textName.setTextColor(getResources().getColor(R.color.text));
+                textName.setTextSize(MainActivity.DP_TEXT_SIZE);
+                textName.setLayoutParams(paramsLeft);
+                textName.setText(name);
+                TextView textTime = new TextView(getContext());
+                textTime.setTextColor(getResources().getColor(R.color.text));
+                textTime.setTextSize(MainActivity.DP_TEXT_SIZE);
+                textTime.setLayoutParams(paramsMid);
+                textTime.setText(time);
+                TextView textCategory = new TextView(getContext());
+                textCategory.setTextColor(getResources().getColor(R.color.text));
+                textCategory.setTextSize(MainActivity.DP_TEXT_SIZE);
+                textCategory.setLayoutParams(paramsRight);
+                textCategory.setText(category);
+                row.addView(textName);
+                row.addView(textTime);
+                row.addView(textCategory);
+                row.setGravity(Gravity.CENTER);
+                newsflashTable.addView(row);
+                newsflashTable.addView(separatorHorizontal);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private ArrayList<JSONObject> editBirthdays() {
+        ArrayList<JSONObject> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < birthdays.length(); i++) {
+                JSONObject temp = birthdays.getJSONObject(i);
+                temp.put("category", CAT_BIRTHDAY);
+                result.add(temp);
+            }
+        } catch (JSONException e) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.error)
+                    .setMessage("Die Geburtstage konnten nicht verarbeitet werden!\n " +
+                            "Fehlerhafte Daten wurden geschickt!")
+                    .setNegativeButton("OK", null)
+                    .create();
+            alertDialog.show();
+        }
+        return result;
+    }
+
+    private ArrayList<JSONObject> editAppointments() {
+        ArrayList<JSONObject> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < appointments.length(); i++) {
+                JSONObject temp = appointments.getJSONObject(i);
+                temp.put("category", CAT_APPOINTMENT);
+                result.add(temp);
+            }
+        } catch (JSONException e) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.error)
+                    .setMessage("Die Meetings konnten nicht verarbeitet werden!\n " +
+                            "Fehlerhafte Daten wurden geschickt!")
+                    .setNegativeButton("OK", null)
+                    .create();
+            alertDialog.show();
+        }
+        return result;
+    }
+
+    private ArrayList<JSONObject> editTasks() {
+        ArrayList<JSONObject> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < tasks.length(); i++) {
+                JSONObject temp = tasks.getJSONObject(i);
+                temp.put("category", CAT_TASK);
+                result.add(temp);
+            }
+        } catch (JSONException e) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.error)
+                    .setMessage("Die Aufgaben konnten nicht verarbeitet werden!\n " +
+                            "Fehlerhafte Daten wurden geschickt!")
+                    .setNegativeButton("OK", null)
+                    .create();
+            alertDialog.show();
+        }
+        return result;
+    }
+
+    private ArrayList<JSONObject> editProjects() {
+        ArrayList<JSONObject> result = new ArrayList<>();
+        try {
+            for (int i = 0; i < projects.length(); i++) {
+                JSONObject temp = projects.getJSONObject(i);
+                temp.put("category", CAT_PROJECT);
+                result.add(temp);
+            }
+        } catch (JSONException e) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                    .setTitle(R.string.error)
+                    .setMessage("Die Projekte konnten nicht verarbeitet werden!\n" +
+                            "Fehlerhafte Daten wurden geschickt!")
+                    .setNegativeButton("OK", null)
+                    .create();
+            alertDialog.show();
+        }
+        return result;
+    }
+
+    private void setUpHeaderRow(TableRow.LayoutParams paramsLeft,
+                                TableRow.LayoutParams paramsMid,
+                                TableRow.LayoutParams paramsRight) {
+        TableRow headerRow = new TableRow(getContext());
+        TextView headerName = new TextView(getContext());
+        headerName.setTextColor(getResources().getColor(R.color.text));
+        headerName.setTextSize(MainActivity.DP_TEXT_SIZE);
+        headerName.setLayoutParams(paramsLeft);
+        headerName.setText(getResources().getString(R.string.label_name));
+        TextView headerTime = new TextView(getContext());
+        headerTime.setTextColor(getResources().getColor(R.color.text));
+        headerTime.setTextSize(MainActivity.DP_TEXT_SIZE);
+        headerTime.setLayoutParams(paramsMid);
+        headerTime.setText(getResources().getString(R.string.label_time));
+        TextView headerCategories = new TextView(getContext());
+        headerCategories.setTextColor(getResources().getColor(R.color.text));
+        headerCategories.setTextSize(MainActivity.DP_TEXT_SIZE);
+        headerCategories.setLayoutParams(paramsRight);
+        headerCategories.setText(getResources().getString(R.string.label_category));
+        headerRow.addView(headerName);
+        headerRow.addView(headerTime);
+        headerRow.addView(headerCategories);
+        headerRow.setGravity(Gravity.CENTER);
+        newsflashTable.addView(headerRow);
     }
 
     private String[] getRequests() {
@@ -316,6 +521,54 @@ public class PinboardFragment extends Fragment {
                                     transaction.commit();
                                 }
                             })
+                            .create();
+                    alertDialog.show();
+                }
+            } catch (InterruptedException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                // TODO
+                e.printStackTrace();
+            } catch (JSONException e) {
+                // TODO
+                e.printStackTrace();
+            }
+        } else {
+            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+            alertDialog.show();
+        }
+    }
+
+    private void getNewsflashData() {
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        String currentDate = formatter.format(calendar.getTime());
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        String mondayOfWeek = formatter.format(calendar.getTime());
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        String sundayOfWeek = formatter.format(calendar.getTime());
+        if (CheckInternet.isNetworkAvailable(getContext())) {
+            String[] params = new String[]{MainActivity.URL + "newsflash",
+                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
+                    MainActivity.userData.getUsername(), currentDate, mondayOfWeek, sundayOfWeek};
+            NewsflashTask newsflashTask = new NewsflashTask();
+            try {
+                JSONObject result = newsflashTask.execute(params).get();
+                String success = result.getString("success");
+                if (success.equals("true")) {
+                    JSONObject relevantDates = result.getJSONObject("dates");
+                    projects = relevantDates.getJSONArray("projects");
+                    appointments = relevantDates.getJSONArray("appointments");
+                    tasks = relevantDates.getJSONArray("tasks");
+                    birthdays = relevantDates.getJSONArray("birthdays");
+                } else {
+                    String reason = result.getString("reason");
+                    AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                            .setTitle(R.string.error)
+                            .setMessage("Die anstehenden Ereignisse für die Woche konnten nicht " +
+                                    "geladen werden!\n" + reason)
+                            .setNegativeButton("OK", null)
                             .create();
                     alertDialog.show();
                 }

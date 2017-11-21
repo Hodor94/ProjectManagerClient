@@ -128,5 +128,12 @@
     <string name="choose_time">Uhrzeit wählen</string>
     <string name="choose_appointment">Wählen Sie ein Meeting am</string>
     <string name="label_date">Datum:</string>
+    <string name="take_part">Zusagen</string>
+    <string name="maybe">Vielleicht</string>
+    <string name="decline">Absagen</string>
+    <string name="send_participation">Teilnahme eintragen</string>
+    <string name="statistic_header">Teilnahmestatistiken für das Projekt</string>
+    <string name="newsflash">Newsflash:</string>
+    <string name="label_category">Kategorie:</string>
 
 </resources>

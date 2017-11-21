@@ -8,19 +8,19 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:text="@string/label_username" />
 
     <TextView
         android:id="@+id/text_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp" />
+        android:layout_marginBottom="5sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:text="@string/label_registers" />
 
     <Spinner
@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:layout_gravity="center" />
 
     <Button

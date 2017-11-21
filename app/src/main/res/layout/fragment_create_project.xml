@@ -18,8 +18,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="10sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_name" />
 
@@ -27,15 +27,15 @@
                 android:id="@+id/project_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="10sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_description" />
 
@@ -43,15 +43,15 @@
                 android:id="@+id/project_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="10sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_project_manager" />
 
@@ -59,14 +59,14 @@
                 android:id="@+id/dropdown_project_owner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:spinnerMode="dropdown" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="10sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_deadline" />
 
@@ -74,7 +74,7 @@
                 android:id="@+id/deadline_project"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:hint="@string/hint_deadline"
@@ -84,8 +84,8 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:textSize="20dp"
+                android:layout_marginBottom="10sp"
+                android:textSize="20sp"
                 android:textColor="@color/text"
                 android:text="@string/label_time" />
 
@@ -97,24 +97,24 @@
                 android:numbersSelectorColor="@color/toolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:timePickerMode="spinner"
-                android:layout_marginRight="25dp"
-                android:layout_marginLeft="25dp"/>
+                android:layout_marginRight="25sp"
+                android:layout_marginLeft="25sp"/>
 
             <Button
                 android:id="@+id/btn_create_project"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:text="@string/ready" />
 
             <TextView
                 android:id="@+id/text_create_project_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:gravity="center"
                 android:textColor="#f00"
                 android:textStyle="bold" />

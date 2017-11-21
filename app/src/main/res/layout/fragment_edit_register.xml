@@ -10,51 +10,51 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="10sp"
         android:text="@string/register_name" />
 
     <TextView
         android:id="@+id/label_register_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:text="@string/chooseColor" />
 
     <ImageView
         android:layout_gravity="center"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="50sp"
+        android:layout_height="50sp"
         android:id="@+id/edit_color_for_register"
         android:background="@drawable/border_table"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10sp" />
 
     <TextView
         android:id="@+id/text_edit_register_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#f00"
         android:gravity="center"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10sp"/>
 
     <Button
         android:id="@+id/btn_edit_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/ready"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10sp" />
 
     <Button
         android:id="@+id/btn_delete_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/label_delete"
-        android:layout_marginBottom="10dp" />
+        android:layout_marginBottom="10sp" />
 
 </LinearLayout>

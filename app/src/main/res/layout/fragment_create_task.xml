@@ -17,25 +17,25 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:text="@string/label_name" />
 
             <EditText
                 android:id="@+id/task_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text"
-                android:textSize="20dp" />
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text"
-                android:textSize="20dp"
-                android:layout_marginBottom="5dp"
+                android:textSize="20sp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_description" />
 
             <EditText
@@ -43,22 +43,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text"
-                android:textSize="20dp"
-                android:layout_marginBottom="5dp" />
+                android:textSize="20sp"
+                android:layout_marginBottom="5sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:textColor="@color/text"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:text="@string/label_deadline" />
 
             <DatePicker
                 android:id="@+id/deadline_task"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:calendarViewShown="false"
                 android:datePickerMode="spinner"
                 android:hint="@string/hint_birthday"
@@ -68,9 +68,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:textColor="@color/text"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:text="@string/label_time" />
 
             <TimePicker
@@ -78,9 +78,9 @@
                 android:id="@+id/create_task_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp"
+                android:layout_marginBottom="10sp"
+                android:layout_marginLeft="25sp"
+                android:layout_marginRight="25sp"
                 android:numbersInnerTextColor="@color/text"
                 android:numbersSelectorColor="@color/toolbar"
                 android:numbersTextColor="@color/text"
@@ -90,33 +90,33 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text"
-                android:textSize="20dp"
-                android:layout_marginBottom="5dp"
+                android:textSize="20sp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/label_worker" />
 
             <Spinner
                 android:id="@+id/dropdown_task_worker"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:spinnerMode="dropdown" />
 
             <Button
                 android:id="@+id/btn_create_task"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="5sp"
                 android:text="@string/ready" />
 
             <TextView
                 android:id="@+id/text_create_task_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20dp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="#f00"
                 android:gravity="center"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginBottom="10sp"/>
 
         </LinearLayout>
 

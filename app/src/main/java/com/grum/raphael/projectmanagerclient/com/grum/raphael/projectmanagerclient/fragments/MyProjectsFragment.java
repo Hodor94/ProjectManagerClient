@@ -52,21 +52,20 @@ public class MyProjectsFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String projectName = (String) parent.getItemAtPosition(position);
-                openEditProjectPage(projectName);
+                openProjectOverviewPage(projectName);
             }
         });
         myProjectsList.setAdapter(arrayAdapter);
         return rootView;
     }
 
-    private void openEditProjectPage(String projectName) {
+    private void openProjectOverviewPage(String projectName) {
         Bundle bundle = new Bundle();
         bundle.putString("projectName", projectName);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        Fragment newFragment = new EditProjectFragment();
+        Fragment newFragment = new ProjectOverviewFragment();
         newFragment.setArguments(bundle);
         transaction.replace(R.id.containerFrame, newFragment);
-        transaction.addToBackStack(null);
         transaction.commit();
     }
 

@@ -5,10 +5,10 @@
     android:theme="@style/FontSizeStyle" >
 
     <TextView
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="10sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textStyle="bold"
         android:text="@string/label_team_name"
         />
@@ -17,12 +17,12 @@
         android:id="@+id/edit_team_profile_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp" />
+        android:layout_marginBottom="5sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textStyle="bold"
         android:text="@string/label_description"
         />
@@ -31,12 +31,12 @@
         android:id="@+id/edit_team_profile_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp" />
+        android:layout_marginBottom="5sp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="5sp"
         android:textStyle="bold"
         android:text="@string/label_admin"
         />
@@ -45,7 +45,7 @@
         android:id="@+id/edit_team_profile_admin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp" />
+        android:layout_marginBottom="15sp" />
 
     <Button
         android:id="@+id/edit_team_btn"
@@ -58,10 +58,10 @@
         android:id="@+id/edit_team_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="#f00"
         android:gravity="center"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="10sp"/>
 
 </LinearLayout>

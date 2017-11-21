@@ -19,7 +19,7 @@
                 android:id="@+id/header_invitations"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:gravity="center"
                 android:text="@string/invitations" />
 
@@ -27,7 +27,7 @@
                 android:id="@+id/invitations_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10sp" />
 
             <TextView
                 android:id="@+id/pinnboard_no_invitations"
@@ -40,7 +40,7 @@
                 android:id="@+id/header_requests"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="10sp"
                 android:gravity="center"
                 android:text="@string/requests" />
 
@@ -48,7 +48,7 @@
                 android:id="@+id/requests_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp" />
+                android:layout_marginBottom="10sp" />
 
             <TextView
                 android:id="@+id/pinnboard_no_requests"
@@ -56,6 +56,28 @@
                 android:layout_height="wrap_content"
                 android:text="@string/no_requests"
                 android:gravity="center" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginBottom="10sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:text="@string/newsflash"/>
+
+            <TableLayout
+                android:id="@+id/newsflash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:stretchColumns="*"
+                android:textColor="@color/text"
+                android:background="@drawable/border_table" />
 
         </LinearLayout>
 
