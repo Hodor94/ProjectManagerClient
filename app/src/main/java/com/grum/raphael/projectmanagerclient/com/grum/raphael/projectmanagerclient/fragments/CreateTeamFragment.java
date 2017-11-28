@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.ErrorAlertExpiredRights;
 import com.grum.raphael.projectmanagerclient.MainActivity;
@@ -30,7 +31,6 @@ public class CreateTeamFragment extends Fragment {
 
     private EditText teamName;
     private EditText teamDescription;
-    private TextView info;
     private Button btnCreate;
 
     @Override
@@ -38,7 +38,6 @@ public class CreateTeamFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_team, container, false);
         teamName = (EditText) rootView.findViewById(R.id.team_name);
-        info = (TextView) rootView.findViewById(R.id.create_team_info);
         teamDescription = (EditText) rootView.findViewById(R.id.team_description);
         btnCreate = (Button) rootView.findViewById(R.id.btn_create_team);
         btnCreate.setOnClickListener(new View.OnClickListener() {
@@ -61,7 +60,6 @@ public class CreateTeamFragment extends Fragment {
                 String teamName = this.teamName.getText().toString();
                 String teamDescription = this.teamDescription.getText().toString();
                 if (validateUserInput(teamName, teamDescription)) {
-                    info.setText("");
                     CreateTeamTask createTeamTask = new CreateTeamTask();
                     try {
                         JSONObject fetchedData
@@ -93,7 +91,8 @@ public class CreateTeamFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    info.setText(R.string.error_create_team_input);
+                    Toast.makeText(getContext(), R.string.error_create_team_input,
+                            Toast.LENGTH_LONG).show();
                 }
             } else {
                 AlertDialog alertDialog = new ErrorAlertExpiredRights(getActivity()).getAlertDialog();

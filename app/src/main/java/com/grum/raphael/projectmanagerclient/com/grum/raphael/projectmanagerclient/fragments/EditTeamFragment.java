@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -28,7 +29,6 @@ import java.util.concurrent.ExecutionException;
 
 public class EditTeamFragment extends Fragment {
 
-    private TextView info;
     private TextView teamName;
     private EditText teamDescription;
     private TextView admin;
@@ -40,7 +40,6 @@ public class EditTeamFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         Bundle bundle = getArguments();
         View rootView = inflater.inflate(R.layout.fragment_edit_team, container, false);
-        info = (TextView) rootView.findViewById(R.id.edit_team_info);
         teamName = (TextView) rootView.findViewById(R.id.edit_team_profile_name);
         teamDescription = (EditText) rootView.findViewById(R.id.edit_team_profile_description);
         admin = (TextView) rootView.findViewById(R.id.edit_team_profile_admin);
@@ -80,7 +79,6 @@ public class EditTeamFragment extends Fragment {
     }
 
     public void editTeam() {
-        info.setText("");
         if (CheckInternet.isNetworkAvailable(getContext())) {
             EditTeamTask editTeamTask = new EditTeamTask();
             String teamName = getTeamName().getText().toString();
@@ -122,7 +120,9 @@ public class EditTeamFragment extends Fragment {
                     e.printStackTrace();
                 }
             } else {
-                info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.error_fields_filled_wrong),
+                        Toast.LENGTH_LONG).show();
             }
         } else {
             AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());

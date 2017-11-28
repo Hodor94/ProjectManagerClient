@@ -33,16 +33,6 @@
         android:background="@drawable/border_table"
         android:layout_marginBottom="10sp" />
 
-    <TextView
-        android:id="@+id/text_edit_register_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="#f00"
-        android:gravity="center"
-        android:layout_marginBottom="10sp"/>
-
     <Button
         android:id="@+id/btn_edit_register"
         android:layout_width="match_parent"

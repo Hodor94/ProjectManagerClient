@@ -1,16 +1,11 @@
 package com.grum.raphael.projectmanagerclient;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -28,7 +23,6 @@ import com.grum.raphael.projectmanagerclient.tasks.UserTask;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.concurrent.ExecutionException;
 
 public class NavigationActivity extends AppCompatActivity
@@ -186,7 +180,6 @@ public class NavigationActivity extends AppCompatActivity
                 }
             } else if (id == R.id.nav_appointments) {
                 if (!MainActivity.userData.getTeamName().equals("null")) {
-                    // TODO
                     newFragment = new AppointmentsFragment();
                 } else {
                     AlertDialog alertDialog = generateEmptyTeamAlert();
@@ -201,8 +194,7 @@ public class NavigationActivity extends AppCompatActivity
                 newFragment = new SearchUsersFragment();
             } else if (id == R.id.nav_chats) {
                 if (!MainActivity.userData.getTeamName().equals("null")) {
-                    // TODO
-                    newFragment = new ChatsFragment();
+                    newFragment = new ChooseChatFragment();
                 } else {
                     AlertDialog alertDialog = generateEmptyTeamAlert();
                     alertDialog.show();
@@ -243,6 +235,7 @@ public class NavigationActivity extends AppCompatActivity
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+
     }
 
     private void leaveApp() {

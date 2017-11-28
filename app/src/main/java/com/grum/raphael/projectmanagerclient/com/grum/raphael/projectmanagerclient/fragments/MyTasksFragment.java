@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -161,13 +162,12 @@ public class MyTasksFragment extends Fragment {
         TextView taskWorker = (TextView) view.findViewById(R.id.popup_edit_task_worker);
         Button editTask = (Button) view.findViewById(R.id.popup_btn_edit_task_ready);
         Button deleteTask = (Button) view.findViewById(R.id.popup_btn_delete_task);
-        TextView info = (TextView) view.findViewById(R.id.popup_edit_task_info);
         taskName.setText(fetchedTaskName);
         taskDescription.setText(fetchedTaskDescription);
         setUpDatePicker(taskDeadline, fetchedTaskDeadline);
         taskWorker.setText(fetchedTaskWorker);
         setUpTextWatcherTaskDescription(taskDescription);
-        setUpEditBtn(editTask, info, popupWindow);
+        setUpEditBtn(editTask, popupWindow);
         setUpDeleteBtn(deleteTask, popupWindow);
     }
 
@@ -237,11 +237,10 @@ public class MyTasksFragment extends Fragment {
         });
     }
 
-    private void setUpEditBtn(Button editTask, final TextView info, final PopupWindow popupWindow) {
+    private void setUpEditBtn(Button editTask, final PopupWindow popupWindow) {
         editTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                info.setText("");
                 if (CheckInternet.isNetworkAvailable(getContext())) {
                     if (taskWorker.equals(MainActivity.userData.getUsername())) {
                         if (validateInput(taskDescription, deadline)) {
@@ -291,11 +290,14 @@ public class MyTasksFragment extends Fragment {
                                     e.printStackTrace();
                                 }
                             } else {
-                                info.setText(getResources().getString(R.string.error_deadline));
-
+                                Toast. makeText(getContext(),
+                                        getResources().getString(R.string.error_deadline),
+                                        Toast.LENGTH_LONG).show();
                             }
                         } else {
-                            info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                            Toast.makeText(getContext(),
+                                    getResources().getString(R.string.error_fields_filled_wrong),
+                                    Toast.LENGTH_LONG).show();
                         }
                     } else {
                         AlertDialog alertDialog = new AlertDialog.Builder(getActivity())

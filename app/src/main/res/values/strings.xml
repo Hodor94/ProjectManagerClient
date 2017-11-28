@@ -135,5 +135,7 @@
     <string name="statistic_header">Teilnahmestatistiken für das Projekt</string>
     <string name="newsflash">Newsflash:</string>
     <string name="label_category">Kategorie:</string>
+    <string name="choose_chat">Wählen Sie einen Chat aus:</string>
+    <string name="label_add_tributes">Ehrung hinzufügen:</string>
 
 </resources>

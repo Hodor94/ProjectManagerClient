@@ -59,14 +59,4 @@
         android:text="@string/btn_create_team"
         android:textColor="@color/text" />
 
-    <TextView
-        android:id="@+id/create_team_info"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#f00"
-        android:textStyle="bold"
-        android:gravity="center"/>
-
-
-
 </LinearLayout>

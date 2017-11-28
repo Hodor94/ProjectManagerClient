@@ -23,6 +23,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -33,14 +34,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    configurations.all {
+        resolutionStrategy.force 'com.android.support:support-annotations:25.3.1'
+    }
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.1'
-    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl', version: '1.9.13'
-
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
     compile 'org.apache.httpcomponents:httpmime:4.2.3'
     compile 'cz.msebera.android:httpclient:4.4.1.2'
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
@@ -51,9 +53,20 @@ dependencies {
     compile 'com.github.yukuku:ambilwarna:2.0.1'
     compile 'com.roomorama:caldroid:3.0.1'
     compile 'com.github.PhilJay:MPAndroidChart:v2.1.0'
+    compile 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    compile 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
+    compile 'com.google.firebase:firebase-core:11.0.2'
+    compile 'com.google.firebase:firebase-database:11.0.2'
+    compile 'com.firebaseui:firebase-ui-database:2.1.0'
     testCompile 'junit:junit:4.12'
     androidTestCompile 'com.android.support:support-annotations:25.3.1'
     androidTestCompile 'com.android.support.test:runner:0.5'
     androidTestCompile 'com.android.support.test:rules:0.5'
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
 }
+
+
+
+apply plugin: 'com.google.gms.google-services'

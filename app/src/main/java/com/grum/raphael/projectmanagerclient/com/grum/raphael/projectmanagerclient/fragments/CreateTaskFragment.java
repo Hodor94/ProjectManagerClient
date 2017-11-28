@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -53,7 +54,6 @@ public class CreateTaskFragment extends Fragment {
     private TimePicker timePicker;
     private Spinner dropdownWorker;
     private Button createTaskBtn;
-    private TextView info;
 
     @Nullable
     @Override
@@ -72,7 +72,6 @@ public class CreateTaskFragment extends Fragment {
         time = currentHour + ":" + currentMinutes + ":00";
         dropdownWorker = (Spinner) rootView.findViewById(R.id.dropdown_task_worker);
         createTaskBtn = (Button) rootView.findViewById(R.id.btn_create_task);
-        info = (TextView) rootView.findViewById(R.id.text_create_task_info);
         taskName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -175,7 +174,6 @@ public class CreateTaskFragment extends Fragment {
     }
 
     private void createTask() {
-        info.setText("");
         if (CheckInternet.isNetworkAvailable(getContext())) {
             deadline = concatenateDeadline(deadline, time);
             if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
@@ -225,13 +223,18 @@ public class CreateTaskFragment extends Fragment {
                             e.printStackTrace();
                         }
                     } else {
-                        info.setText(getResources().getString(R.string.error_deadline));
+                        Toast.makeText(getContext(),
+                                getResources().getString(R.string.error_deadline),
+                                Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                    Toast.makeText(getContext(),
+                            getResources().getString(R.string.error_fields_filled_wrong),
+                            Toast.LENGTH_LONG).show();
                 }
             } else {
-                info.setText(getResources().getString(R.string.no_rights));
+                Toast.makeText(getContext(),getResources().getString(R.string.no_rights) ,
+                        Toast.LENGTH_LONG).show();
             }
         } else {
             AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());

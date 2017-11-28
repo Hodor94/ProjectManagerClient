@@ -18,6 +18,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -44,7 +45,6 @@ public class CreateAppointmentFragment extends Fragment {
     private DatePicker deadlinePicker;
     private TimePicker timePicker;
     private Button createAppointment;
-    private TextView info;
 
 
     @Nullable
@@ -58,7 +58,6 @@ public class CreateAppointmentFragment extends Fragment {
         timePicker = (TimePicker) rootView.findViewById(R.id.create_appointment_time);
         timePicker.setIs24HourView(true);
         createAppointment = (Button) rootView.findViewById(R.id.btn_create_appointment_rdy);
-        info = (TextView) rootView.findViewById(R.id.text_create_appointment_info);
         appointmentName.addTextChangedListener(setUpTextWatcherAppointmentName());
         appointmentDescription.addTextChangedListener(setUpTextWatcherAppointmentDescription());
         Calendar currentCalendar = Calendar.getInstance();
@@ -79,7 +78,6 @@ public class CreateAppointmentFragment extends Fragment {
     }
 
     private void createAppointment() {
-        info.setText("");
         deadline = concatenateDeadline(deadline, time);
         if (CheckInternet.isNetworkAvailable(getContext())) {
             if (validateInput(name, description)) {
@@ -124,10 +122,13 @@ public class CreateAppointmentFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    info.setText(getResources().getString(R.string.error_deadline));
+                    Toast.makeText(getContext(), getResources().getString(R.string.error_deadline),
+                            Toast.LENGTH_LONG).show();
                 }
             } else {
-                info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.error_fields_filled_wrong),
+                        Toast.LENGTH_LONG).show();
             }
         } else {
             AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());

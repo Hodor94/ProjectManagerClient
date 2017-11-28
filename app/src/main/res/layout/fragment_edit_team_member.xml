@@ -18,6 +18,19 @@
         android:layout_marginBottom="5sp" />
 
     <TextView
+        android:id="@+id/users_tribute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5sp"
+        android:text="@string/label_add_tributes" />
+
+    <EditText
+        android:id="@+id/add_tribute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5sp" />
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5sp"

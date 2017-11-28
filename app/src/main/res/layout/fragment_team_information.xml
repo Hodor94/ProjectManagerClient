@@ -69,6 +69,7 @@
         android:id="@+id/team_profile_admin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/text"
         android:textSize="20sp"
         android:layout_marginBottom="15sp" />
 

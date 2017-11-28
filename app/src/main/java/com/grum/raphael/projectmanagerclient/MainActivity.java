@@ -1,8 +1,10 @@
 package com.grum.raphael.projectmanagerclient;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +22,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public final static String PROJECT_OWNER = "PROJECT_OWNER";
     public final static String GOOLE_DRIVE_URL = "https://www.google.com/drive/";
     public final static float DP_TEXT_SIZE = 20f;
+    public static final String FILE = "MyFile";
     // For emulator use
     // public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
@@ -153,29 +158,16 @@ public class MainActivity extends AppCompatActivity {
                             result = new JSONObject(stringBuilder.toString());
                             return result;
                         }
-                    } catch (IOException e) {
+                    } catch (IOException | JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                                         .setTitle(R.string.error_login_title)
-                                        .setMessage("App reagiert falsch! Bitte benachrichtigen Sie den " +
-                                                "Admin unter grum02@gw.uni-passau.de")
-                                        .setNegativeButton("OK", null)
-                                        .create();
-                                alertDialog.show();
-                            }
-                        });
-                    } catch (JSONException e) {
-                        // AlertDialog has to run on UI thread.
-                        e.printStackTrace();
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
-                                        .setTitle(R.string.error_login_title)
-                                        .setMessage("Server Fehler! Bitte benachrichtigen Sie den " +
-                                                "Admin unter grum02@gw.uni-passau.de")
+                                        .setMessage("Sie können derzeit nicht auf den Port im Netz"
+                                                + "der Universität Passau zugreifen!\n" +
+                                                "Bitte versuchen Sie es erneut im entsprechenden "
+                                                + "Netz mit entsprechender Port-Weiterleitung!")
                                         .setNegativeButton("OK", null)
                                         .create();
                                 alertDialog.show();
@@ -254,6 +246,10 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.userData.setTeamName(teamName);
                 MainActivity.userData.setUsername(username);
                 MainActivity.userData.setUserRole(userRole);
+                SharedPreferences settings = getSharedPreferences(FILE, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("team", teamName);
+                editor.commit();
             } catch (JSONException e) {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                         .setTitle(R.string.error_login_title)

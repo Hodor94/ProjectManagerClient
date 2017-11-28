@@ -41,7 +41,6 @@ public class EditRegisterFragment extends Fragment {
     private String registerName;
     private TextView registerNameView;
     private ImageView editColor;
-    private TextView info;
     private Button editRegister;
     private Button deleteRegister;
 
@@ -53,8 +52,6 @@ public class EditRegisterFragment extends Fragment {
         registerName = bundle.getString("registerName");
         JSONObject register = getRegister(registerName);
         getColorOfRegister(register);
-        info = (TextView) rootView.findViewById(R.id.text_edit_register_info);
-        info.setVisibility(View.GONE);
         registerNameView = (TextView) rootView.findViewById(R.id.label_register_name);
         registerNameView.setText(registerName);
         editColor = (ImageView) rootView.findViewById(R.id.edit_color_for_register);
@@ -192,8 +189,6 @@ public class EditRegisterFragment extends Fragment {
     private void editRegister(String registerName, int color) {
         if (CheckInternet.isNetworkAvailable(getContext())) {
             if (!registerName.equals(getResources().getString(R.string.blank))) {
-                info.setText("");
-                info.setVisibility(View.GONE);
                 if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
                     String[] params = new String[]{MainActivity.URL + "edit/register",
                             MainActivity.userData.getToken(), registerName, "" + color,
@@ -255,8 +250,8 @@ public class EditRegisterFragment extends Fragment {
                             e.printStackTrace();
                         }
                     } else {
-                        info.setText(R.string.error_create_team_input);
-                        info.setVisibility(View.VISIBLE);
+                        Toast.makeText(getContext(), R.string.error_create_team_input,
+                                Toast.LENGTH_LONG).show();
                     }
                 } else {
                     AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
@@ -267,8 +262,8 @@ public class EditRegisterFragment extends Fragment {
                     alertDialog.show();
                 }
             } else {
-                info.setText(R.string.impossible_register_editing);
-                info.setVisibility(View.VISIBLE);
+                Toast.makeText(getContext(), R.string.impossible_register_editing,
+                        Toast.LENGTH_LONG).show();
             }
         } else {
             AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());

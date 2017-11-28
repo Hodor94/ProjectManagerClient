@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
@@ -69,7 +70,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private EditText passwordValidation;
-    private TextView info;
     private Button register;
 
     @Override
@@ -87,7 +87,6 @@ public class RegisterActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.text_register_username);
         password = (EditText) findViewById(R.id.text_register_password);
         passwordValidation = (EditText) findViewById(R.id.text_register_password_validation);
-        info = (TextView) findViewById(R.id.text_register_info);
         register = (Button) findViewById(R.id.button_register);
 
         // Set birthday String
@@ -179,7 +178,7 @@ public class RegisterActivity extends AppCompatActivity {
             result = true;
         } else {
             errorMessages = builder.toString();
-            info.setText(errorMessages);
+            Toast.makeText(getApplicationContext(), errorMessages, Toast.LENGTH_LONG).show();
         }
         return result;
     }
@@ -275,7 +274,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerUser() {
-        info.setText("");
         if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
             RegisterUserTask registerTask = new RegisterUserTask();
             // Getting all the user input made in the register form.

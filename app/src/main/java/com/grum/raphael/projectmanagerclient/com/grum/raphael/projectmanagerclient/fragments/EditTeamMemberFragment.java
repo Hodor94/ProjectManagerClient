@@ -9,11 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -40,11 +43,24 @@ public class EditTeamMemberFragment extends Fragment {
     private Button ready;
     private List<JSONObject> registers;
     private String registerName;
+    private TextView tributes;
+    private EditText editTributes;
+    private String tributesText;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_edit_team_member, container, false);
+        tributes = (TextView) rootView.findViewById(R.id.users_tribute);
+        editTributes = (EditText) rootView.findViewById(R.id.add_tribute);
+        if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
+            tributes.setVisibility(View.GONE);
+            editTributes.setVisibility(View.GONE);
+        } else {
+            editTributes.addTextChangedListener(setUpEditTributes());
+            // TODO fetch tributes of user and set it as value of editTributes
+            tributesText = editTributes.getText().toString();
+        }
         registers = new ArrayList<>();
         Bundle bundle = getArguments();
         final String username = bundle.getString("username");
@@ -83,6 +99,25 @@ public class EditTeamMemberFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private TextWatcher setUpEditTributes() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                tributesText = editTributes.getText().toString();
+            }
+        };
     }
 
     private ArrayList<String> getRegisters() {

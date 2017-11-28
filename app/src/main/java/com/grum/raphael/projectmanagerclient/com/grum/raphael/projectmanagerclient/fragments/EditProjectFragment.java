@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
@@ -51,7 +52,6 @@ public class EditProjectFragment extends Fragment {
     private Button edit;
     private Button delete;
     private Button editUsers;
-    private TextView info;
     private String time;
 
     @Nullable
@@ -60,7 +60,6 @@ public class EditProjectFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_edit_project, container, false);
         Bundle bundle = getArguments();
         projectName = bundle.getString("projectName");
-        info = (TextView) rootView.findViewById(R.id.edit_project_info);
         projectNameTextView = (TextView) rootView.findViewById(R.id.edit_project_name);
         projectDescriptionTextView = (EditText) rootView.findViewById(R.id.edit_project_description);
         datePickerDeadline = (DatePicker) rootView.findViewById(R.id.edit_project_deadline);
@@ -231,7 +230,6 @@ public class EditProjectFragment extends Fragment {
     }
 
     private void editProject() {
-        info.setText("");
         deadline = concatenateDeadline(deadline, time);
         if (CheckInternet.isNetworkAvailable(getContext())) {
             if (description != null && !(description.equals("")) && deadline != null
@@ -277,10 +275,11 @@ public class EditProjectFragment extends Fragment {
                         e.printStackTrace();
                     }
                 } else {
-                    info.setText(getResources().getString(R.string.error_deadline));
+                    Toast.makeText(getContext(), getResources().getString(R.string.error_deadline),
+                            Toast.LENGTH_LONG).show();
                 }
             } else {
-                info.setText(R.string.error_fields_empty);
+                Toast.makeText(getContext(), R.string.error_fields_empty, Toast.LENGTH_LONG).show();
             }
         } else {
             AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());

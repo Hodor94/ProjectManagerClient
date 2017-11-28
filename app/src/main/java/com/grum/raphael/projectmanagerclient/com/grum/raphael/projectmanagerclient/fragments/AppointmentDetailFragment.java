@@ -51,7 +51,6 @@ public class AppointmentDetailFragment extends Fragment {
     private TimePicker timePicker;
     private Button edit;
     private Button delete;
-    private TextView info;
 
     @Nullable
     @Override
@@ -59,7 +58,6 @@ public class AppointmentDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_appointment_detail, container, false);
         Bundle bundle = getArguments();
         fetchDataFromBundle(bundle);
-        info = (TextView) rootView.findViewById(R.id.appointment_detail_info);
         nameText = (EditText) rootView.findViewById(R.id.appointment_detail_name);
         if (isDeadline) {
             nameText.setFocusable(false);
@@ -193,7 +191,6 @@ public class AppointmentDetailFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                info.setText("");
                 if (CheckInternet.isNetworkAvailable(getContext())) {
                     if (validateInput(name, description)) {
                         String[] params = new String[]{MainActivity.URL + "delete/appointment",
@@ -238,7 +235,9 @@ public class AppointmentDetailFragment extends Fragment {
                             e.printStackTrace();
                         }
                     } else {
-                        info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                        Toast.makeText(getContext(),
+                                getResources().getString(R.string.error_fields_filled_wrong),
+                                Toast.LENGTH_LONG).show();
                     }
                 } else {
                     AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
@@ -277,7 +276,6 @@ public class AppointmentDetailFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                info.setText("");
                 if (CheckInternet.isNetworkAvailable(getContext())) {
                     if (validateInput(name, description)) {
                         concatenateDateAndTime();
@@ -325,10 +323,14 @@ public class AppointmentDetailFragment extends Fragment {
                                 e.printStackTrace();
                             }
                         } else {
-                            info.setText(getResources().getString(R.string.error_deadline));
+                            Toast.makeText(getContext(),
+                                    getResources().getString(R.string.error_deadline),
+                                    Toast.LENGTH_LONG).show();
                         }
                     } else {
-                        info.setText(getResources().getString(R.string.error_fields_filled_wrong));
+                        Toast.makeText(getContext(),
+                                getResources().getString(R.string.error_fields_filled_wrong),
+                                Toast.LENGTH_LONG).show();
                     }
                 } else {
                     AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());

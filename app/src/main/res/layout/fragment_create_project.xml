@@ -110,15 +110,6 @@
                 android:layout_marginBottom="10sp"
                 android:text="@string/ready" />
 
-            <TextView
-                android:id="@+id/text_create_project_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10sp"
-                android:gravity="center"
-                android:textColor="#f00"
-                android:textStyle="bold" />
-
         </LinearLayout>
 
     </ScrollView>

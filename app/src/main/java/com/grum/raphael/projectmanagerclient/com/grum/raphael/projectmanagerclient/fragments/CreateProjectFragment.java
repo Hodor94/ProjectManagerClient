@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -45,7 +46,6 @@ public class CreateProjectFragment extends Fragment {
     private DatePicker datePicker;
     private TimePicker timePicker;
     private Button createProject;
-    private TextView info;
     private String projectName;
     private String projectDescription;
     private String projectManager;
@@ -57,7 +57,6 @@ public class CreateProjectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_project, container, false);
         List<String> members = getTeamMembers();
-        info = (TextView) rootView.findViewById(R.id.text_create_project_info);
         datePicker = (DatePicker) rootView.findViewById(R.id.deadline_project);
         timePicker = (TimePicker) rootView.findViewById(R.id.time_picker_create_project);
         timePicker.setIs24HourView(true);
@@ -145,7 +144,6 @@ public class CreateProjectFragment extends Fragment {
         createProject.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                info.setText("");
                 deadline = concatenateDeadline(deadline, time);
                 createNewProject(MainActivity.userData.getTeamName(), projectName,
                         projectDescription, projectManager, deadline);
@@ -269,11 +267,12 @@ public class CreateProjectFragment extends Fragment {
             if (currentTime.before(choosenTime)) {
                 result = true;
             } else {
-                info.setText(info.getText().toString() + "\n"
-                        + getResources().getString(R.string.error_deadline));
+                Toast.makeText(getContext(),  getResources().getString(R.string.error_deadline),
+                        Toast.LENGTH_LONG).show();
             }
         } else {
-            info.setText(R.string.error_fields_filled_wrong);
+            Toast.makeText(getContext(), R.string.error_fields_filled_wrong, Toast.LENGTH_LONG)
+                    .show();
         }
         return result;
     }

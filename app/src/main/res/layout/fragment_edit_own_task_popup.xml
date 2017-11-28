@@ -99,16 +99,6 @@
             android:layout_marginBottom="5sp"
             android:text="@string/label_delete" />
 
-        <TextView
-            android:id="@+id/popup_edit_task_info"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="#f00"
-            android:gravity="center"
-            android:layout_marginBottom="10sp"/>
-
     </LinearLayout>
 
     </ScrollView>
