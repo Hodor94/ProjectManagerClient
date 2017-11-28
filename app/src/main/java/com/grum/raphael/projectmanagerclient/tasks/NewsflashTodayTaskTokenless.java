@@ -2,7 +2,6 @@ package com.grum.raphael.projectmanagerclient.tasks;
 
 import android.os.AsyncTask;
 
-import org.codehaus.jackson.JsonNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,20 +20,29 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
  * Created by Raphael on 28.11.2017.
  */
 
-public class GetUsersTributesTask extends AsyncTask<String, Void, JSONObject> {
+public class NewsflashTodayTaskTokenless extends AsyncTask<String, Void, JSONObject> {
+
+    /**
+     * Created by Raphael on 21.11.2017.
+     */
+
     @Override
     protected JSONObject doInBackground(String... params) {
         JSONObject result;
         String url = params[0];
-        String token = params[1];
+        String teamName = params[1];
         String username = params[2];
+        String currentDate = params[3];
+        String mondayOfWeek = params[4];
+        String sundayOfWeek = params[4];
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost getUsersTributesRequest = new HttpPost(url);
-        StringEntity stringEntity = new StringEntity(createRequestData(token, username), "UTF-8");
+        HttpPost getNewsflashRequest = new HttpPost(url);
+        StringEntity stringEntity = new StringEntity(createRequestData(teamName, username,
+                currentDate, mondayOfWeek, sundayOfWeek), "UTF-8");
         stringEntity.setContentType("application/json");
-        getUsersTributesRequest.setEntity(stringEntity);
+        getNewsflashRequest.setEntity(stringEntity);
         try {
-            HttpResponse response = client.execute(getUsersTributesRequest);
+            HttpResponse response = client.execute(getNewsflashRequest);
             InputStream input = response.getEntity().getContent();
             if (input != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -46,7 +54,6 @@ public class GetUsersTributesTask extends AsyncTask<String, Void, JSONObject> {
                 result = new JSONObject(stringBuilder.toString());
             } else {
                 result = null;
-                // TODO
             }
         } catch (IOException e) {
             // TODO
@@ -60,7 +67,11 @@ public class GetUsersTributesTask extends AsyncTask<String, Void, JSONObject> {
         return result;
     }
 
-    private String createRequestData(String token, String username) {
-        return "{\"token\": \"" + token + "\", \"username\": \"" + username + "\"}";
+    private String createRequestData(String teamName, String username,
+                                     String currentDate, String mondayOfWeek, String sundayOfWeek) {
+        return "{\"teamName\": \"" + teamName + "\", \"username\": " + "\"" + username + "\", "
+                + "\"currentDate\": \"" + currentDate + "\", \"mondayOfWeek\": "
+                + "\"" + mondayOfWeek + "\", \"sundayOfWeek\": \"" + sundayOfWeek + "\"}";
     }
 }
+

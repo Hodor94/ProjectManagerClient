@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
  * Created by Raphael on 28.11.2017.
  */
 
-public class AppService extends WakefulIntentService {
+public class DetectChangesService extends WakefulIntentService {
 
 
     /**
@@ -31,19 +31,18 @@ public class AppService extends WakefulIntentService {
      *
      * @param name Used to name the worker thread, important only for debugging.
      */
-    public AppService(String name) {
+    public DetectChangesService(String name) {
         super(name);
     }
 
-    public AppService() {
-        super(AppService.class.getName());
+    public DetectChangesService() {
+        super(DetectChangesService.class.getName());
     }
 
     @Override
     void doWakefulWork(Intent intent) {
         SharedPreferences settings = getSharedPreferences("MyFile", 0);
         String teamName = settings.getString("team", "null");
-        Toast.makeText(this, "SERVICE STARTED: " + teamName, Toast.LENGTH_LONG).show();
         getNews(teamName);
     }
 

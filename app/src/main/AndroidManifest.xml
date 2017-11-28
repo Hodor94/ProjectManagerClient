@@ -34,7 +34,14 @@
             </intent-filter>
         </receiver>
         <receiver android:name="com.grum.raphael.projectmanagerclient.service.OnAlarmReceiver" />
-        <service android:name="com.grum.raphael.projectmanagerclient.service.AppService"></service>
+        <receiver android:name="com.grum.raphael.projectmanagerclient.service.DateChangedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.DATE_CHANGED"></action>
+                <action android:name="android.intent.action.USER_PRESENT"></action>
+            </intent-filter>
+        </receiver>
+        <service android:name="com.grum.raphael.projectmanagerclient.service.DetectChangesService"></service>
+        <service android:name="com.grum.raphael.projectmanagerclient.service.TodaysActionService"></service>
     </application>
 
 </manifest>

@@ -5,13 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Created by Raphael on 23.11.2017.
+ * Created by Raphael on 28.11.2017.
  */
 
-public class OnAlarmReceiver extends BroadcastReceiver {
+public class AlarmsReceiverSpecificTime extends BroadcastReceiver {
+
     @Override
     public void onReceive(Context context, Intent intent) {
         WakefulIntentService.acquireStaticLock(context);
-        context.startService(new Intent(context, DetectChangesService.class));
+        context.startService(new Intent(context, TodaysActionService.class));
     }
 }

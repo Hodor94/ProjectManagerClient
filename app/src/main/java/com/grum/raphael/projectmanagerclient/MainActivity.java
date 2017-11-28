@@ -249,6 +249,7 @@ public class MainActivity extends AppCompatActivity {
                 SharedPreferences settings = getSharedPreferences(FILE, 0);
                 SharedPreferences.Editor editor = settings.edit();
                 editor.putString("team", teamName);
+                editor.putString("username", username);
                 editor.commit();
             } catch (JSONException e) {
                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)

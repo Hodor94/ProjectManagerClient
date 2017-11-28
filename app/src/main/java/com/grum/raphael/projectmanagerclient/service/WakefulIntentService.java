@@ -45,7 +45,7 @@ abstract public class WakefulIntentService extends IntentService {
 
     private static PowerManager.WakeLock lockStatic = null;
     public static final String LOCK_NAME_STATIC
-            = "com.grum.raphael.projectmanagerclient.service.AppService.Static"; // for debugging purpose
+            = "com.grum.raphael.projectmanagerclient.service.DetectChangesService.Static"; // for debugging purpose
 
     public static void acquireStaticLock(Context context) {
         getLock(context).acquire();
