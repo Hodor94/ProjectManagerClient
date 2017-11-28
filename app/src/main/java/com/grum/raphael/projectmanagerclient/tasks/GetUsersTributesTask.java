@@ -2,6 +2,7 @@ package com.grum.raphael.projectmanagerclient.tasks;
 
 import android.os.AsyncTask;
 
+import org.codehaus.jackson.JsonNode;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,29 +18,23 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 
 /**
- * Created by Raphael on 18.10.2017.
+ * Created by Raphael on 28.11.2017.
  */
 
-public class EditTeamMemberTask extends AsyncTask<String, Void, JSONObject> {
+public class GetUsersTributesTask extends AsyncTask<String, Void, JSONObject> {
     @Override
     protected JSONObject doInBackground(String... params) {
         JSONObject result;
         String url = params[0];
         String token = params[1];
         String username = params[2];
-        String registerName = params[3];
-        String admin = params[4];
-        String teamName = params[5];
-        String tributes = params[6];
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost editTeamMemberRequest = new HttpPost(url);
-        StringEntity stringEntity
-                = new StringEntity(createRequestData(token, username, registerName, admin,
-                teamName, tributes), "UTF-8");
+        HttpPost getUsersTributesRequest = new HttpPost(url);
+        StringEntity stringEntity = new StringEntity(createRequestData(token, username), "UTF-8");
         stringEntity.setContentType("application/json");
-        editTeamMemberRequest.setEntity(stringEntity);
+        getUsersTributesRequest.setEntity(stringEntity);
         try {
-            HttpResponse response = client.execute(editTeamMemberRequest);
+            HttpResponse response = client.execute(getUsersTributesRequest);
             InputStream input = response.getEntity().getContent();
             if (input != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -51,22 +46,21 @@ public class EditTeamMemberTask extends AsyncTask<String, Void, JSONObject> {
                 result = new JSONObject(stringBuilder.toString());
             } else {
                 result = null;
+                // TODO
             }
         } catch (IOException e) {
             // TODO
             result = null;
             e.printStackTrace();
         } catch (JSONException e) {
+            // TODO
             result = null;
             e.printStackTrace();
         }
         return result;
     }
 
-    private String createRequestData(String token, String username, String registerName,
-                                     String admin, String teamName, String tributes) {
-        return "{\"token\": \"" + token + "\", \"username\": \"" + username + "\", \"registerName\":" +
-                " \"" + registerName + "\", \"admin\": \"" + admin + "\", \"teamName\": \""
-                + teamName + "\", \"tributes\": \"" + tributes + "\"}";
+    private String createRequestData(String token, String username) {
+        return "{\"token\": \"" + token + "\", \"username\" \"" + username + "\"}";
     }
 }

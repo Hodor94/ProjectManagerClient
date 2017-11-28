@@ -1,5 +1,6 @@
 package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
@@ -8,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -25,6 +25,7 @@ import com.grum.raphael.projectmanagerclient.R;
 import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.EditTeamMemberTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegistersTask;
+import com.grum.raphael.projectmanagerclient.tasks.GetUsersTributesTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +59,7 @@ public class EditTeamMemberFragment extends Fragment {
             editTributes.setVisibility(View.GONE);
         } else {
             editTributes.addTextChangedListener(setUpEditTributes());
-            // TODO fetch tributes of user and set it as value of editTributes
+            fillEditTributes();
             tributesText = editTributes.getText().toString();
         }
         registers = new ArrayList<>();
@@ -99,6 +100,34 @@ public class EditTeamMemberFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private void fillEditTributes() {
+        String[] params = new String[]{MainActivity.URL + "user/tributes",
+                MainActivity.userData.getToken(), MainActivity.userData.getUsername()};
+        GetUsersTributesTask getUsersTributesTask = new GetUsersTributesTask();
+        JSONObject result;
+        try {
+            result = getUsersTributesTask.execute(params).get();
+            String success = result.getString("success");
+            if (success.equals("true")) {
+                String tributes = result.getString("tributes");
+                editTributes.setText(tributes);
+            } else {
+                String reason = result.getString("reason");
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.error)
+                        .setMessage("Die Ehren des Users " + username + " konnten nicht geladen " +
+                                "werden!\n" + reason)
+                        .setNegativeButton("OK", null)
+                        .create();
+                alertDialog.show();
+            }
+        } catch (InterruptedException | ExecutionException | JSONException e) {
+            editTributes.setVisibility(View.GONE);
+            tributes.setVisibility(View.GONE);
+        }
+        // TODO fetch tributes of user and set it as value of editTributes
     }
 
     private TextWatcher setUpEditTributes() {
@@ -180,7 +209,8 @@ public class EditTeamMemberFragment extends Fragment {
             registerName = dropDownRegsiters.getSelectedItem().toString();
             String[] params = new String[]{MainActivity.URL + "member/edit",
                     MainActivity.userData.getToken(), username, registerName,
-                    MainActivity.userData.getUsername(), MainActivity.userData.getTeamName()};
+                    MainActivity.userData.getUsername(), MainActivity.userData.getTeamName(),
+                    tributesText};
             EditTeamMemberTask editTeamMemberTask = new EditTeamMemberTask();
             try {
                 JSONObject result = editTeamMemberTask.execute(params).get();
