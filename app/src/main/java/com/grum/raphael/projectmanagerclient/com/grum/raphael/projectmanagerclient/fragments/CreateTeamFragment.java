@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,7 +39,9 @@ public class CreateTeamFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_team, container, false);
         teamName = (EditText) rootView.findViewById(R.id.team_name);
+        teamName.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         teamDescription = (EditText) rootView.findViewById(R.id.team_description);
+        teamDescription.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         btnCreate = (Button) rootView.findViewById(R.id.btn_create_team);
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override

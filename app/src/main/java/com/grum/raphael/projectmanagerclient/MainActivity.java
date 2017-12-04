@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -58,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText username;
     private EditText password;
     private TextView registerLink;
+    private TextView forgotPasswordLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +71,11 @@ public class MainActivity extends AppCompatActivity {
         login = (Button) findViewById(R.id.button_login);
         username = (EditText) findViewById(R.id.main_username);
         password = (EditText) findViewById(R.id.main_password);
+        username.setFilters(new InputFilter[] {EMOJI_FILTER});
+        password.setFilters(new InputFilter[] {EMOJI_FILTER});
         registerLink = (TextView) findViewById(R.id.main_link_register);
+        forgotPasswordLink = (TextView) findViewById(R.id.main_link_forgot_password);
 
-        // Set Listener for clicking buttons
         login.setOnClickListener(new View.OnClickListener() {
 
             /**
@@ -82,8 +87,6 @@ public class MainActivity extends AppCompatActivity {
                 login();
             }
         });
-
-        // Set Listener for clicking the link to the register page
         registerLink.setOnClickListener(new View.OnClickListener() {
 
             /**
@@ -94,6 +97,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+            }
+        });
+        forgotPasswordLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ForgotPasswordActivity.class));
             }
         });
     }
@@ -128,6 +137,22 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
         }
     }
+
+    public static InputFilter EMOJI_FILTER = new InputFilter() {
+
+        @Override
+        public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) {
+            for (int index = start; index < end; index++) {
+
+                int type = Character.getType(source.charAt(index));
+
+                if (type == Character.SURROGATE|| type == Character.OTHER_SYMBOL) {
+                    return "";
+                }
+            }
+            return null;
+        }
+    };
 
     private class LoginTask extends AsyncTask<String, Void, JSONObject> {
 
@@ -262,6 +287,5 @@ public class MainActivity extends AppCompatActivity {
                 alertDialog.show();
             }
         }
-
     }
 }

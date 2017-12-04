@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -63,6 +64,7 @@ public class SearchAllTeamsFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_search_all_teams, container, false);
         list = (ListView) rootView.findViewById(R.id.list_teams);
         search = (EditText) rootView.findViewById(R.id.filter_teams);
+        search.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         GetTeamsTask getTeams = new GetTeamsTask(getActivity());
         try {
             JSONObject fetchedData = getTeams.execute(new String[]{MainActivity.URL + "teams",

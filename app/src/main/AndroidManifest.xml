@@ -4,8 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"></uses-permission>
-    <uses-permission android:name="android.permission.WAKE_LOCK"></uses-permission>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -14,34 +14,45 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".RegisterActivity" />
         <activity
             android:name=".NavigationActivity"
-            android:label="@string/title_activity_navigation"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
-        <receiver android:name="com.grum.raphael.projectmanagerclient.service.Autostart">
+            android:label="@string/title_activity_navigation"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <receiver android:name=".service.Autostart">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"></action>
-                <action android:name="android.intent.action.USER_PRESENT"></action>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.grum.raphael.projectmanagerclient.service.OnAlarmReceiver" />
-        <receiver android:name="com.grum.raphael.projectmanagerclient.service.DateChangedReceiver">
+        <receiver android:name=".service.OnAlarmReceiver" />
+        <receiver android:name=".service.DateChangedReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.DATE_CHANGED"></action>
-                <action android:name="android.intent.action.USER_PRESENT"></action>
+                <action android:name="android.intent.action.DATE_CHANGED" />
             </intent-filter>
         </receiver>
-        <service android:name="com.grum.raphael.projectmanagerclient.service.DetectChangesService"></service>
-        <service android:name="com.grum.raphael.projectmanagerclient.service.TodaysActionService"></service>
+        <receiver android:name=".service.MessageBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".service.MessageAlarmReceiver" />
+
+        <service android:name=".service.DetectChangesService" />
+        <service android:name=".service.TodaysActionService" />
+        <service android:name=".service.GetNewMessagesService" />
+
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".ChangePasswordActivity"></activity>
     </application>
 
 </manifest>

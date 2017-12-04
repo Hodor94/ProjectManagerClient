@@ -68,11 +68,20 @@
             android:text="@string/label_login" />
 
         <TextView
+            android:layout_marginBottom="10sp"
             android:id="@+id/main_link_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/hint_register"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/main_link_forgot_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/hint_forgot_password"
             android:textSize="15sp" />
 
     </LinearLayout>

@@ -10,6 +10,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
+import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.NewsflashTodayTaskTokenless;
 
 import org.json.JSONArray;
@@ -66,41 +67,46 @@ public class TodaysActionService extends WakefulIntentService {
         username, currentDate, mondayOfWeek, sundayOfWeek};
         NewsflashTodayTaskTokenless getNewsflashTask = new NewsflashTodayTaskTokenless();
         try {
-            JSONObject result = getNewsflashTask.execute(params).get();
-            String success = result.getString("success");
-            if (success.equals("true")) {
-                JSONObject relevantDates = result.getJSONObject("dates");
-                projects = relevantDates.getJSONArray("projects");
-                appointments = relevantDates.getJSONArray("appointments");
-                tasks = relevantDates.getJSONArray("tasks");
-                birthdays = relevantDates.getJSONArray("birthdays");
-                editProjects(projects);
-                editAppointments(appointments);
-                editTasks(tasks);
-                editBirthdays(birthdays);
-                if (content.length() != 0) {
-                    Intent notificationIntent = new Intent(getApplicationContext(),
-                            MainActivity.class);
-                    notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-                            Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    PendingIntent intent = PendingIntent.getActivity(getApplicationContext(),
-                            0, notificationIntent, 0);
-                    NotificationManager notificationManager =
-                            (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
-                    NotificationCompat.Builder builder =
-                            new NotificationCompat.Builder(getApplicationContext())
-                                    .setSmallIcon(R.drawable.ic_notification)
-                                    .setContentTitle("Das steht heute an:")
-                                    .setContentText(content)
-                                    .setDefaults(Notification.DEFAULT_ALL)
-                                    .setStyle(new NotificationCompat.BigTextStyle()
-                                            .bigText(content))
-                                    .setContentIntent(intent)
-                                    .setAutoCancel(true);
-                    Notification notification = builder.build();
-                    notificationManager.notify(0, notification);
+            if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
+                JSONObject result = getNewsflashTask.execute(params).get();
+                if (result != null) {
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        JSONObject relevantDates = result.getJSONObject("dates");
+                        projects = relevantDates.getJSONArray("projects");
+                        appointments = relevantDates.getJSONArray("appointments");
+                        tasks = relevantDates.getJSONArray("tasks");
+                        birthdays = relevantDates.getJSONArray("birthdays");
+                        editProjects(projects);
+                        editAppointments(appointments);
+                        editTasks(tasks);
+                        editBirthdays(birthdays);
+                        if (content.length() != 0) {
+                            Intent notificationIntent = new Intent(getApplicationContext(),
+                                    MainActivity.class);
+                            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                    Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            PendingIntent intent = PendingIntent.getActivity(getApplicationContext(),
+                                    0, notificationIntent, 0);
+                            NotificationManager notificationManager =
+                                    (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+                            NotificationCompat.Builder builder =
+                                    new NotificationCompat.Builder(getApplicationContext())
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setContentTitle("Das steht heute an:")
+                                            .setContentText(content)
+                                            .setDefaults(Notification.DEFAULT_ALL)
+                                            .setStyle(new NotificationCompat.BigTextStyle()
+                                                    .bigText(content))
+                                            .setContentIntent(intent)
+                                            .setAutoCancel(true);
+                            Notification notification = builder.build();
+                            notificationManager.notify(0, notification);
+                        }
+                    }
                 }
             }
+            stopSelf();
         } catch (InterruptedException | JSONException | ExecutionException e) {
             stopSelf();
         }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ public class SearchUsersFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_search_users, container, false);
         list = (ListView) rootView.findViewById(R.id.list_users);
         search = (EditText) rootView.findViewById(R.id.filter_users);
+        search.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         if (CheckInternet.isNetworkAvailable(getContext())) {
             GetUsersTask getUsersTask = new GetUsersTask();
             try {

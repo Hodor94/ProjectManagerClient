@@ -137,5 +137,13 @@
     <string name="label_category">Kategorie:</string>
     <string name="choose_chat">Wählen Sie einen Chat aus:</string>
     <string name="label_add_tributes">Ehrung hinzufügen:</string>
+    <string name="hint_forgot_password">Passwort vergessen</string>
+    <string name="lable_username">Username:</string>
+    <string name="label_old_password">PIN:</string>
+    <string name="hint_type_old_password">PIN eingeben</string>
+    <string name="get_pin">PIN anfordern</string>
+    <string name="choose_chat_members">Wähle die User für den Chat:</string>
+    <string name="attention">Achtung!</string>
+    <string name="create_chat_name">Chat Name:</string>
 
 </resources>

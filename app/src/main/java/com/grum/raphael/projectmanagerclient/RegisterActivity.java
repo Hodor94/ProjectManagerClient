@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.util.Base64;
 import android.view.KeyEvent;
 import android.view.View;
@@ -88,6 +89,16 @@ public class RegisterActivity extends AppCompatActivity {
         password = (EditText) findViewById(R.id.text_register_password);
         passwordValidation = (EditText) findViewById(R.id.text_register_password_validation);
         register = (Button) findViewById(R.id.button_register);
+
+        // Disable emoji and other symbols
+        firstName.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        surname.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        address.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        email.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        phoneNr.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        username.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        password.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        passwordValidation.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
 
         // Set birthday String
         birthday = "" + birthdayPicker.getDayOfMonth() + "." + (birthdayPicker.getMonth() + 1) + "."

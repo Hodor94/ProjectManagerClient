@@ -264,7 +264,6 @@ public class EditProjectUsersFragment extends Fragment {
                     if (ctv.isChecked()) {
                         ctv.setChecked(false);
                         usernamesToEdit.remove(checkedUsername);
-                        System.out.println("" + usernamesToEdit.size());
                     } else {
                         ctv.setChecked(true);
                         usernamesToEdit.add(checkedUsername);

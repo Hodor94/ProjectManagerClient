@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,7 +62,9 @@ public class CreateTaskFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_create_task, container, false);
         teamMembers = getTeamMembers();
         taskName = (EditText) rootView.findViewById(R.id.task_name);
+        taskName.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         taskDescription = (EditText) rootView.findViewById(R.id.task_description);
+        taskDescription.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         deadlineDatePicker = (DatePicker) rootView.findViewById(R.id.deadline_task);
         timePicker = (TimePicker) rootView.findViewById(R.id.create_task_time);
         timePicker.setIs24HourView(true);

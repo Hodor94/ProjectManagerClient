@@ -68,6 +68,7 @@ public class PinboardFragment extends Fragment {
     private TextView headerRequests;
     private TextView noRequests;
     private TableLayout newsflashTable;
+    private TextView tableHeader;
     private JSONArray projects;
     private JSONArray tasks;
     private JSONArray appointments;
@@ -83,6 +84,7 @@ public class PinboardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_pinboard, container, false);
+        tableHeader = (TextView) rootView.findViewById(R.id.header_table_newsflash);
         newsflashTable = (TableLayout) rootView.findViewById(R.id.newsflash);
         headerInvitations = (TextView) rootView.findViewById(R.id.header_invitations);
         invitationsList = (ListView) rootView.findViewById(R.id.invitations_list);
@@ -140,31 +142,36 @@ public class PinboardFragment extends Fragment {
     }
 
     private void setUpTable() {
-        TableRow.LayoutParams layoutParamsLeftElement
-                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParamsLeftElement.setMargins(0, 0, 10, 0);
-        TableRow.LayoutParams layoutParamsRightElement
-                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParamsRightElement.setMargins(10, 0, 0, 0);
-        TableRow.LayoutParams layoutParamsMidElement
-                = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParamsMidElement.setMargins(5, 0 , 5, 0);
-        setUpHeaderRow(layoutParamsLeftElement, layoutParamsMidElement, layoutParamsRightElement);
-        ArrayList<JSONObject> projectsList = editProjects();
-        ArrayList<JSONObject> tasksList = editTasks();
-        ArrayList<JSONObject> appointmentsList = editAppointments();
-        ArrayList<JSONObject> birthdaysList = editBirthdays();
-        addToTable(projectsList, "project", layoutParamsLeftElement, layoutParamsMidElement,
-                layoutParamsRightElement);
-        addToTable(tasksList, "task", layoutParamsLeftElement, layoutParamsMidElement,
-                layoutParamsRightElement);
-        addToTable(appointmentsList, "appointment", layoutParamsLeftElement, layoutParamsMidElement,
-                layoutParamsRightElement);
-        addToTable(birthdaysList, "user", layoutParamsLeftElement, layoutParamsMidElement,
-                layoutParamsRightElement);
+        if (!MainActivity.userData.getTeamName().equals("null")) {
+            TableRow.LayoutParams layoutParamsLeftElement
+                    = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParamsLeftElement.setMargins(0, 0, 10, 0);
+            TableRow.LayoutParams layoutParamsRightElement
+                    = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParamsRightElement.setMargins(10, 0, 0, 0);
+            TableRow.LayoutParams layoutParamsMidElement
+                    = new TableRow.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT);
+            layoutParamsMidElement.setMargins(5, 0, 5, 0);
+            setUpHeaderRow(layoutParamsLeftElement, layoutParamsMidElement, layoutParamsRightElement);
+            ArrayList<JSONObject> projectsList = editProjects();
+            ArrayList<JSONObject> tasksList = editTasks();
+            ArrayList<JSONObject> appointmentsList = editAppointments();
+            ArrayList<JSONObject> birthdaysList = editBirthdays();
+            addToTable(projectsList, "project", layoutParamsLeftElement, layoutParamsMidElement,
+                    layoutParamsRightElement);
+            addToTable(tasksList, "task", layoutParamsLeftElement, layoutParamsMidElement,
+                    layoutParamsRightElement);
+            addToTable(appointmentsList, "appointment", layoutParamsLeftElement, layoutParamsMidElement,
+                    layoutParamsRightElement);
+            addToTable(birthdaysList, "user", layoutParamsLeftElement, layoutParamsMidElement,
+                    layoutParamsRightElement);
+        } else {
+            tableHeader.setVisibility(View.GONE);
+            newsflashTable.setVisibility(View.GONE);
+        }
     }
 
     private void addToTable(ArrayList<JSONObject> list, String objectName,
@@ -541,50 +548,52 @@ public class PinboardFragment extends Fragment {
     }
 
     private void getNewsflashData() {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
-        Calendar calendar = Calendar.getInstance();
-        String currentDate = formatter.format(calendar.getTime());
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        String mondayOfWeek = formatter.format(calendar.getTime());
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-        String sundayOfWeek = formatter.format(calendar.getTime());
-        if (CheckInternet.isNetworkAvailable(getContext())) {
-            String[] params = new String[]{MainActivity.URL + "newsflash",
-                    MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
-                    MainActivity.userData.getUsername(), currentDate, mondayOfWeek, sundayOfWeek};
-            NewsflashTask newsflashTask = new NewsflashTask();
-            try {
-                JSONObject result = newsflashTask.execute(params).get();
-                String success = result.getString("success");
-                if (success.equals("true")) {
-                    JSONObject relevantDates = result.getJSONObject("dates");
-                    projects = relevantDates.getJSONArray("projects");
-                    appointments = relevantDates.getJSONArray("appointments");
-                    tasks = relevantDates.getJSONArray("tasks");
-                    birthdays = relevantDates.getJSONArray("birthdays");
-                } else {
-                    String reason = result.getString("reason");
-                    AlertDialog alertDialog = new AlertDialog.Builder(getContext())
-                            .setTitle(R.string.error)
-                            .setMessage("Die anstehenden Ereignisse für die Woche konnten nicht " +
-                                    "geladen werden!\n" + reason)
-                            .setNegativeButton("OK", null)
-                            .create();
-                    alertDialog.show();
+        if (!MainActivity.userData.getTeamName().equals("null")) {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy hh:mm:ss");
+            Calendar calendar = Calendar.getInstance();
+            String currentDate = formatter.format(calendar.getTime());
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+            String mondayOfWeek = formatter.format(calendar.getTime());
+            calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+            String sundayOfWeek = formatter.format(calendar.getTime());
+            if (CheckInternet.isNetworkAvailable(getContext())) {
+                String[] params = new String[]{MainActivity.URL + "newsflash",
+                        MainActivity.userData.getToken(), MainActivity.userData.getTeamName(),
+                        MainActivity.userData.getUsername(), currentDate, mondayOfWeek, sundayOfWeek};
+                NewsflashTask newsflashTask = new NewsflashTask();
+                try {
+                    JSONObject result = newsflashTask.execute(params).get();
+                    String success = result.getString("success");
+                    if (success.equals("true")) {
+                        JSONObject relevantDates = result.getJSONObject("dates");
+                        projects = relevantDates.getJSONArray("projects");
+                        appointments = relevantDates.getJSONArray("appointments");
+                        tasks = relevantDates.getJSONArray("tasks");
+                        birthdays = relevantDates.getJSONArray("birthdays");
+                    } else {
+                        String reason = result.getString("reason");
+                        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                                .setTitle(R.string.error)
+                                .setMessage("Die anstehenden Ereignisse für die Woche konnten nicht " +
+                                        "geladen werden!\n" + reason)
+                                .setNegativeButton("OK", null)
+                                .create();
+                        alertDialog.show();
+                    }
+                } catch (InterruptedException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (ExecutionException e) {
+                    // TODO
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    // TODO
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                // TODO
-                e.printStackTrace();
-            } catch (JSONException e) {
-                // TODO
-                e.printStackTrace();
+            } else {
+                AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+                alertDialog.show();
             }
-        } else {
-            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
-            alertDialog.show();
         }
     }
 }

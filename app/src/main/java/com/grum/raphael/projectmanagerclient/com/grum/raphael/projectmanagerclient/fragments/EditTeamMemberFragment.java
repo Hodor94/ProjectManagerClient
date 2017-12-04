@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,7 @@ public class EditTeamMemberFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_edit_team_member, container, false);
         tributes = (TextView) rootView.findViewById(R.id.users_tribute);
         editTributes = (EditText) rootView.findViewById(R.id.add_tribute);
+        editTributes.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
             tributes.setVisibility(View.GONE);
             editTributes.setVisibility(View.GONE);

@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,7 @@ public class EditProjectFragment extends Fragment {
         getProjectData();
         projectNameTextView.setText(projectName);
         projectDescriptionTextView.setText(description);
+        projectDescriptionTextView.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {

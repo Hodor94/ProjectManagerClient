@@ -50,4 +50,14 @@
         android:id="@+id/list_of_messages"
         android:layout_marginBottom="16dp"
         android:layout_alignParentLeft="true" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="@color/text"
+        android:id="@+id/header_chat"
+        android:layout_marginBottom="5sp"
+        android:layout_above="@+id/list_of_messages" />
+
 </RelativeLayout>

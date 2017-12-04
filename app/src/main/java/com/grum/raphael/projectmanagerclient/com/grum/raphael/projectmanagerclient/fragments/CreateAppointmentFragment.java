@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,8 +53,10 @@ public class CreateAppointmentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_appointment, container, false);
         appointmentName = (EditText) rootView.findViewById(R.id.create_appointment_name);
+        appointmentName.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         appointmentDescription
                 = (EditText) rootView.findViewById(R.id.create_appointment_description);
+        appointmentDescription.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         deadlinePicker = (DatePicker) rootView.findViewById(R.id.create_appointment_deadline);
         timePicker = (TimePicker) rootView.findViewById(R.id.create_appointment_time);
         timePicker.setIs24HourView(true);

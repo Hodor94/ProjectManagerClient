@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,6 +63,12 @@ public class EditUserProfileFragment extends Fragment {
         email = (EditText) rootView.findViewById(R.id.edit_email);
         birthday = (DatePicker) rootView.findViewById(R.id.edit_birthday);
         ready = (Button) rootView.findViewById(R.id.edit_user_profile);
+
+        // Disable emoji usage
+        firstName.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        surname.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        address.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        phoneNr.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
 
         // Fetch values of Bundle
         final String firstName = bundle.getString("firstName");

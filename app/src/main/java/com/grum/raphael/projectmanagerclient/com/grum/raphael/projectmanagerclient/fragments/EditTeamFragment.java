@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -42,6 +43,7 @@ public class EditTeamFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_edit_team, container, false);
         teamName = (TextView) rootView.findViewById(R.id.edit_team_profile_name);
         teamDescription = (EditText) rootView.findViewById(R.id.edit_team_profile_description);
+        teamDescription.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         admin = (TextView) rootView.findViewById(R.id.edit_team_profile_admin);
         String teamName = bundle.getString("teamName");
         String teamDescription = bundle.getString("teamDescription");

@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +60,7 @@ public class AppointmentDetailFragment extends Fragment {
         Bundle bundle = getArguments();
         fetchDataFromBundle(bundle);
         nameText = (EditText) rootView.findViewById(R.id.appointment_detail_name);
+        nameText.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         if (isDeadline) {
             nameText.setFocusable(false);
             nameText.setOnClickListener(new View.OnClickListener() {
@@ -71,6 +73,7 @@ public class AppointmentDetailFragment extends Fragment {
         }
         nameText.addTextChangedListener(nameChanged());
         descriptionText = (EditText) rootView.findViewById(R.id.appointment_detail_description);
+        descriptionText.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         descriptionText.addTextChangedListener(descriptionChanged());
         datePicker = (DatePicker) rootView.findViewById(R.id.appointment_detail_date);
         timePicker = (TimePicker) rootView.findViewById(R.id.appointment_detail_time);

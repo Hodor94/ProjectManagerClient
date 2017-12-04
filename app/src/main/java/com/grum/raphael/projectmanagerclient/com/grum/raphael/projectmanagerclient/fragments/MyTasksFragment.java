@@ -12,6 +12,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -158,6 +159,7 @@ public class MyTasksFragment extends Fragment {
                                   PopupWindow popupWindow) {
         TextView taskName = (TextView) view.findViewById(R.id.popup_edit_task_name);
         EditText taskDescription = (EditText) view.findViewById(R.id.popup_edit_task_description);
+        taskDescription.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         DatePicker taskDeadline = (DatePicker) view.findViewById(R.id.popup_edit_task_deadline);
         TextView taskWorker = (TextView) view.findViewById(R.id.popup_edit_task_worker);
         Button editTask = (Button) view.findViewById(R.id.popup_btn_edit_task_ready);

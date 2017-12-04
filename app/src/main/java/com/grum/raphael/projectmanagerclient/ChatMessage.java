@@ -8,9 +8,11 @@ import java.util.Calendar;
 
 public class ChatMessage {
 
+    // Those attributes where used before
     private String messageText;
     private String messageUser;
     private long messageTime;
+    // Those attributes where added after i have used the model before
     private String team;
     private String receiver;
 
