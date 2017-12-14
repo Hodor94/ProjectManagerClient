@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
@@ -27,6 +28,7 @@ import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
 import com.grum.raphael.projectmanagerclient.tasks.EditTeamMemberTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetRegistersTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetUsersTributesTask;
+import com.grum.raphael.projectmanagerclient.tasks.LeaveTeamTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,6 +49,7 @@ public class EditTeamMemberFragment extends Fragment {
     private String registerName;
     private TextView tributes;
     private EditText editTributes;
+    private Button deleteTeamMember;
     private String tributesText;
 
     @Nullable
@@ -55,7 +58,7 @@ public class EditTeamMemberFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_edit_team_member, container, false);
         tributes = (TextView) rootView.findViewById(R.id.users_tribute);
         editTributes = (EditText) rootView.findViewById(R.id.add_tribute);
-        editTributes.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        editTributes.setFilters(new InputFilter[]{MainActivity.EMOJI_FILTER});
         if (!MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)) {
             tributes.setVisibility(View.GONE);
             editTributes.setVisibility(View.GONE);
@@ -101,6 +104,13 @@ public class EditTeamMemberFragment extends Fragment {
 
             }
         });
+        deleteTeamMember = (Button) rootView.findViewById(R.id.delete_team_member);
+        if (MainActivity.userData.getUserRole().equals(MainActivity.ADMIN)
+                && !MainActivity.userData.getUsername().equals(username)) {
+            deleteTeamMember.setOnClickListener(removeUserFromTeam());
+        } else {
+            deleteTeamMember.setVisibility(View.GONE);
+        }
         return rootView;
     }
 
@@ -254,5 +264,57 @@ public class EditTeamMemberFragment extends Fragment {
             android.app.AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
+    }
+
+    private View.OnClickListener removeUserFromTeam() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.attention)
+                        .setMessage("Wollen Sie den User wirklich vom Team entfernen?")
+                        .setNegativeButton("Abbrechen", null)
+                        .setPositiveButton("Entfernen", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (CheckInternet.isNetworkAvailable(getContext())) {
+                                    String[] params = new String[]{MainActivity.URL + "leave/team",
+                                            MainActivity.userData.getToken(),
+                                            username.getText().toString(),
+                                            MainActivity.userData.getTeamName()};
+                                    LeaveTeamTask leaveTeamTask = new LeaveTeamTask();
+                                    try {
+                                        JSONObject result = leaveTeamTask.execute(params).get();
+                                        String success = result.getString("success");
+                                        if (success.equals("true")) {
+                                            Toast.makeText(getContext(),
+                                                    "Der User wurde erfolgreich aus dem Team " +
+                                                            "entfernt", Toast.LENGTH_LONG).show();
+                                            FragmentTransaction transaction =
+                                                    getFragmentManager().beginTransaction();
+                                            transaction.replace(R.id.pager_team_profile,
+                                                    new TeamMembersFragment());
+                                            transaction.addToBackStack(null);
+                                            transaction.commit();
+                                        } else {
+                                            String reason = result.getString("reason");
+                                            Toast.makeText(getContext(),
+                                                    "Der User konnte nicht entfernt werden!\n"
+                                                            + reason, Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (InterruptedException | ExecutionException
+                                            | JSONException e) {
+                                        Toast.makeText(getContext(), "Interner Fehler! " +
+                                                "Die Aktion konnte nicht durchgeführt werden!",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    CheckInternet.internetNotAvailable(getActivity()).show();
+                                }
+                            }
+                        });
+                alertBuilder.show();
+            }
+        };
     }
 }

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -67,10 +68,11 @@ public class CreateAppointmentFragment extends Fragment {
         deadlinePicker.init(currentCalendar.get(Calendar.YEAR), currentCalendar.get(Calendar.MONTH),
                 currentCalendar.get(Calendar.DAY_OF_MONTH), setUpOnDateChangedListener());
         timePicker.setOnTimeChangedListener(setTimeChangedListener());
-        Calendar calendar = Calendar.getInstance();
-        String currentHour = "" + calendar.get(Calendar.HOUR_OF_DAY);
-        String currentMinutes = "" + calendar.get(Calendar.MONTH);
-        time = currentHour + ":" + currentMinutes + ":00";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            time = timePicker.getHour() + ":" + timePicker.getMinute() + ":00";
+        } else {
+            time = timePicker.getCurrentHour() + ":" + timePicker.getCurrentMinute() + ":00";
+        }
         createAppointment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

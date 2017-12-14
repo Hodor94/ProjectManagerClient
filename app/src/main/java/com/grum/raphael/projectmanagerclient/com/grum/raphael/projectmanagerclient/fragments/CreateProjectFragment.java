@@ -214,16 +214,7 @@ public class CreateProjectFragment extends Fragment {
                                 .setTitle(R.string.error)
                                 .setMessage("Das Projekt " + projectName
                                         + " konnte nicht angelegt werden!\n" + reason)
-                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FragmentTransaction transaction
-                                                = getFragmentManager().beginTransaction();
-                                        transaction.replace(R.id.pager_projects_profile,
-                                                new CreateProjectFragment());
-                                        transaction.commit();
-                                    }
-                                }).create();
+                                .setNegativeButton("OK", null).create();
                         alertDialog.show();
                     }
                 } catch (InterruptedException e) {

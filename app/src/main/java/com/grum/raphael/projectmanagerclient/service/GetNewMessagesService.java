@@ -19,7 +19,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -48,11 +50,14 @@ public class GetNewMessagesService extends WakefulIntentService {
         SharedPreferences settings = getSharedPreferences("MyFile", 0);
         String username = settings.getString("username", "null");
         getNewMessages(username);
-    }
+        }
 
     private void getNewMessages(String username) {
         if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
-            String[] params = new String[]{MainActivity.URL + "messages/new", username};
+            Calendar currentTime = Calendar.getInstance();
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+            String timestamp = formatter.format(currentTime.getTime());
+            String[] params = new String[]{MainActivity.URL + "messages/new", username, timestamp};
             GetNewMessagesTask getNewMessagesTask = new GetNewMessagesTask();
             try {
                 JSONObject result = getNewMessagesTask.execute(params).get();

@@ -30,10 +30,11 @@ public class SendMessageTask extends AsyncTask<String, Void, JSONObject> {
         String chatId = params[2];
         String message = params[3];
         String author = params[4];
+        String timestamp = params[5];
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost sendMessageTask = new HttpPost(url);
         StringEntity stringEntity = new StringEntity(createRequestData(token, chatId, message,
-                author), "UTF-8");
+                author, timestamp), "UTF-8");
         stringEntity.setContentType("application/json");
         sendMessageTask.setEntity(stringEntity);
         try {
@@ -63,8 +64,10 @@ public class SendMessageTask extends AsyncTask<String, Void, JSONObject> {
         return result;
     }
 
-    private String createRequestData(String token, String chatId, String message, String author) {
+    private String createRequestData(String token, String chatId, String message, String author,
+                                     String timestamp) {
         return "{\"token\": \"" + token + "\", \"chatId\": \"" + chatId + "\", \"message\": \""
-                + message + "\", \"author\": \"" + author + "\"}";
+                + message + "\", \"author\": \"" + author + "\", \"timestamp\": \""
+                + timestamp + "\"}";
     }
 }

@@ -23,7 +23,7 @@
     <string name="all_projects">Übersicht der Projekte des Teams:</string>
     <string name="error_fields_filled_wrong">Die benötigten Daten wurden nicht ausgefüllt
         oder falsch ausgefüllt!</string>
-    <string name="error_deadline">Das Datum muss in der Zukunft liegen!</string>
+    <string name="error_deadline">Das Datum muss mindestens 24 Stunden in der Zukunft liegen!</string>
     <string name="hint_deadline">Bitte geben Sie die Deadline an</string>
     <string name="no_rights">Sie haben keine Berechtigung für die gewählte Aktion!</string>
     <string name="error_get_members">Die Team-Mitglieder konnten nicht geladen werden!</string>
@@ -145,5 +145,6 @@
     <string name="choose_chat_members">Wähle die User für den Chat:</string>
     <string name="attention">Achtung!</string>
     <string name="create_chat_name">Chat Name:</string>
+    <string name="remove">Entfernen</string>
 
 </resources>

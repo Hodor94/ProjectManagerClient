@@ -2,7 +2,6 @@ package com.grum.raphael.projectmanagerclient.tasks;
 
 import android.os.AsyncTask;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,8 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.Buffer;
-import java.util.Calendar;
 
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -23,22 +20,21 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
  * Created by Raphael on 04.12.2017.
  */
 
-public class GetNewMessagesTask extends AsyncTask<String, Void, JSONObject> {
+public class DeleteChatTask extends AsyncTask<String, Void, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(String... params) {
         JSONObject result;
         String url = params[0];
-        String username = params[1];
-        String timestamp = params[2];
+        String token = params[1];
+        String id = params[2];
         HttpClient client = HttpClientBuilder.create().build();
-        HttpPost getNewMessageRequest = new HttpPost(url);
-        StringEntity stringEntity = new StringEntity(createRequestData(username, timestamp),
-                "UTF-8");
+        HttpPost deleteChatRequest = new HttpPost(url);
+        StringEntity stringEntity = new StringEntity(createRequestData(token, id), "UTF-8");
         stringEntity.setContentType("application/json");
-        getNewMessageRequest.setEntity(stringEntity);
+        deleteChatRequest.setEntity(stringEntity);
         try {
-            HttpResponse response = client.execute(getNewMessageRequest);
+            HttpResponse response = client.execute(deleteChatRequest);
             InputStream input = response.getEntity().getContent();
             if (input != null) {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -48,7 +44,7 @@ public class GetNewMessagesTask extends AsyncTask<String, Void, JSONObject> {
                     stringBuilder.append(temp);
                 }
                 result = new JSONObject(stringBuilder.toString());
-            } else  {
+            } else {
                 // TODO
                 result = null;
             }
@@ -64,8 +60,8 @@ public class GetNewMessagesTask extends AsyncTask<String, Void, JSONObject> {
         return result;
     }
 
-    private String createRequestData(String username, String timestamp) {
-        return "{\"username\": \"" + username + "\", \"timestamp\": \"" + timestamp + "\"}";
+    private String createRequestData(String token, String id) {
+        return "{\"token\": \"" + token + "\", \"chatId\": \"" + id + "\"}";
     }
 
 }

@@ -11,13 +11,19 @@ import android.os.Bundle;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
@@ -29,6 +35,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URL;
 
 import cz.msebera.android.httpclient.HttpEntity;
@@ -51,8 +59,10 @@ public class MainActivity extends AppCompatActivity {
     public final static String GOOLE_DRIVE_URL = "https://www.google.com/drive/";
     public final static float DP_TEXT_SIZE = 20f;
     public static final String FILE = "MyFile";
+    public static final int LOCAL_PORT = 5500;
+    public static Session session;
     // For emulator use
-    // public final static String URL = "http://10.0.2.2:8080/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
+    // public final static String URL = "http://10.0.2.2:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
     public static DataContainer userData = new DataContainer();
 
@@ -66,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         // Fetch all components within activity
         login = (Button) findViewById(R.id.button_login);
         username = (EditText) findViewById(R.id.main_username);
         password = (EditText) findViewById(R.id.main_password);
-        username.setFilters(new InputFilter[] {EMOJI_FILTER});
-        password.setFilters(new InputFilter[] {EMOJI_FILTER});
+        username.setFilters(new InputFilter[]{EMOJI_FILTER});
+        password.setFilters(new InputFilter[]{EMOJI_FILTER});
         registerLink = (TextView) findViewById(R.id.main_link_register);
         forgotPasswordLink = (TextView) findViewById(R.id.main_link_forgot_password);
 
@@ -146,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
                 int type = Character.getType(source.charAt(index));
 
-                if (type == Character.SURROGATE|| type == Character.OTHER_SYMBOL) {
+                if (type == Character.SURROGATE || type == Character.OTHER_SYMBOL) {
                     return "";
                 }
             }
@@ -158,6 +168,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected JSONObject doInBackground(String... params) {
+            // TODO jsch just works if connected with laptop and starting application from here.
+            // Address already in use is cause for port could not be bound
+            session = SSHSession.createSession();
+            try {
+                session.connect();
+                session.setPortForwardingL("0.0.0.0", LOCAL_PORT, "localhost", 8080);
+            } catch (JSchException e) {
+                e.printStackTrace();
+            }
             JSONObject result = null;
             StringBuilder stringBuilder = new StringBuilder();
             HttpClient client = HttpClientBuilder.create().build();
@@ -183,16 +202,19 @@ public class MainActivity extends AppCompatActivity {
                             result = new JSONObject(stringBuilder.toString());
                             return result;
                         }
-                    } catch (IOException | JSONException e) {
+                    } catch (final IOException | JSONException e) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                e.printStackTrace();
                                 AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this)
                                         .setTitle(R.string.error_login_title)
                                         .setMessage("Sie können derzeit nicht auf den Port im Netz"
-                                                + "der Universität Passau zugreifen!\n" +
+                                                + " der Universität Passau zugreifen!\n" +
+
                                                 "Bitte versuchen Sie es erneut im entsprechenden "
-                                                + "Netz mit entsprechender Port-Weiterleitung!")
+                                                + "Netz mit entsprechender Port-Weiterleitung!\n"
+                                                + getStackTrace(e))
                                         .setNegativeButton("OK", null)
                                         .create();
                                 alertDialog.show();
@@ -202,6 +224,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             return result;
+        }
+
+        public String getStackTrace(Throwable throwable) {
+            final StringWriter sw = new StringWriter();
+            final PrintWriter pw = new PrintWriter(sw, true);
+            throwable.printStackTrace(pw);
+            return sw.getBuffer().toString();
         }
 
         @Override

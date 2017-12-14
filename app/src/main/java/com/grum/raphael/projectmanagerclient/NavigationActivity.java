@@ -1,5 +1,6 @@
 package com.grum.raphael.projectmanagerclient;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,11 +15,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagerclient.fragments.*;
 import com.grum.raphael.projectmanagerclient.tasks.LeaveAppTask;
 import com.grum.raphael.projectmanagerclient.tasks.TeamTask;
 import com.grum.raphael.projectmanagerclient.tasks.UserTask;
+import com.jcraft.jsch.JSchException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +38,7 @@ public class NavigationActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -85,10 +91,12 @@ public class NavigationActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (getFragmentManager().getBackStackEntryCount() == 0) {
-                super.onBackPressed();
-            } else {
+            final android.app.Fragment fragment
+                    = getFragmentManager().findFragmentById(R.id.containerFrame);
+            if (fragment != null) {
                 getFragmentManager().popBackStack();
+            } else {
+                super.onBackPressed();
             }
         }
     }
@@ -96,6 +104,9 @@ public class NavigationActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        InputMethodManager inputMethodManager = (InputMethodManager)
+                this.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
         getMenuInflater().inflate(R.menu.navigation, menu);
         return true;
     }
@@ -232,10 +243,18 @@ public class NavigationActivity extends AppCompatActivity
 
     private void logout() {
         MainActivity.userData = new DataContainer();
+        try {
+            if (MainActivity.session != null) {
+                MainActivity.session.delPortForwardingL(MainActivity.LOCAL_PORT);
+                MainActivity.session.disconnect();
+            }
+        } catch (JSchException e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
         Intent intent = new Intent(this, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
-
     }
 
     private void leaveApp() {

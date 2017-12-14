@@ -2,11 +2,13 @@ package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagercli
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -20,25 +22,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.firebase.database.FirebaseDatabase;
-import com.grum.raphael.projectmanagerclient.ChatMessage;
 import com.grum.raphael.projectmanagerclient.MainActivity;
 import com.grum.raphael.projectmanagerclient.R;
 import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
+import com.grum.raphael.projectmanagerclient.tasks.DeleteChatTask;
 import com.grum.raphael.projectmanagerclient.tasks.GetMessagesOfChatTask;
 import com.grum.raphael.projectmanagerclient.tasks.SendMessageTask;
 
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 public class ChatFragment extends Fragment {
@@ -46,11 +43,11 @@ public class ChatFragment extends Fragment {
     private JSONObject chat;
     private String id;
     private String chatName;
-    private TextView header;
     private FloatingActionButton btnSend;
     private EditText newMessage;
     private String message;
     private ListView messages;
+    private Button deleteChat;
 
     @Nullable
     @Override
@@ -58,21 +55,17 @@ public class ChatFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chats, container, false);
         Bundle bundle = getArguments();
+        JSONArray users = null;
         try {
             chat = new JSONObject(bundle.getString("chat"));
             id = chat.getString("id");
             chatName = chat.getString("name");
+            users = chat.getJSONArray("users");
         } catch (JSONException e) {
             showInternalError();
         }
-        header = (TextView) rootView.findViewById(R.id.header_chat);
-        if (chatName.length() != 0 && chatName != null) {
-            header.setText("Chat \"" + chatName);
-        } else {
-            header.setVisibility(View.GONE);
-        }
         newMessage = (EditText) rootView.findViewById(R.id.input);
-        newMessage.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
+        newMessage.setFilters(new InputFilter[]{MainActivity.EMOJI_FILTER});
         newMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -94,6 +87,8 @@ public class ChatFragment extends Fragment {
 
         // Writing data to the database
         btnSend.setOnClickListener(sendMessage());
+        deleteChat = (Button) rootView.findViewById(R.id.deleteChat);
+        deleteChat.setOnClickListener(removeChat());
         displayMessages(id);
         return rootView;
     }
@@ -105,12 +100,15 @@ public class ChatFragment extends Fragment {
                 if (message != null && !message.equals("")) {
                     if (chat != null) {
                         if (CheckInternet.isNetworkAvailable(getContext())) {
+                            Calendar currentTime = Calendar.getInstance();
+                            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                            String timestamp = formatter.format(currentTime.getTime());
                             String[] params = new String[]{MainActivity.URL + "receive/message",
                                     MainActivity.userData.getToken(), id, message,
-                                    MainActivity.userData.getUsername()};
+                                    MainActivity.userData.getUsername(), timestamp};
                             SendMessageTask sendMessageTask = new SendMessageTask();
                             try {
-                               JSONObject result = sendMessageTask.execute(params).get();
+                                JSONObject result = sendMessageTask.execute(params).get();
                                 String success = result.getString("success");
                                 if (success.equals("true")) {
                                     displayMessages(id);
@@ -141,6 +139,8 @@ public class ChatFragment extends Fragment {
                     } else {
                         showInternalError();
                     }
+                    newMessage.setText("");
+                    message = "";
                 } else {
                     Toast.makeText(getContext(), "Bitte geben Sie eine Nachricht ein, die " +
                             "Sie verschicken wollen!", Toast.LENGTH_SHORT).show();
@@ -169,19 +169,20 @@ public class ChatFragment extends Fragment {
                 String success = result.getString("success");
                 if (success.equals("true")) {
                     JSONArray fetchedMessages = result.getJSONArray("messages");
-                    ArrayList<JSONObject> messages = new ArrayList<>();
+                    final ArrayList<JSONObject> messages = new ArrayList<>();
                     for (int i = 0; i < fetchedMessages.length(); i++) {
                         messages.add(fetchedMessages.getJSONObject(i));
                     }
-                    ChatMessageArrayAdapter adapter = new ChatMessageArrayAdapter(messages,
+                    final ChatMessageArrayAdapter adapter = new ChatMessageArrayAdapter(messages,
                             getContext());
                     this.messages.setAdapter(adapter);
+                    scrollToLastItem(this.messages, adapter);
                 } else {
                     String reason = result.getString("reason");
                     AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                             .setTitle(R.string.error)
                             .setMessage("Die Nachrichten konnten nicht geladen werden!\n"
-                            + reason)
+                                    + reason)
                             .setNegativeButton("OK", null).create();
                     alertDialog.show();
                 }
@@ -193,6 +194,70 @@ public class ChatFragment extends Fragment {
             AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
             alertDialog.show();
         }
+    }
+
+    private void scrollToLastItem(final ListView messages, final ChatMessageArrayAdapter adapter) {
+        this.messages.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                messages.setSelection(adapter.getCount() - 1);
+            }
+        });
+    }
+
+    private View.OnClickListener removeChat() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.attention)
+                        .setMessage("Möchten Sie den Chat wirklich löschen?")
+                        .setNegativeButton("Abbrechen", null)
+                        .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (CheckInternet.isNetworkAvailable(getContext())) {
+                                    String[] params = new String[]{MainActivity.URL + "delete/chat",
+                                            MainActivity.userData.getToken(), id};
+                                    DeleteChatTask deleteChatTask = new DeleteChatTask();
+                                    try {
+                                        JSONObject result = deleteChatTask.execute(params).get();
+                                        String success = result.getString("success");
+                                        if (success.equals("true")) {
+                                            Toast.makeText(getContext(),
+                                                    "Der Chat wurde erfolgreich gelsöcht!",
+                                                    Toast.LENGTH_LONG).show();
+                                            FragmentTransaction transaction
+                                                    = getFragmentManager()
+                                                    .beginTransaction();
+                                            transaction.replace(R.id.containerFrame,
+                                                    new ChooseChatFragment());
+                                            transaction.commit();
+                                        } else {
+                                            String reason = result.getString("reason");
+                                            Toast.makeText(getContext(),
+                                                    "Der Chat konnte nicht gelöscht werden!\n"
+                                                            + reason, Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (InterruptedException | ExecutionException
+                                            | JSONException e) {
+                                        Toast.makeText(getContext(),
+                                                "Interner Fehler! Die Aktion konnte nicht " +
+                                                        "durchgeführt werden!", Toast.LENGTH_LONG)
+                                                .show();
+                                    }
+                                } else
+
+                                {
+                                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+                                    alertDialog.show();
+                                }
+                            }
+                        });
+                alertBuilder.show();
+            }
+        };
     }
 
 }

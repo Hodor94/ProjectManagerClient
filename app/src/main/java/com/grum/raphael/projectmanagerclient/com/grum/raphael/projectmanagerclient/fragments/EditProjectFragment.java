@@ -166,69 +166,86 @@ public class EditProjectFragment extends Fragment {
         Fragment newFragment = new EditProjectUsersFragment();
         newFragment.setArguments(bundle);
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        transaction.replace(R.id.containerFrame, newFragment);
+        transaction.replace(((ViewGroup)getView().getParent()).getId(), newFragment);
         transaction.addToBackStack(null);
         transaction.commit();
     }
 
     private void deleteProject() {
-        if (CheckInternet.isNetworkAvailable(getContext())) {
-            if (manager.equals(MainActivity.userData.getUsername())) {
-                String[] params = new String[]{MainActivity.URL + "delete/project",
-                        MainActivity.userData.getToken(), projectName,
-                        MainActivity.userData.getTeamName(), MainActivity.userData.getUsername()};
-                DeleteProjectTask deleteProjectTask = new DeleteProjectTask();
-                try {
-                    JSONObject result = deleteProjectTask.execute(params).get();
-                    String success = result.getString("success");
-                    if (success.equals("true")) {
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.success)
-                                .setMessage("Sie haben das Projekt " + projectName
-                                        + " erfolgreich gelöscht!")
-                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        FragmentTransaction transaction = getFragmentManager()
-                                                .beginTransaction();
-                                        transaction.replace(R.id.containerFrame, new ProjectsFragment());
-                                        transaction.commit();
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext())
+                .setTitle(R.string.attention)
+                .setMessage("Möchten Sie das Projekt wirklich löschen?")
+                .setNegativeButton("Abbrechen", null)
+                .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (CheckInternet.isNetworkAvailable(getContext())) {
+                            if (manager.equals(MainActivity.userData.getUsername())) {
+                                String[] params = new String[]{MainActivity.URL + "delete/project",
+                                        MainActivity.userData.getToken(), projectName,
+                                        MainActivity.userData.getTeamName(),
+                                        MainActivity.userData.getUsername()};
+                                DeleteProjectTask deleteProjectTask = new DeleteProjectTask();
+                                try {
+                                    JSONObject result = deleteProjectTask.execute(params).get();
+                                    String success = result.getString("success");
+                                    if (success.equals("true")) {
+                                        AlertDialog alertDialog = new AlertDialog
+                                                .Builder(getActivity())
+                                                .setTitle(R.string.success)
+                                                .setMessage("Sie haben das Projekt " + projectName
+                                                        + " erfolgreich gelöscht!")
+                                                .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        FragmentTransaction transaction
+                                                                = getFragmentManager()
+                                                                .beginTransaction();
+                                                        transaction.replace(R.id.containerFrame,
+                                                                new ProjectsFragment());
+                                                        transaction.commit();
+                                                    }
+                                                })
+                                                .create();
+                                        alertDialog.show();
+                                    } else {
+                                        String reason = result.getString("reason");
+                                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                                .setTitle(R.string.error)
+                                                .setMessage("Das Projekt " + projectName
+                                                        + " konnte nicht gelöscht werden!\n"
+                                                        + reason)
+                                                .setNegativeButton("OK", null)
+                                                .create();
+                                        alertDialog.show();
                                     }
-                                })
-                                .create();
-                        alertDialog.show();
-                    } else {
-                        String reason = result.getString("reason");
-                        AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                .setTitle(R.string.error)
-                                .setMessage("Das Projekt " + projectName
-                                        + " konnte nicht gelöscht werden!\n" + reason)
-                                .setNegativeButton("OK", null)
-                                .create();
-                        alertDialog.show();
+                                } catch (InterruptedException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                } catch (ExecutionException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                } catch (JSONException e) {
+                                    // TODO
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                        .setTitle(R.string.error)
+                                        .setMessage(getResources().getString(R.string.no_rights))
+                                        .setNegativeButton("OK", null)
+                                        .create();
+                                alertDialog.show();
+                            }
+                        } else {
+                            AlertDialog alertDialog = CheckInternet
+                                    .internetNotAvailable(getActivity());
+                            alertDialog.show();
+                        }
                     }
-                } catch (InterruptedException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    // TODO
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    // TODO
-                    e.printStackTrace();
-                }
-            } else {
-                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
-                        .setMessage(getResources().getString(R.string.no_rights))
-                        .setNegativeButton("OK", null)
-                        .create();
-                alertDialog.show();
-            }
-        } else {
-            AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
-            alertDialog.show();
-        }
+                });
+        alertBuilder.show();
+
     }
 
     private void editProject() {

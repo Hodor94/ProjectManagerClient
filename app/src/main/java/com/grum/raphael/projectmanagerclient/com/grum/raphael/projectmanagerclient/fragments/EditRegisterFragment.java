@@ -3,6 +3,8 @@ package com.grum.raphael.projectmanagerclient.com.grum.raphael.projectmanagercli
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -51,10 +53,10 @@ public class EditRegisterFragment extends Fragment {
         Bundle bundle = getArguments();
         registerName = bundle.getString("registerName");
         JSONObject register = getRegister(registerName);
-        getColorOfRegister(register);
         registerNameView = (TextView) rootView.findViewById(R.id.label_register_name);
         registerNameView.setText(registerName);
         editColor = (ImageView) rootView.findViewById(R.id.edit_color_for_register);
+        getColorOfRegister(register);
         editColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -149,6 +151,8 @@ public class EditRegisterFragment extends Fragment {
                 e.printStackTrace();
             }
         }
+        String color = "#" + Integer.toHexString(defaultColor);
+        editColor.setBackgroundColor(Color.parseColor(color));
     }
 
     private JSONObject getRegister(String registerName) {

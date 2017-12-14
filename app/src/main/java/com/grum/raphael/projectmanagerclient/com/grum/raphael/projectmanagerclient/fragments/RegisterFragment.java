@@ -132,7 +132,7 @@ public class RegisterFragment extends Fragment {
                 TabLayout.LayoutParams.MATCH_PARENT);
         layoutParams.setMargins(0, 0, 0, 10);
         for (int i = 0; i < registers.size(); i++) {
-            JSONObject register = registers.get(i);
+            final JSONObject register = registers.get(i);
             String color = null;
             String registerName = null;
             try {

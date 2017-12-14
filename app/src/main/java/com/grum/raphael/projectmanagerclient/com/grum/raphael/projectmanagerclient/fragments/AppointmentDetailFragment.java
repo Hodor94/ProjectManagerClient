@@ -194,58 +194,68 @@ public class AppointmentDetailFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (CheckInternet.isNetworkAvailable(getContext())) {
-                    if (validateInput(name, description)) {
-                        String[] params = new String[]{MainActivity.URL + "delete/appointment",
-                                MainActivity.userData.getToken(), MainActivity.userData.getAdminOfProject(),
-                                MainActivity.userData.getTeamName(), MainActivity.userData.getUsername(), id};
-                        DeleteAppointmentTask deleteAppointmentTask = new DeleteAppointmentTask();
-                        try {
-                            JSONObject result = deleteAppointmentTask.execute(params).get();
-                            String success = result.getString("success");
-                            if (success.equals("true")) {
-                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                        .setTitle(R.string.success)
-                                        .setMessage("Das Meeting wurde erfolgreich gelöscht!")
-                                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                Fragment newFragment = new AppointmentsFragment();
-                                                FragmentTransaction transaction
-                                                        = getFragmentManager().beginTransaction();
-                                                transaction.replace(R.id.containerFrame, newFragment);
-                                                transaction.commit();
+                AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.attention)
+                        .setMessage("Möchten Sie das Meeting wirklich löschen?")
+                        .setNegativeButton("Abbrechen", null)
+                        .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (CheckInternet.isNetworkAvailable(getContext())) {
+                                    if (validateInput(name, description)) {
+                                        String[] params = new String[]{MainActivity.URL + "delete/appointment",
+                                                MainActivity.userData.getToken(), MainActivity.userData.getAdminOfProject(),
+                                                MainActivity.userData.getTeamName(), MainActivity.userData.getUsername(), id};
+                                        DeleteAppointmentTask deleteAppointmentTask = new DeleteAppointmentTask();
+                                        try {
+                                            JSONObject result = deleteAppointmentTask.execute(params).get();
+                                            String success = result.getString("success");
+                                            if (success.equals("true")) {
+                                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                                        .setTitle(R.string.success)
+                                                        .setMessage("Das Meeting wurde erfolgreich gelöscht!")
+                                                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                Fragment newFragment = new AppointmentsFragment();
+                                                                FragmentTransaction transaction
+                                                                        = getFragmentManager().beginTransaction();
+                                                                transaction.replace(R.id.containerFrame, newFragment);
+                                                                transaction.commit();
+                                                            }
+                                                        }).create();
+                                                alertDialog.show();
+                                            } else {
+                                                String reason = result.getString("reason");
+                                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+                                                        .setTitle(R.string.error)
+                                                        .setMessage("Das Meeting konnte nicht gelöscht werden!\n" + reason)
+                                                        .setNegativeButton("OK", null)
+                                                        .create();
+                                                alertDialog.show();
                                             }
-                                        }).create();
-                                alertDialog.show();
-                            } else {
-                                String reason = result.getString("reason");
-                                AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                                        .setTitle(R.string.error)
-                                        .setMessage("Das Meeting konnte nicht gelöscht werden!\n" + reason)
-                                        .setNegativeButton("OK", null)
-                                        .create();
-                                alertDialog.show();
+                                        } catch (InterruptedException e) {
+                                            // TODO
+                                            e.printStackTrace();
+                                        } catch (ExecutionException e) {
+                                            // TODO
+                                            e.printStackTrace();
+                                        } catch (JSONException e) {
+                                            // TODO
+                                            e.printStackTrace();
+                                        }
+                                    } else {
+                                        Toast.makeText(getContext(),
+                                                getResources().getString(R.string.error_fields_filled_wrong),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                } else {
+                                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
+                                    alertDialog.show();
+                                }
                             }
-                        } catch (InterruptedException e) {
-                            // TODO
-                            e.printStackTrace();
-                        } catch (ExecutionException e) {
-                            // TODO
-                            e.printStackTrace();
-                        } catch (JSONException e) {
-                            // TODO
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Toast.makeText(getContext(),
-                                getResources().getString(R.string.error_fields_filled_wrong),
-                                Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    AlertDialog alertDialog = CheckInternet.internetNotAvailable(getActivity());
-                    alertDialog.show();
-                }
+                        });
+                alertBuilder.show();
             }
         };
     }

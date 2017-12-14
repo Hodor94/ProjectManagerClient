@@ -63,7 +63,17 @@ public class TeamInformationFragment extends Fragment {
         leaveTeam.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leaveTeam();
+                AlertDialog alertDialog = new AlertDialog.Builder(getContext())
+                        .setTitle(R.string.attention)
+                        .setMessage("Wollden Sie das Team wirklich verlassen?")
+                        .setNegativeButton("Abbrechen", null)
+                        .setPositiveButton("Verlassen", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                leaveTeam();
+                            }
+                        }).create();
+                alertDialog.show();
             }
         });
         googleDrive = (ImageView) rootView.findViewById(R.id.google_drive);
@@ -186,11 +196,12 @@ public class TeamInformationFragment extends Fragment {
                 MainActivity.userData.setUserRole(MainActivity.USER);
             } else {
                 AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.error)
+                        .setTitle(R.string.attention)
                         .setMessage("Sie sind Administrator des Teams!\n " +
                                 "Das Team wäre nutzlos ohne Sie! Wenn Sie trotzdem das Team verlassen " +
                                 "wollen, bitte löschen Sie dieses nun.")
-                        .setNegativeButton("Löschen", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("Abbrechen", null)
+                        .setPositiveButton("Löschen", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 deleteTeam();
