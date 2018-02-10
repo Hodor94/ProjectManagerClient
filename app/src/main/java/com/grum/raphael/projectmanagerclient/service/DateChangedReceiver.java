@@ -1,21 +1,17 @@
 package com.grum.raphael.projectmanagerclient.service;
 
-import android.app.AlarmManager;
-import android.app.DatePickerDialog;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.SystemClock;
-import android.widget.Toast;
-
-import java.util.Calendar;
 
 /**
- * Created by Raphael on 28.11.2017.
+ * Listens to the action of a change of the date and performs action if it detects such an action.
  */
-
 public class DateChangedReceiver extends BroadcastReceiver {
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         WakefulIntentService.acquireStaticLock(context);

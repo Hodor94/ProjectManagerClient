@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.grum.raphael.projectmanagerclient.tasks.CheckInternet;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,7 +53,9 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import okhttp3.MediaType;
 
-// TODO: comment
+/**
+ * This is the page of the user interface for register a new user to the system.
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     // For validating phoneNr
@@ -73,6 +77,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText passwordValidation;
     private Button register;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,6 +154,9 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent keyEvent) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -155,6 +165,9 @@ public class RegisterActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, keyEvent);
     }
 
+    /*
+    Validates the user input.
+     */
     private boolean validateInput(String email, String phoneNr, String birthday, String username,
                                   String password, String passwordValidation) {
         boolean result = false;
@@ -284,6 +297,9 @@ public class RegisterActivity extends AppCompatActivity {
         return result;
     }
 
+    /*
+    This method calls the task to send the request to the server to register a new user.
+     */
     private void registerUser() {
         if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
             RegisterUserTask registerTask = new RegisterUserTask();
@@ -312,19 +328,28 @@ public class RegisterActivity extends AppCompatActivity {
 
     //----------------------------------------------------------------------------------------------
 
-    // TODO prograss bar or sthg like this
+    /*
+    The task which sends the requests for create new users in the system.
+     */
     private class RegisterUserTask extends AsyncTask<String, Void, JSONObject> {
 
         @Override
         protected JSONObject doInBackground(String... urls) {
             JSONObject result = null;
+            Session session = SSHSession.createSession();
+            try {
+                session.connect();
+                session.setPortForwardingL("0.0.0.0", MainActivity.LOCAL_PORT, "localhost", 8080);
+            } catch (JSchException e) {
+                e.printStackTrace();
+            }
             try {
                 String tempJson = null;
                 StringBuilder builder = new StringBuilder();
                 HttpClient client = HttpClientBuilder.create().build();
                 HttpPost registerPost = new HttpPost(urls[0]);
                 // Give the users information to the method.
-                JSONObject userJson = creatUserInfo(urls[1], urls[2], urls[3], urls[4], urls[5],
+                JSONObject userJson = createUserInfo(urls[1], urls[2], urls[3], urls[4], urls[5],
                         urls[6], urls[7], urls[8]);
                 if (userJson != null) {
                     StringEntity stringEntity = new StringEntity(userJson.toString(), "UTF-8");
@@ -389,7 +414,7 @@ public class RegisterActivity extends AppCompatActivity {
             return result;
         }
 
-        private JSONObject creatUserInfo(String firstName, String surname, String birthday,
+        private JSONObject createUserInfo(String firstName, String surname, String birthday,
                                          String address, String email, String phoneNr,
                                          String username, String password) {
             JSONObject result = null;
@@ -405,6 +430,11 @@ public class RegisterActivity extends AppCompatActivity {
             return result;
         }
 
+        /**
+         * Extracts the answer of the server and informs the user about the result of the action.
+         *
+         * @param jsonObject The answer of the server.
+         */
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             if (jsonObject != null) {

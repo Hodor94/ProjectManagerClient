@@ -47,10 +47,12 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
+/**
+ * The first page of the application. Is used for login and save global information used in the
+ * application.
+ */
 public class MainActivity extends AppCompatActivity {
 
-
-    // For smartphone use
     public final static String URL
             = "http://127.0.0.1:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     public final static String ADMIN = "ADMINISTRATOR";
@@ -61,24 +63,25 @@ public class MainActivity extends AppCompatActivity {
     public static final String FILE = "MyFile";
     public static final int LOCAL_PORT = 5500;
     public static Session session;
-    // For emulator use
-    // public final static String URL = "http://10.0.2.2:5500/ProjectManager-0.0.1-SNAPSHOT/pmservice/";
     private String userInfo;
     public static DataContainer userData = new DataContainer();
 
-    private Button login;
+    private Button loginButton;
     private EditText username;
     private EditText password;
     private TextView registerLink;
     private TextView forgotPasswordLink;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         // Fetch all components within activity
-        login = (Button) findViewById(R.id.button_login);
+        loginButton = (Button) findViewById(R.id.button_login);
         username = (EditText) findViewById(R.id.main_username);
         password = (EditText) findViewById(R.id.main_password);
         username.setFilters(new InputFilter[]{EMOJI_FILTER});
@@ -86,12 +89,7 @@ public class MainActivity extends AppCompatActivity {
         registerLink = (TextView) findViewById(R.id.main_link_register);
         forgotPasswordLink = (TextView) findViewById(R.id.main_link_forgot_password);
 
-        login.setOnClickListener(new View.OnClickListener() {
-
-            /**
-             * TODO
-             * @param v
-             */
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 login();
@@ -117,6 +115,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /*
+    Validates the user input.
+     */
     private boolean validateInput(String username, String password) {
         boolean result = false;
         if (username != "" && password != "") {
@@ -125,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
+    /*
+    Starts the login request to the server and extracts the answer. Due to this answer it performs
+    specific actions like forwarding to the user profile page if the login was a success.
+     */
     private void login() {
         final String username = this.username.getText().toString().trim();
         final String password = this.password.getText().toString().trim();
@@ -164,12 +169,20 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    /*
+    This calss sends the login request to the server.
+     */
     private class LoginTask extends AsyncTask<String, Void, JSONObject> {
 
+        /**
+         * Sends the login request to the server.
+         *
+         * @param params The data as a String {@List} needed for the request.
+         *
+         * @return A JSONObject with the result of the request.
+         */
         @Override
         protected JSONObject doInBackground(String... params) {
-            // TODO jsch just works if connected with laptop and starting application from here.
-            // Address already in use is cause for port could not be bound
             session = SSHSession.createSession();
             try {
                 session.connect();
@@ -213,8 +226,7 @@ public class MainActivity extends AppCompatActivity {
                                                 + " der Universität Passau zugreifen!\n" +
 
                                                 "Bitte versuchen Sie es erneut im entsprechenden "
-                                                + "Netz mit entsprechender Port-Weiterleitung!\n"
-                                                + getStackTrace(e))
+                                                + "Netz mit entsprechender Port-Weiterleitung!")
                                         .setNegativeButton("OK", null)
                                         .create();
                                 alertDialog.show();
@@ -226,13 +238,11 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
-        public String getStackTrace(Throwable throwable) {
-            final StringWriter sw = new StringWriter();
-            final PrintWriter pw = new PrintWriter(sw, true);
-            throwable.printStackTrace(pw);
-            return sw.getBuffer().toString();
-        }
-
+        /**
+         * Extracts the answer of the server and notifies the user.
+         *
+         * @param jsonObject The answer of the server.
+         */
         @Override
         protected void onPostExecute(JSONObject jsonObject) {
             if (jsonObject != null) {
@@ -282,11 +292,17 @@ public class MainActivity extends AppCompatActivity {
             return result;
         }
 
+        /*
+        Forwards to the NavigationActivity.
+         */
         private void goToNavigationActivity() {
             Intent navigationAction = new Intent(MainActivity.this, NavigationActivity.class);
             startActivity(navigationAction);
         }
 
+        /*
+        Saves the data received from the server and needed for the usage of this application.
+         */
         private void fillDataContainer(JSONObject userData) {
             try {
                 JSONObject user = new JSONObject(userData.getString("user"));

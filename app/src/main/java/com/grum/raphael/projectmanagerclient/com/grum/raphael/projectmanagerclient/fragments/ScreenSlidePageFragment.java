@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 import com.github.mikephil.charting.charts.PieChart;
 import com.grum.raphael.projectmanagerclient.R;
@@ -28,8 +29,11 @@ public class ScreenSlidePageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.diagaram_container, container,
                 false);
-        FrameLayout frameLayout = (FrameLayout) rootView.findViewById(R.id.chart_container);
-        frameLayout.addView(pieChart);
+        LinearLayout frame = (LinearLayout) rootView.findViewById(R.id.chart_container);
+        if (pieChart.getParent() != null) {
+            ((ViewGroup)pieChart.getParent()).removeView(pieChart);
+        }
+        frame.addView(pieChart);
         return rootView;
     }
 }

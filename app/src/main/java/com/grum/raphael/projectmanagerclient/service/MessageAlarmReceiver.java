@@ -5,9 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Created by Raphael on 04.12.2017.
+ * This receiver class starts the service which asks for new messages of the user's chats.
  */
-
 public class MessageAlarmReceiver extends BroadcastReceiver {
 
     @Override

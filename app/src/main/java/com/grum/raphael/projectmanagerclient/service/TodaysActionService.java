@@ -23,11 +23,11 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by Raphael on 28.11.2017.
+ * This service requests the actions of the user's team taking place on the current day.
  */
-
 public class TodaysActionService extends WakefulIntentService {
 
+    // Used for creating the notification
     private String content = "";
 
     /**
@@ -43,6 +43,9 @@ public class TodaysActionService extends WakefulIntentService {
         super(TodaysActionService.class.getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void doWakefulWork(Intent intent) {
         SharedPreferences settings = getSharedPreferences("MyFile", 0);
@@ -51,6 +54,9 @@ public class TodaysActionService extends WakefulIntentService {
         getNewsflashForToday(teamName, username);
     }
 
+    /*
+    Requests the actions taking place on the current day.
+     */
     private void getNewsflashForToday(String teamName, String username) {
         JSONArray projects;
         JSONArray appointments;
@@ -113,6 +119,9 @@ public class TodaysActionService extends WakefulIntentService {
         stopSelf();
     }
 
+    /*
+    Extracts the tasks of the current day.
+     */
     private void editTasks(JSONArray tasks) throws JSONException {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < tasks.length(); i++) {
@@ -126,6 +135,9 @@ public class TodaysActionService extends WakefulIntentService {
         }
     }
 
+    /*
+    Extracts the appointments taking place on the current day.
+     */
     private void editAppointments(JSONArray appointments) throws JSONException {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < appointments.length(); i++) {
@@ -139,6 +151,9 @@ public class TodaysActionService extends WakefulIntentService {
         }
     }
 
+    /*
+    Extracts the projects which deadlines are taking place on the current day.
+     */
     private void editProjects(JSONArray projects) throws JSONException {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < projects.length(); i++) {
@@ -152,6 +167,9 @@ public class TodaysActionService extends WakefulIntentService {
         }
     }
 
+    /*
+    Extracts the birthdays of the team members take place at the current day.
+     */
     private void editBirthdays(JSONArray birthdays) throws JSONException {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < birthdays.length(); i++) {

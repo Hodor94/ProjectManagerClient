@@ -52,16 +52,10 @@ public class TeamTask extends AsyncTask<String, Void, JSONObject> {
                 } else {
                     result = null;
                 }
-            } catch (UnsupportedEncodingException e) {
-                result = null;
-            } catch (ClientProtocolException e) {
-                result = null;
-            } catch (IOException e) {
-                result = null;
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 result = null;
             }
-        } else {
+        }else {
             result = null;
         }
         return result;

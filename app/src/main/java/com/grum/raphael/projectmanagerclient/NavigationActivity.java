@@ -30,11 +30,17 @@ import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * This activity is used to create the navigation main menu.
+ */
 public class NavigationActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     public static JSONObject userTaskData;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +91,9 @@ public class NavigationActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -101,6 +110,9 @@ public class NavigationActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -111,6 +123,9 @@ public class NavigationActivity extends AppCompatActivity
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -128,6 +143,9 @@ public class NavigationActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -241,6 +259,9 @@ public class NavigationActivity extends AppCompatActivity
         return result;
     }
 
+    /*
+    Logs out the user.
+     */
     private void logout() {
         MainActivity.userData = new DataContainer();
         try {
@@ -257,6 +278,9 @@ public class NavigationActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    /*
+    Sends the request to delete the user from the system.
+     */
     private void leaveApp() {
         String[] params = new String[] {MainActivity.URL + "leave",
                 MainActivity.userData.getToken(), MainActivity.userData.getUsername()};

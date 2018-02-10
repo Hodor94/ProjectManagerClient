@@ -26,9 +26,9 @@ import org.json.JSONObject;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by Raphael on 23.11.2017.
+ * This class is used for the background communication with the server. It forces the device to
+ * stay awake during the whole process.
  */
-
 abstract public class WakefulIntentService extends IntentService {
 
 
@@ -41,16 +41,38 @@ abstract public class WakefulIntentService extends IntentService {
         super(name);
     }
 
+    /**
+     * Is used to perform the communication action with the server inside a background thread.
+     * Is defined by the service which has to perform the action. Basically uses HTTP to request
+     * data om the server.
+     *
+     * @param intent The abstract information about the action to perform.
+     */
     abstract void doWakefulWork(Intent intent);
 
     private static PowerManager.WakeLock lockStatic = null;
-    public static final String LOCK_NAME_STATIC
-            = "com.grum.raphael.projectmanagerclient.service.DetectChangesService.Static"; // for debugging purpose
 
+    public static final String LOCK_NAME_STATIC
+            = "com.grum.raphael.projectmanagerclient.service.DetectChangesService.Static";
+    // for debugging purpose
+
+
+    /**
+     * Is used to force the device to stay awake during the process. Increases power usage.
+     *
+     * @param context
+     */
     public static void acquireStaticLock(Context context) {
         getLock(context).acquire();
     }
 
+    /**
+     * Returns the device's PowerManager.WakeLock to be able to force the devi ce to stay awake.
+     *
+     * @param context The interface to access the global resources of the application.
+     *
+     * @return The PowerManager.WakeLock. The device's power manager to force it staying awake.
+     */
     synchronized private static PowerManager.WakeLock getLock(Context context) {
         if (lockStatic == null) {
             PowerManager mgr = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
@@ -61,6 +83,9 @@ abstract public class WakefulIntentService extends IntentService {
         return lockStatic;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     final protected void onHandleIntent(@Nullable Intent intent) {
         try {

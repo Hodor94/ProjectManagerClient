@@ -140,7 +140,7 @@ public class ProjectStatisticFragment extends Fragment {
                     return;
                 } else {
                     Toast.makeText(getContext(),
-                            xData[e.getXIndex()] + " = " + e.getVal() + "%", Toast.LENGTH_LONG)
+                            xData[e.getXIndex()] + " = " + (e.getVal()*100) + "%", Toast.LENGTH_LONG)
                             .show();
                 }
             }

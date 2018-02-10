@@ -21,6 +21,9 @@ import org.json.JSONObject;
 
 import java.util.concurrent.ExecutionException;
 
+/**
+ * The page the user can change his or her password with a PIN created on the server side.
+ */
 public class ChangePasswordActivity extends AppCompatActivity {
 
     private TextView header;
@@ -33,6 +36,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
     private String newPasswordRepetition;
     private String username;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,16 +50,28 @@ public class ChangePasswordActivity extends AppCompatActivity {
         oldPasswordView = (EditText) findViewById(R.id.old_password);
         oldPasswordView.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         oldPasswordView.addTextChangedListener(new TextWatcher() {
+
+            /**
+             * {@inheritDoc}
+             */
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged(CharSequence s, int start,
+                                          int count, int after) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(CharSequence s, int start,
+                                      int before, int count) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void afterTextChanged(Editable s) {
                 oldPassword = oldPasswordView.getText().toString();
@@ -62,16 +80,26 @@ public class ChangePasswordActivity extends AppCompatActivity {
         newPasswordView = (EditText) findViewById(R.id.new_password_one);
         newPasswordView.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         newPasswordView.addTextChangedListener(new TextWatcher() {
+
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void afterTextChanged(Editable s) {
                 newPassword = newPasswordView.getText().toString();
@@ -80,16 +108,25 @@ public class ChangePasswordActivity extends AppCompatActivity {
         newPasswordRepetitionView = (EditText) findViewById(R.id.new_password_two);
         newPasswordRepetitionView.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         newPasswordRepetitionView.addTextChangedListener(new TextWatcher() {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void afterTextChanged(Editable s) {
                 newPasswordRepetition = newPasswordRepetitionView.getText().toString();
@@ -104,6 +141,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
         });
     }
 
+    /*
+    Sends the password request to the server.
+    */
     private void changePassword() {
         if (validateInput()) {
             if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
@@ -149,6 +189,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    Validates the whole input.
+     */
     private boolean validateInput() {
         boolean result = false;
         if (oldPassword != null && oldPassword.length() != 0 && newPassword != null

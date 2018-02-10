@@ -3,9 +3,8 @@ package com.grum.raphael.projectmanagerclient;
 import java.util.HashMap;
 
 /**
- * Created by Raphael on 24.08.2017.
+ * This class is used to save the user'S data needed during the client runs.
  */
-
 public class DataContainer {
     private String token;
     private String username;
@@ -13,11 +12,23 @@ public class DataContainer {
     private String userRole;
     private String adminOfProject;
 
+    /**
+     * Creates an instance of DataContainer.
+     */
     public DataContainer() {
     }
 
+    /**
+     * Creates an instance of DataContainer with all data set.
+     *
+     * @param token The user token.
+     * @param username The username of the user using the client.
+     * @param teamName The name of the team the user belongs to.
+     * @param userRole The role of the user in the team.
+     * @param adminOfProject The name of the project the user is manager of.
+     */
     public DataContainer(String token, String username, String teamName, String userRole,
-                         String adminOfProject, HashMap<String, String> colors) {
+                         String adminOfProject) {
         this.token = token;
         this.username = username;
         this.teamName = teamName;

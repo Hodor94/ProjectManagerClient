@@ -6,9 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 
 /**
- * Created by Raphael on 31.08.2017.
+ * This class is used to create an alert error due to the user token expired.
  */
-
 public class ErrorAlertExpiredRights {
 
     private AlertDialog alertDialog;
@@ -34,6 +33,9 @@ public class ErrorAlertExpiredRights {
         return alertDialog;
     }
 
+    /**
+     * @return Returns the token expired error alert.
+     */
     public AlertDialog getAlertDialog() {
         return alertDialog;
     }

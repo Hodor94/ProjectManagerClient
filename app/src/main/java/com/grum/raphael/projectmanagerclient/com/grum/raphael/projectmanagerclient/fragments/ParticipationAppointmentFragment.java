@@ -115,10 +115,11 @@ public class ParticipationAppointmentFragment extends Fragment {
                     }
                 } else {
                     String value = userAnswerJson.getString(key);
+                    value = transformValue(value);
                     userAnswers.put(key, value);
                 }
             }
-            checkButtons.setOnCheckedChangeListener(setCheckAnserListener());
+            checkButtons.setOnCheckedChangeListener(setCheckAnswerListener());
             sendParticipationAnswer.setOnClickListener(sendAnswer());
         } catch (JSONException e) {
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
@@ -137,7 +138,19 @@ public class ParticipationAppointmentFragment extends Fragment {
         }
     }
 
-    private RadioGroup.OnCheckedChangeListener setCheckAnserListener() {
+    private String transformValue(String value) {
+        String result;
+        if (value.equals(YES)) {
+            result = "Nimmt teil";
+        } else if (value.equals(MAYBE)) {
+            result = "Vielleicht";
+        } else {
+            result = "Absage";
+        }
+        return result;
+    }
+
+    private RadioGroup.OnCheckedChangeListener setCheckAnswerListener() {
         return new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {

@@ -13,12 +13,18 @@ import android.widget.Toast;
 
 import com.grum.raphael.projectmanagerclient.tasks.ForgotPasswordTask;
 
+/**
+ * The page of the user for the user to request a PIN from the server.
+ */
 public class ForgotPasswordActivity extends AppCompatActivity {
 
     private EditText username;
     private String usernameText;
     private Button getPin;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,16 +32,25 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         username = (EditText) findViewById(R.id.add_username);
         username.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
         username.addTextChangedListener(new TextWatcher() {
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
             }
 
+            /**
+             * {@inheritDoc}
+             */
             @Override
             public void afterTextChanged(Editable s) {
                 usernameText = username.getText().toString();
@@ -64,6 +79,9 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         });
     }
 
+    /*
+     Validates the user input.
+     */
     private boolean validateInput() {
         boolean result = false;
         if (usernameText != null && usernameText.length() != 0) {

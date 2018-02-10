@@ -1,11 +1,9 @@
 package com.grum.raphael.projectmanagerclient.service;
 
-import android.app.IntentService;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NotificationCompat;
@@ -25,9 +23,8 @@ import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Created by Raphael on 04.12.2017.
+ * This service is used to ask for new messages of the user's chat.
  */
-
 public class GetNewMessagesService extends WakefulIntentService {
 
     private String content = "";
@@ -45,6 +42,9 @@ public class GetNewMessagesService extends WakefulIntentService {
         super(name);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void doWakefulWork(Intent intent) {
         SharedPreferences settings = getSharedPreferences("MyFile", 0);
@@ -52,6 +52,9 @@ public class GetNewMessagesService extends WakefulIntentService {
         getNewMessages(username);
         }
 
+    /*
+    Requests the new messages for the client's user.
+     */
     private void getNewMessages(String username) {
         if (CheckInternet.isNetworkAvailable(getApplicationContext())) {
             Calendar currentTime = Calendar.getInstance();
@@ -104,6 +107,10 @@ public class GetNewMessagesService extends WakefulIntentService {
         stopSelf();
     }
 
+    /*
+    Extracts the names of the chats in which new messages exist and creates the notification for
+    the user.
+     */
     private void editContent(ArrayList<String> chats) {
         if (chats.size() != 0) {
             content = "Sie haben neue Nachrichten bei folgenden Chats:\n";

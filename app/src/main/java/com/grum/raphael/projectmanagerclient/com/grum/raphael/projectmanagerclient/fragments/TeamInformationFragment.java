@@ -218,14 +218,14 @@ public class TeamInformationFragment extends Fragment {
 
     private void goToUserProfile() {
         if (CheckInternet.isNetworkAvailable(getContext())) {
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            Fragment newFragment;
             UserTask userTask = new UserTask();
             String[] params = new String[]{MainActivity.URL + "user",
                     MainActivity.userData.getUsername(),
                     MainActivity.userData.getToken()};
             try {
                 JSONObject userData = userTask.execute(params).get();
-                FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                Fragment newFragment;
                 if (userData != null) {
                     Bundle bundle = new Bundle();
                     bundle.putString("userData", userData.toString());

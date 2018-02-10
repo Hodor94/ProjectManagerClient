@@ -1,12 +1,7 @@
 package com.grum.raphael.projectmanagerclient.tasks;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-
-import com.grum.raphael.projectmanagerclient.MainActivity;
-import com.grum.raphael.projectmanagerclient.NavigationActivity;
-import com.grum.raphael.projectmanagerclient.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,7 +10,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URLDecoder;
 
 import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.client.HttpClient;
@@ -40,6 +34,11 @@ public class UserTask extends AsyncTask<String, Void, JSONObject> {
     }
 
     @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
     protected JSONObject doInBackground(String... params) {
         String url = params[0];
         String username = params[1];
@@ -47,15 +46,16 @@ public class UserTask extends AsyncTask<String, Void, JSONObject> {
         JSONObject result;
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost getUserData = new HttpPost(url);
-        StringEntity stringEntity = new StringEntity(createUserInfo(token, username), "UTF-8");
+        StringEntity stringEntity
+                = new StringEntity(createUserInfo(token, username), "UTF-8");
         stringEntity.setContentType("application/json");
         getUserData.setEntity(stringEntity);
         try {
             HttpResponse response = client.execute(getUserData);
             InputStream input = response.getEntity().getContent();
             if (input != null) {
-                InputStreamReader streamReader = new InputStreamReader(input);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                BufferedReader reader
+                        = new BufferedReader(new InputStreamReader(input));
                 String temp;
                 StringBuilder stringBuilder = new StringBuilder();
                 while ((temp = reader.readLine()) != null) {

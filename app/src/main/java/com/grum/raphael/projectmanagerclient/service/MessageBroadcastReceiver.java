@@ -8,13 +8,15 @@ import android.content.Intent;
 import android.os.SystemClock;
 
 /**
- * Created by Raphael on 04.12.2017.
+ * This receiver starts the service to ask for new messages periodically all 2 minutes.
  */
-
 public class MessageBroadcastReceiver extends BroadcastReceiver {
 
     private final int PERIOD = 120000; // 2 minutes
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         AlarmManager alarmManager

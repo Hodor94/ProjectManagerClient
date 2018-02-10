@@ -5,13 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 
 /**
- * Created by Raphael on 23.11.2017.
+ * This receiver class starts the service which asks for changes in the team environment.
  */
-
 public class OnAlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         WakefulIntentService.acquireStaticLock(context);
-        context.startService(new Intent(context, DetectChangesService.class));
+        context.startService(new Intent(context,
+                DetectChangesService.class));
     }
 }

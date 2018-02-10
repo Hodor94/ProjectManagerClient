@@ -25,8 +25,9 @@
         <activity
             android:name=".NavigationActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_navigation"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ForgotPasswordActivity" />
+        <activity android:name=".ChangePasswordActivity" />
 
         <receiver android:name=".service.Autostart">
             <intent-filter>
@@ -46,13 +47,9 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".service.MessageAlarmReceiver" />
-
         <service android:name=".service.DetectChangesService" />
         <service android:name=".service.TodaysActionService" />
         <service android:name=".service.GetNewMessagesService" />
-
-        <activity android:name=".ForgotPasswordActivity" />
-        <activity android:name=".ChangePasswordActivity"></activity>
     </application>
 
 </manifest>

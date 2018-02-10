@@ -23,8 +23,10 @@ import java.util.concurrent.ExecutionException;
  * Created by Raphael on 28.11.2017.
  */
 
+/**
+ * Asks server for changes in the team environment.
+ */
 public class DetectChangesService extends WakefulIntentService {
-
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -35,10 +37,16 @@ public class DetectChangesService extends WakefulIntentService {
         super(name);
     }
 
+    /**
+     * Creates an instance of this service.
+     */
     public DetectChangesService() {
         super(DetectChangesService.class.getName());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     void doWakefulWork(Intent intent) {
         SharedPreferences settings = getSharedPreferences("MyFile", 0);
@@ -46,6 +54,11 @@ public class DetectChangesService extends WakefulIntentService {
         getNews(teamName);
     }
 
+    /**
+     * Requests the news of the team of this client's user.
+     *
+     * @param teamName The name of the user's team.
+     */
     private void getNews(String teamName) {
         GetTeamsNews getTeamsNews = new GetTeamsNews();
         String[] params = new String[] {MainActivity.URL + "team/news", teamName};
@@ -63,7 +76,8 @@ public class DetectChangesService extends WakefulIntentService {
                         PendingIntent intent = PendingIntent.getActivity(getApplicationContext(),
                                 0, notificationIntent, 0);
                         NotificationManager notificationManager =
-                                (NotificationManager) getSystemService(Service.NOTIFICATION_SERVICE);
+                                (NotificationManager) getSystemService
+                                        (Service.NOTIFICATION_SERVICE);
                         NotificationCompat.Builder builder =
                                 new NotificationCompat.Builder(getApplicationContext())
                                 .setSmallIcon(R.drawable.ic_notification)
@@ -89,6 +103,9 @@ public class DetectChangesService extends WakefulIntentService {
         }
     }
 
+    /*
+    Extracts the news of the team received from the server.
+     */
     private String getContent(JSONObject result) throws JSONException {
         StringBuilder stringBuilder = new StringBuilder();
         JSONArray array = result.getJSONArray("news");

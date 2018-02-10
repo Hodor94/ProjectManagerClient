@@ -51,7 +51,8 @@ public class CreateAppointmentFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_create_appointment, container, false);
         appointmentName = (EditText) rootView.findViewById(R.id.create_appointment_name);
         appointmentName.setFilters(new InputFilter[] {MainActivity.EMOJI_FILTER});
